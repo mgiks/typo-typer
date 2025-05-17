@@ -113,12 +113,12 @@ func (db *Database) AddUser(name string, email string, password string) (pgx.Row
 	return rows, nil
 }
 
-func (db *Database) GetRandomTextRow() pgx.Row {
+func (db *Database) RandomTextRow() pgx.Row {
 	row := db.QueryRow(`SELECT id, content, submitter, source FROM "text" ORDER BY RANDOM()`)
 	return row
 }
 
-func (db *Database) GetRandomText() string {
+func (db *Database) RandomText() string {
 	row := db.QueryRow(`SELECT content FROM "text" ORDER BY RANDOM()`)
 	var text string
 	err := row.Scan(&text)

@@ -8,7 +8,7 @@ import (
 
 func (s *server) createRandomTextMessage() *dtos.RandomTextMessage {
 	rtm := dtos.NewRandomTextMessage()
-	row := s.db.GetRandomTextRow()
+	row := s.db.RandomTextRow()
 	if err := row.Scan(
 		&rtm.Data.Id,
 		&rtm.Data.Text,
@@ -27,7 +27,7 @@ func (s *server) createMatchFoundMessage(
 	playerNames []string,
 ) *dtos.MatchFoundMessage {
 	mfm := dtos.NewMatchFoundMessage()
-	row := s.db.GetRandomText()
+	row := s.db.RandomText()
 
 	mfm.Data.MatchID = matchID
 	mfm.Data.Text = row
