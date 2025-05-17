@@ -7,23 +7,25 @@ import (
 	"net/http"
 
 	"github.com/coder/websocket"
-	"github.com/mgiks/ttyper/internal/db"
+	"github.com/mgiks/ttyper/internal/db/postgres"
+	"github.com/mgiks/ttyper/internal/db/redis"
 	"github.com/mgiks/ttyper/internal/dtos"
 )
 
 type server struct {
-	mux  http.ServeMux
-	pm   *PlayerManager
-	mm   *MatchManager
-	db   *db.Database
-	wsmr *WSMessageRouter
+	mux        http.ServeMux
+	pm         *PlayerManager
+	mm         *MatchManager
+	postgresDB *postgres.Database
+	redisDB    *redis.Database
+	wsmr       *WSMessageRouter
 }
 
 func New() *server {
 	s := server{}
 
 	s.setupManagers()
-	s.setupDB()
+	s.setupDBs()
 	s.setupWSRoutes()
 	s.setupMatchMaker()
 
@@ -38,9 +40,10 @@ func (s *server) setupManagers() {
 	s.mm = NewMatchManager()
 }
 
-func (s *server) setupDB() {
+func (s *server) setupDBs() {
 	ctx := context.TODO()
-	s.db = db.New(ctx)
+	s.postgresDB = postgres.New(ctx)
+	s.redisDB = redis.New(ctx)
 }
 
 func (s *server) setupWSRoutes() {
@@ -75,7 +78,7 @@ func (s *server) matchMake() {
 		s.mm.Mu.Unlock()
 
 		ctx := context.TODO()
-		row := s.db.GetRandomTextRow(ctx)
+		row := s.postgresDB.GetRandomTextRow(ctx)
 
 		var text string
 		if err := row.Scan(nil, &text); err != nil {

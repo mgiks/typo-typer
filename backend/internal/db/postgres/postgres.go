@@ -1,17 +1,16 @@
-package db
+package postgres
 
 import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/mgiks/ttyper/internal/utils"
 )
 
 type Database struct {
-	url  string
 	pool *pgxpool.Pool
 }
 
@@ -20,22 +19,22 @@ func New(ctx context.Context) *Database {
 
 	dbpool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
-		log.Fatalln("Unable to connect to database:", err)
+		log.Fatalln("Unable to connect to postgres database:", err)
 	}
 
-	db := Database{url: dbURL, pool: dbpool}
+	db := Database{pool: dbpool}
 
 	if err := db.pool.Ping(ctx); err != nil {
-		log.Fatalln("Unable to ping database:", err)
+		log.Fatalln("Unable to ping postgres database:", err)
 	}
 
 	return &db
 }
 
 func getDBURL() string {
-	dbPass := findEnvOrFail("POSTGRES_PASSWORD")
-	dbPort := findEnvOrFail("POSTGRES_PORT")
-	dbName := findEnvOrFail("POSTGRES_DB")
+	dbPass := utils.FindEnvOrFail("POSTGRES_PASSWORD")
+	dbPort := utils.FindEnvOrFail("POSTGRES_PORT")
+	dbName := utils.FindEnvOrFail("POSTGRES_DB")
 
 	return fmt.Sprintf(
 		"postgres://postgres:%s@localhost:%s/%s",
@@ -43,14 +42,6 @@ func getDBURL() string {
 		dbPort,
 		dbName,
 	)
-}
-
-func findEnvOrFail(env string) string {
-	envVal := os.Getenv(env)
-	if len(envVal) == 0 {
-		log.Fatalf(`Environmental variable "%v" not found`, env)
-	}
-	return envVal
 }
 
 func (db *Database) AddText(
