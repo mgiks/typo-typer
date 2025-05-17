@@ -33,29 +33,24 @@ func New(ctx context.Context) *Database {
 }
 
 func getDBURL() string {
-	requiredEnvs := map[string]string{
-		"DBPass": "POSTGRES_PASSWORD",
-		"DBPort": "POSTGRES_PORT",
-		"DBName": "POSTGRES_DB",
-	}
-
-	envs := make(map[string]string)
-	for k, v := range requiredEnvs {
-		env := os.Getenv(v)
-
-		if len(env) == 0 {
-			log.Fatalf("Env `%v` not found", v)
-		}
-
-		envs[k] = env
-	}
+	dbPass := findEnvOrFail("POSTGRES_PASSWORD")
+	dbPort := findEnvOrFail("POSTGRES_PORT")
+	dbName := findEnvOrFail("POSTGRES_DB")
 
 	return fmt.Sprintf(
 		"postgres://postgres:%s@localhost:%s/%s",
-		envs["DBPass"],
-		envs["DBPort"],
-		envs["DBName"],
+		dbPass,
+		dbPort,
+		dbName,
 	)
+}
+
+func findEnvOrFail(env string) string {
+	envVal := os.Getenv(env)
+	if len(envVal) == 0 {
+		log.Fatalf(`Environmental variable "%v" not found`, env)
+	}
+	return envVal
 }
 
 func (db *Database) AddText(
