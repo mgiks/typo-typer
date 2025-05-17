@@ -82,7 +82,7 @@ func (db *Database) GetRandomTextRow(ctx context.Context) pgx.Row {
 func (db *Database) Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
 	rows, err := db.pool.Query(ctx, query, args...)
 	if err != nil {
-		log.Printf("Query `%v` failed: %v\n", query, err)
+		log.Printf(`Query "%v" failed: %v\n`, query, err)
 		return nil, err
 	}
 
