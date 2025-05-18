@@ -1,7 +1,9 @@
 services:
   postgres:
     container_name: postgres
-    image: postgres:17.4
+    build:
+      context: ./docker/postgres
+      dockerfile: Dockerfile
     env_file: ".env"
     environment:
       PGUSER: ${POSTGRES_USER}

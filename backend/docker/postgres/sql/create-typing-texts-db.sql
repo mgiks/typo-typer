@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS typing_text(
+    id SERIAL PRIMARY KEY,
+    content TEXT NOT NULL,
+    submitter VARCHAR(100) NOT NULL,
+    source TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+)
