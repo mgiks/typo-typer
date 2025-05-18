@@ -1,16 +1,15 @@
 services:
-  db:
+  postgres:
     container_name: postgres
     image: postgres:17.4
-    env_file:
-      - .env
+    env_file: ".env"
     environment:
       PGUSER: ${POSTGRES_USER}
       PGPASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /var/lib/postgresql/data
       PGDATABASE: ${POSTGRES_DB}
     volumes: 
-      - db:/data/postgres
+      - postgres:/data/postgres
     ports:
       - "${POSTGRES_PORT}:5432"
     networks:
@@ -21,12 +20,23 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+  redis:
+    container_name: redis
+    image: redis:8.0.1
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - db
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 networks:
   db:
     driver: bridge
 
 volumes:
-  db:
-
-
+  postgres:
