@@ -52,7 +52,7 @@ func (db *Database) AddText(
 ) (pgx.Rows, error) {
 	rows, err := db.Query(
 		ctx,
-		`INSERT INTO "text"(content, submitter, source) 
+		`INSERT INTO typing_text(content, submitter, source) 
 		VALUES ($1, $2, $3) RETURNING text, submitter`,
 		text,
 		uploaderName,
@@ -66,7 +66,7 @@ func (db *Database) AddText(
 }
 
 func (db *Database) GetRandomTextRow(ctx context.Context) pgx.Row {
-	row := db.QueryRow(ctx, `SELECT id, content, submitter, source FROM texts ORDER BY RANDOM()`)
+	row := db.QueryRow(ctx, `SELECT id, content, submitter, source FROM typing_text ORDER BY RANDOM()`)
 	return row
 }
 
