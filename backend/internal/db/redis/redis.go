@@ -6,12 +6,12 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type Database struct {
+type Struct struct {
 	Client *redis.Client
 }
 
-func New(ctx context.Context) *Database {
-	return &Database{
+func New(ctx context.Context) *Struct {
+	return &Struct{
 		Client: redis.NewClient(
 			&redis.Options{
 				Addr:     "localhost:6379",
