@@ -5,35 +5,35 @@ import (
 	"sync"
 )
 
-type WSMessageHandler func(p *Player, message []byte)
+type wsMessageHandler func(p *player, message []byte)
 
-type WSMessageRouter struct {
-	MHs map[string]WSMessageHandler
-	Mu  sync.Mutex
+type wsMessageRouter struct {
+	mhs map[string]wsMessageHandler
+	mu  sync.Mutex
 }
 
-func NewWSMessageRouter() *WSMessageRouter {
-	return &WSMessageRouter{MHs: make(map[string]WSMessageHandler)}
+func newWsMessageRouter() *wsMessageRouter {
+	return &wsMessageRouter{mhs: make(map[string]wsMessageHandler)}
 }
 
-func (mr *WSMessageRouter) AddMessageHandler(
+func (mr *wsMessageRouter) addMessageHandler(
 	messageType string,
-	mh WSMessageHandler,
+	mh wsMessageHandler,
 ) {
-	mr.Mu.Lock()
-	defer mr.Mu.Unlock()
+	mr.mu.Lock()
+	defer mr.mu.Unlock()
 
-	mr.MHs[messageType] = mh
+	mr.mhs[messageType] = mh
 }
 
-func (mr *WSMessageRouter) RouteMessage(
-	p *Player,
+func (mr *wsMessageRouter) routeMessage(
+	p *player,
 	messageType string,
 	message []byte,
 ) {
-	messageHandler, exists := mr.MHs[messageType]
+	messageHandler, exists := mr.mhs[messageType]
 	if !exists {
-		err := p.Conn.CloseNow()
+		err := p.conn.CloseNow()
 		if err != nil {
 			log.Println("Failed to close websocket connection:", err)
 		}

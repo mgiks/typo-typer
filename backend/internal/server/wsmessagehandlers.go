@@ -7,8 +7,8 @@ import (
 	"github.com/mgiks/ttyper/internal/dtos"
 )
 
-func (s *server) SearchForAMatch(
-	p *Player,
+func (s *server) searchForAMatch(
+	p *player,
 	message []byte,
 ) {
 	var msg dtos.SearchForMatchMessage
@@ -16,10 +16,10 @@ func (s *server) SearchForAMatch(
 		log.Println("Failed to unmarshal searching player message:", err)
 	}
 
-	p.Name = msg.Data.PlayerName
-	p.Id = msg.Data.PlayerId
+	p.name = msg.Data.PlayerName
+	p.id = msg.Data.PlayerId
 
-	s.pm.Mu.Lock()
-	s.pm.SearchingPlayers[p.Id] = p
-	s.pm.Mu.Unlock()
+	s.pm.mu.Lock()
+	s.pm.searchingPlayers[p.id] = p
+	s.pm.mu.Unlock()
 }

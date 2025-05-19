@@ -6,30 +6,30 @@ import (
 	"github.com/coder/websocket"
 )
 
-type Player struct {
-	Conn *websocket.Conn
-	Name string
-	Id   string
+type player struct {
+	conn *websocket.Conn
+	name string
+	id   string
 }
 
-type Match struct {
-	Players []*Player
+type match struct {
+	players []*player
 }
 
-type PlayerManager struct {
-	SearchingPlayers map[string]*Player
-	Mu               sync.Mutex
+type playerManager struct {
+	searchingPlayers map[string]*player
+	mu               sync.Mutex
 }
 
-type MatchManager struct {
-	Matches map[string]Match
-	Mu      sync.RWMutex
+type matchManager struct {
+	matches map[string]match
+	mu      sync.RWMutex
 }
 
-func NewPlayerManager() *PlayerManager {
-	return &PlayerManager{SearchingPlayers: make(map[string]*Player)}
+func newPlayerManager() *playerManager {
+	return &playerManager{searchingPlayers: make(map[string]*player)}
 }
 
-func NewMatchManager() *MatchManager {
-	return &MatchManager{Matches: make(map[string]Match)}
+func newMatchManager() *matchManager {
+	return &matchManager{matches: make(map[string]match)}
 }

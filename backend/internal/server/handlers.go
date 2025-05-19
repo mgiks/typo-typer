@@ -59,16 +59,16 @@ func (s *server) websocketMessageHandler(
 		return
 	}
 
-	p := &Player{Conn: wsc}
+	p := &player{conn: wsc}
 	ctx := context.TODO()
 	for {
-		messageType, message, err := p.Conn.Read(ctx)
+		messageType, message, err := p.conn.Read(ctx)
 		if err != nil || messageType != websocket.MessageText {
-			s.pm.Mu.Lock()
-			delete(s.pm.SearchingPlayers, p.Id)
-			s.pm.Mu.Unlock()
+			s.pm.mu.Lock()
+			delete(s.pm.searchingPlayers, p.id)
+			s.pm.mu.Unlock()
 
-			cerr := p.Conn.CloseNow()
+			cerr := p.conn.CloseNow()
 			if cerr != nil {
 				log.Println("Failed to close websocket connection:", cerr)
 				return
@@ -80,6 +80,6 @@ func (s *server) websocketMessageHandler(
 			log.Println("Failed to unmarshal websocketMessage:", err)
 		}
 
-		s.wsmr.RouteMessage(p, msg.Type, message)
+		s.wsmr.routeMessage(p, msg.Type, message)
 	}
 }

@@ -14,11 +14,11 @@ import (
 
 type server struct {
 	mux        http.ServeMux
-	pm         *PlayerManager
-	mm         *MatchManager
+	pm         *playerManager
+	mm         *matchManager
 	postgresDB *postgres.Struct
 	redisDB    *redis.Struct
-	wsmr       *WSMessageRouter
+	wsmr       *wsMessageRouter
 }
 
 func New() *server {
@@ -36,8 +36,8 @@ func New() *server {
 }
 
 func (s *server) setupManagers() {
-	s.pm = NewPlayerManager()
-	s.mm = NewMatchManager()
+	s.pm = newPlayerManager()
+	s.mm = newMatchManager()
 }
 
 func (s *server) setupDBs() {
@@ -47,8 +47,8 @@ func (s *server) setupDBs() {
 }
 
 func (s *server) setupWSRoutes() {
-	s.wsmr = NewWSMessageRouter()
-	s.wsmr.AddMessageHandler("searchForMatch", s.SearchForAMatch)
+	s.wsmr = newWsMessageRouter()
+	s.wsmr.addMessageHandler("searchForMatch", s.searchForAMatch)
 }
 
 func (s *server) setupMatchMaker() {
@@ -57,25 +57,25 @@ func (s *server) setupMatchMaker() {
 
 func (s *server) matchMake() {
 	for {
-		if len(s.pm.SearchingPlayers) < 2 {
+		if len(s.pm.searchingPlayers) < 2 {
 			continue
 		}
 
-		matchedPlayers := make([]*Player, 0, 2)
-		for _, player := range s.pm.SearchingPlayers {
+		matchedPlayers := make([]*player, 0, 2)
+		for _, player := range s.pm.searchingPlayers {
 			matchedPlayers = append(matchedPlayers, player)
-			delete(s.pm.SearchingPlayers, player.Id)
+			delete(s.pm.searchingPlayers, player.id)
 			if len(matchedPlayers) == 2 {
 				break
 			}
 		}
 
-		m := Match{Players: matchedPlayers}
-		matchID := matchedPlayers[0].Name + " VS " + matchedPlayers[1].Name
+		m := match{players: matchedPlayers}
+		matchID := matchedPlayers[0].name + " VS " + matchedPlayers[1].name
 
-		s.mm.Mu.Lock()
-		s.mm.Matches[matchID] = m
-		s.mm.Mu.Unlock()
+		s.mm.mu.Lock()
+		s.mm.matches[matchID] = m
+		s.mm.mu.Unlock()
 
 		ctx := context.TODO()
 		row := s.postgresDB.GetRandomTextRow(ctx)
@@ -89,8 +89,8 @@ func (s *server) matchMake() {
 		msg.Data.MatchID = matchID
 		msg.Data.Text = text
 		msg.Data.PlayerNames = []string{
-			matchedPlayers[0].Name,
-			matchedPlayers[1].Name,
+			matchedPlayers[0].name,
+			matchedPlayers[1].name,
 		}
 
 		serializedMsg, err := json.Marshal(msg)
@@ -98,12 +98,12 @@ func (s *server) matchMake() {
 			return
 		}
 
-		for _, p := range s.mm.Matches[matchID].Players {
+		for _, p := range s.mm.matches[matchID].players {
 			ctx := context.TODO()
-			err := p.Conn.Write(ctx, websocket.MessageText, serializedMsg)
+			err := p.conn.Write(ctx, websocket.MessageText, serializedMsg)
 
 			if err != nil {
-				cerr := p.Conn.CloseNow()
+				cerr := p.conn.CloseNow()
 				if cerr != nil {
 					log.Println("Failed to close websocket connection:", cerr)
 				}
