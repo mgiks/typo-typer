@@ -1,4 +1,14 @@
 export const text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+export const textWithNewLineChars = `Lorem 
+ipsum
+dolor
+sit
+amet,
+consectetur
+adipiscing
+elit.`
+export const textWithIrregularSpacing =
+  'Lorem   ipsum      dolor   sit amet,  consectetur adipiscing     elit.'
 export const textarea = <textarea data-testid='typing-area'></textarea>
 
 export const extractCorrectTextExpectationTable = [
