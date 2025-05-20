@@ -25,58 +25,59 @@ function TypingStatsContainer() {
   const isStopwatchRunning = useIsStopWatchRunning()
   const timeElapsed = useTimeElapsed()
   const cursorIndex = useCursorIndex()
+
   const { addResult } = useResultActions()
+
   const { setTypingTime, setTimeElapsed, startStopwatch, stopStopwatch } =
     useTypingStatsActions()
+
   const [typingStartTime, setTypingStartTime] = useState(0)
 
-  function handleCursorMoving() {
-    startStopwatch()
-    setTypingStartTime(Date.now())
-  }
+  useEffect(() => {
+    if (!isDoneTyping) return
 
-  function handleFinishingTyping() {
     stopStopwatch()
     setTypingTime(timeElapsed)
-  }
-
-  useEffect(() => {
-    cursorMoved && handleCursorMoving()
-  }, [cursorMoved])
-
-  useEffect(() => {
-    isDoneTyping && handleFinishingTyping()
   }, [isDoneTyping])
 
-  const stopWarchRef = useRef<NodeJS.Timeout>(undefined)
-
   useEffect(() => {
-    if (isStopwatchRunning) {
-      stopWarchRef.current = setInterval(() => {
-        setTimeElapsed(Math.round((Date.now() - typingStartTime) / 1000))
-      }, 1000)
-    } else {
+    if (!cursorMoved) return
+
+    startStopwatch()
+    setTypingStartTime(Date.now())
+  }, [cursorMoved])
+
+  const stopWarchRef = useRef<NodeJS.Timeout>(undefined)
+  useEffect(() => {
+    if (!isStopwatchRunning) {
       clearTimeout(stopWarchRef.current)
+      return
     }
+
+    stopWarchRef.current = setInterval(() => {
+      setTimeElapsed(Math.round((Date.now() - typingStartTime) / 1000))
+    }, 1000)
   }, [isStopwatchRunning])
 
   useEffect(() => {
-    if (timeElapsed) {
-      const { GWPM, NWPM, typingAccuracy } = calculateTypingAccuracyAndWPM(
-        cursorIndex,
-        timeElapsed,
-        correctKeyPresses,
-        errors,
-      )
-      const result: Result = {
-        GWPM: GWPM,
-        NWPM: NWPM,
-        typingAccuracy: typingAccuracy,
-        time: timeElapsed,
-        errors: errors,
-      }
-      addResult(result)
+    if (!timeElapsed) return
+
+    const { GWPM, NWPM, typingAccuracy } = calculateTypingAccuracyAndWPM(
+      cursorIndex,
+      timeElapsed,
+      correctKeyPresses,
+      errors,
+    )
+
+    const result: Result = {
+      GWPM: GWPM,
+      NWPM: NWPM,
+      typingAccuracy: typingAccuracy,
+      time: timeElapsed,
+      errors: errors,
     }
+
+    addResult(result)
   }, [timeElapsed, isDoneTyping])
 
   return (

@@ -24,8 +24,10 @@ function ResultContainer() {
   const textRefreshCount = useTextRefreshCount()
   const results = useResultsPerSecond()
   const cursorIndex = useCursorIndex()
+
   const { clearResults } = useResultActions()
   const { startTypingGame } = useTypingStatsActions()
+
   useEffect(() => {
     clearResults()
     startTypingGame()

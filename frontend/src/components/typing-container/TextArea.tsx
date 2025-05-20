@@ -19,6 +19,7 @@ function TextArea({
   const textBeforeCursor = useTextBeforeCursor()
   const textAfterCursor = useTextAfterCursor()
   const wrongTextStartIndex = useWrongTextStartIndex()
+
   const { setCorrectText } = useTextActions()
 
   const textAreaRef = useRef<HTMLDivElement>(null)
@@ -27,19 +28,12 @@ function TextArea({
     textBeforeCursor,
     textAfterCursor,
   ])
-  useEffect(() => {
-    const textArea = textAreaRef.current
-    if (!textArea) return
-    textArea.style.animation = 'none'
-    // Causes a reflow to reset the animation
-    textArea.offsetHeight
-    textArea.style.animation = ''
-  }, [textRefreshCount])
 
   const [isCurrentlyTyping, setIsCurrentlyTyping] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout>(null)
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
+
     setIsCurrentlyTyping(true)
 
     timeoutRef.current = setTimeout(() => {
@@ -48,28 +42,44 @@ function TextArea({
   }, [textBeforeCursor])
 
   const correctText = extractCorrectText(textBeforeCursor, wrongTextStartIndex)
-  const wrongText = extractWrongText(textBeforeCursor, wrongTextStartIndex)
   useEffect(() => {
     setCorrectText(correctText)
   })
 
   useEffect(() => {
+    if (!textAreaRef.current) return
+
+    const textArea = textAreaRef.current
+
+    textArea.style.animation = 'none'
+
+    // Causes a reflow to reset the animation
+    textArea.offsetHeight
+
+    textArea.style.animation = ''
+  }, [textRefreshCount])
+
+  useEffect(() => {
     if (typingContainerRef.current && textAreaRef.current) {
       const textArea = textAreaRef.current
       const typingContainer = typingContainerRef.current
+
       // It's easier to work with integer line height
       const lineHeight = Math.round(
         parseFloat(getComputedStyle(textArea).lineHeight),
       )
       textArea.style.lineHeight = lineHeight.toString() + 'px'
+
       const topAndBottomMargin = 30
       const numberOfLines = 5
       const typingContainerHeight =
         (lineHeight * numberOfLines + topAndBottomMargin).toString() + 'px'
+
       typingContainer.style.height = typingContainerHeight
     }
   }, [typingContainerRef.current, textAreaRef.current])
 
+  const wrongText = extractWrongText(textBeforeCursor, wrongTextStartIndex)
   return (
     <>
       <InactivityCurtain />
