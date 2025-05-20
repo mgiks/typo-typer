@@ -16,8 +16,8 @@ type server struct {
 	mux        http.ServeMux
 	pm         *playerManager
 	mm         *matchManager
-	postgresDB *postgres.Struct
-	redisDB    *redis.Struct
+	postgresDB *postgres.Database
+	redisDB    *redis.Database
 	wsmr       *wsMessageRouter
 }
 

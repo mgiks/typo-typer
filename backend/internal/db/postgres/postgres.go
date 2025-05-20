@@ -10,11 +10,11 @@ import (
 	"github.com/mgiks/ttyper/internal/utils"
 )
 
-type Struct struct {
+type Database struct {
 	pool *pgxpool.Pool
 }
 
-func New(ctx context.Context) *Struct {
+func New(ctx context.Context) *Database {
 	dbURL := getDBURL()
 
 	dbpool, err := pgxpool.New(ctx, dbURL)
@@ -22,7 +22,7 @@ func New(ctx context.Context) *Struct {
 		log.Fatalln("Unable to connect to postgres database:", err)
 	}
 
-	db := Struct{pool: dbpool}
+	db := Database{pool: dbpool}
 
 	if err := db.pool.Ping(ctx); err != nil {
 		log.Fatalln("Unable to ping postgres database:", err)
@@ -44,7 +44,7 @@ func getDBURL() string {
 	)
 }
 
-func (db *Struct) AddText(
+func (db *Database) AddText(
 	ctx context.Context,
 	text string,
 	source string,
@@ -65,12 +65,12 @@ func (db *Struct) AddText(
 	return rows, err
 }
 
-func (db *Struct) GetRandomTextRow(ctx context.Context) pgx.Row {
+func (db *Database) GetRandomTextRow(ctx context.Context) pgx.Row {
 	row := db.QueryRow(ctx, `SELECT id, content, submitter, source FROM typing_text ORDER BY RANDOM()`)
 	return row
 }
 
-func (db *Struct) Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
+func (db *Database) Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
 	rows, err := db.pool.Query(ctx, query, args...)
 	if err != nil {
 		log.Printf(`Query "%v" failed: %v\n`, query, err)
@@ -80,7 +80,7 @@ func (db *Struct) Query(ctx context.Context, query string, args ...any) (pgx.Row
 	return rows, err
 }
 
-func (db *Struct) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
+func (db *Database) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
 	row := db.pool.QueryRow(ctx, query, args...)
 
 	return row
