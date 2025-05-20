@@ -21,6 +21,7 @@ import {
   Message,
   SearchForMatchMessage,
 } from './dtos/Message'
+import { parseText } from './utils/parseText'
 
 function TypingArea(
   { ref }: { ref: React.RefObject<HTMLTextAreaElement | null> },
@@ -50,7 +51,7 @@ function TypingArea(
   } = useMultiplayerActions()
 
   useEffect(() => {
-    getRandomText().then((text) => setText(text))
+    getRandomText().then((text) => setText(parseText(text)))
   }, [textRefreshCount])
 
   const playerId = usePlayerId()
