@@ -22,6 +22,10 @@ export const extractCorrectTextExpectationTable = [
     index: 1000,
     expected: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   },
+  {
+    index: text.length,
+    expected: text,
+  },
 ]
 
 export const extractWrongTextExpectationTable = [
@@ -36,6 +40,10 @@ export const extractWrongTextExpectationTable = [
   { index: 10, expected: 'm dolor sit amet, consectetur adipiscing elit.' },
   {
     index: 1000,
+    expected: '',
+  },
+  {
+    index: text.length,
     expected: '',
   },
 ]

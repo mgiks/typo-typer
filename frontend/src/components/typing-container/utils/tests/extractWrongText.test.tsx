@@ -10,4 +10,7 @@ describe('extractWrongText', () => {
       },
     )
   })
+  it('should extract empty string if input is empty', () => {
+    expect(extractWrongText('', 5)).toBe('')
+  })
 })
