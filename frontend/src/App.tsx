@@ -17,32 +17,36 @@ import MatchProgressContainer from './components/match-progress-container/MatchP
 function App() {
   const isDoneTyping = useIsDoneTyping()
   const playerMode = usePlayerMode()
+
   const { searchForMatch, stopSearchingForMatch } = useMultiplayerActions()
   const { increaseTextRefreshCount, resetCursorIndex } = useTextActions()
   const { resetTypingStats } = useTypingStatsActions()
   const { setRandomName, setRandomPlayerId } = useMultiplayerActions()
+
+  function handleTab(event: KeyboardEvent) {
+    if (event.key !== 'Tab') {
+      return
+    }
+    switch (playerMode) {
+      case PlayerModes.Singleplayer:
+        increaseTextRefreshCount()
+
+        resetTypingStats()
+        resetCursorIndex()
+
+        stopSearchingForMatch()
+        break
+      case PlayerModes.Multiplayer:
+        searchForMatch()
+        break
+    }
+  }
   useEffect(() => {
     const removeTabDefaultFunctionality = (event: KeyboardEvent) => {
       event.key === 'Tab' && event.preventDefault()
     }
     window.onkeydown = removeTabDefaultFunctionality
 
-    const handleTab = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab') {
-        return
-      }
-      switch (playerMode) {
-        case PlayerModes.Singleplayer:
-          increaseTextRefreshCount()
-          resetTypingStats()
-          resetCursorIndex()
-          stopSearchingForMatch()
-          break
-        case PlayerModes.Multiplayer:
-          searchForMatch()
-          break
-      }
-    }
     window.onkeyup = handleTab
   }, [playerMode])
 
