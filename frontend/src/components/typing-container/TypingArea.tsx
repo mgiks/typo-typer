@@ -15,9 +15,9 @@ import {
   usePlayerId,
   usePlayerName,
 } from '../../stores/MultiplayerStore'
-import { getRandomText } from './utils/getRandomText'
-import { Message, MessageType, SearchForMatchMessage } from './dtos/Message'
+import { Message, MessageType } from './types/Message'
 import { parseText } from './utils/parseText'
+import { MessageOf, NewMessage } from './types/MessageInitializers'
 
 function TypingArea(
   { ref }: { ref: React.RefObject<HTMLTextAreaElement | null> },
@@ -59,12 +59,12 @@ function TypingArea(
     ws.onopen = () => {
       console.log('Connected to websocket server')
 
-      const playerInfo: SearchForMatchMessage = {
-        type: MessageType.searchForMatch,
-        data: { playerName, playerId },
-      }
+      const message = NewMessage(MessageType.searchForMatch, {
+        playerName,
+        playerId,
+      })
 
-      ws.send(JSON.stringify(playerInfo))
+      ws.send(JSON.stringify(message))
     }
 
     ws.onmessage = (event) => {
@@ -103,6 +103,13 @@ function TypingArea(
     isAtTheEndOfText && finishTypingGame()
   })
 
+  async function getRandomText() {
+    const response = await fetch('http://localhost:8000/random-texts')
+    const randomTextMessage = await response.json() as MessageOf<
+      MessageType.randomText
+    >
+    return randomTextMessage.data.text
+  }
   useEffect(() => {
     getRandomText().then((text) => setText(parseText(text)))
   }, [textRefreshCount])

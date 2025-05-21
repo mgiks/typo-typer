@@ -85,9 +85,7 @@ function TypingStatsContainer() {
       <PlayerModeSwitcher />
       <div id='stopwatch'>{timeElapsed}</div>
       <div id='word-count'>
-        {calculateWordCount(correctText) +
-          (correctText.length === text.length ? 0 : -1)} /{' '}
-        {calculateWordCount(text)}
+        {calculateWordCount(correctText)} / {calculateWordCount(text)}
       </div>
     </div>
   )
