@@ -37,13 +37,13 @@ type SearchForMatchMessage struct {
 	Data searchForMatchData `json:"data"`
 }
 
-func NewMatchFoundMessage() *MatchFoundMessage {
+func InitializeMatchFoundMessage() *MatchFoundMessage {
 	msg := &MatchFoundMessage{}
 	msg.Type = "matchFound"
 	return msg
 }
 
-func NewRandomTextMessage() *RandomTextMessage {
+func InitializeRandomTextMessage() *RandomTextMessage {
 	msg := &RandomTextMessage{}
 	msg.Type = "randomText"
 	return msg

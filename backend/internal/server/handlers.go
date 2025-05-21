@@ -18,9 +18,9 @@ func (s *server) getRandomTextHandler(w http.ResponseWriter, r *http.Request) {
 	enableCORS(&w)
 
 	ctx := context.TODO()
-	row := s.postgresDB.GetRandomTextRow(ctx)
+	row := s.postgresDB.GetRandomTypingTextRow(ctx)
 
-	msg := dtos.NewRandomTextMessage()
+	msg := dtos.InitializeRandomTextMessage()
 	if err := row.Scan(
 		&msg.Data.Id,
 		&msg.Data.Text,

@@ -11,7 +11,7 @@ import (
 )
 
 type Database struct {
-	pool *pgxpool.Pool
+	*pgxpool.Pool
 }
 
 func New(ctx context.Context) *Database {
@@ -22,9 +22,9 @@ func New(ctx context.Context) *Database {
 		log.Fatalln("Unable to connect to postgres database:", err)
 	}
 
-	db := Database{pool: dbpool}
+	db := Database{dbpool}
 
-	if err := db.pool.Ping(ctx); err != nil {
+	if err := db.Ping(ctx); err != nil {
 		log.Fatalln("Unable to ping postgres database:", err)
 	}
 
@@ -44,13 +44,13 @@ func getDBURL() string {
 	)
 }
 
-func (db *Database) AddText(
+func (db *Database) AddTypingTextRow(
 	ctx context.Context,
 	text string,
 	source string,
 	uploaderName string,
-) (pgx.Rows, error) {
-	rows, err := db.Query(
+) error {
+	_, err := db.Query(
 		ctx,
 		`INSERT INTO typing_text(content, submitter, source) 
 		VALUES ($1, $2, $3) RETURNING text, submitter`,
@@ -58,30 +58,10 @@ func (db *Database) AddText(
 		uploaderName,
 		source,
 	)
-	if err != nil {
-		return nil, err
-	}
-
-	return rows, err
+	return err
 }
 
-func (db *Database) GetRandomTextRow(ctx context.Context) pgx.Row {
+func (db *Database) GetRandomTypingTextRow(ctx context.Context) pgx.Row {
 	row := db.QueryRow(ctx, `SELECT id, content, submitter, source FROM typing_text ORDER BY RANDOM()`)
-	return row
-}
-
-func (db *Database) Query(ctx context.Context, query string, args ...any) (pgx.Rows, error) {
-	rows, err := db.pool.Query(ctx, query, args...)
-	if err != nil {
-		log.Printf(`Query "%v" failed: %v\n`, query, err)
-		return nil, err
-	}
-
-	return rows, err
-}
-
-func (db *Database) QueryRow(ctx context.Context, query string, args ...any) pgx.Row {
-	row := db.pool.QueryRow(ctx, query, args...)
-
 	return row
 }

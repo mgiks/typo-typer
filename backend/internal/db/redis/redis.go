@@ -7,12 +7,12 @@ import (
 )
 
 type Database struct {
-	Client *redis.Client
+	*redis.Client
 }
 
 func New(ctx context.Context) *Database {
 	return &Database{
-		Client: redis.NewClient(
+		redis.NewClient(
 			&redis.Options{
 				Addr:     "localhost:6379",
 				Password: "",

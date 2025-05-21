@@ -78,14 +78,14 @@ func (s *server) matchMake() {
 		s.mm.mu.Unlock()
 
 		ctx := context.TODO()
-		row := s.postgresDB.GetRandomTextRow(ctx)
+		row := s.postgresDB.GetRandomTypingTextRow(ctx)
 
 		var text string
 		if err := row.Scan(nil, &text); err != nil {
-			log.Println("Failed to get random text row:", err)
+			log.Println("Failed to get random typing text row for matchmaking:", err)
 		}
 
-		msg := dtos.NewMatchFoundMessage()
+		msg := dtos.InitializeMatchFoundMessage()
 		msg.Data.MatchID = matchID
 		msg.Data.Text = text
 		msg.Data.PlayerNames = []string{
