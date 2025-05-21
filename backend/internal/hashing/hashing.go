@@ -18,7 +18,7 @@ func GenerateSalt() (string, error) {
 	for range 16 {
 		n, err := rand.Int(rand.Reader, int)
 		if err != nil {
-			log.Println("Random number generation failed:", err)
+			log.Println("random number generation failed:", err)
 			return "", err
 		}
 		ints = append(ints, byte(n.Int64()))

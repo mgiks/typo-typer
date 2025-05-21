@@ -27,18 +27,21 @@ func (s *server) getRandomTextHandler(w http.ResponseWriter, r *http.Request) {
 		&msg.Data.Submitter,
 		&msg.Data.Source,
 	); err != nil {
-		log.Println("Failed to get random text row:", err)
+		log.Println("getRandomTextHandler: failed to get random text row:", err)
+		http.Error(w, "", 500)
 		return
 	}
 
 	serializedMsg, err := json.Marshal(msg)
 	if err != nil {
-		http.Error(w, "", http.StatusInternalServerError)
+		log.Println("getRandomTextHandler: failed to marshal message:", err)
+		http.Error(w, "", 500)
 		return
 	}
 
 	if _, err = w.Write(serializedMsg); err != nil {
-		http.Error(w, "", http.StatusInternalServerError)
+		log.Println("getRandomTextHandler: failed to write message:", err)
+		http.Error(w, "", 500)
 	}
 }
 
@@ -52,10 +55,8 @@ func (s *server) websocketMessageHandler(
 ) {
 	wsc, err := websocket.Accept(w, r, acceptOptions)
 	if err != nil {
-		cerr := wsc.CloseNow()
-		if cerr != nil {
-			log.Println("Failed to close websocket connection:", cerr)
-		}
+		log.Println("websocketMessageHandler: failed to establish websocket connection:", err)
+		http.Error(w, "failed to upgrade to websocket connection", 400)
 		return
 	}
 
@@ -64,22 +65,38 @@ func (s *server) websocketMessageHandler(
 	for {
 		messageType, message, err := p.conn.Read(ctx)
 		if err != nil || messageType != websocket.MessageText {
+			log.Println(
+				"websocketMessageHandler: failed to read from websocket connection:",
+				err,
+			)
+
 			s.pm.mu.Lock()
 			delete(s.pm.searchingPlayers, p.id)
 			s.pm.mu.Unlock()
 
-			cerr := p.conn.CloseNow()
+			cerr := p.conn.Close(1000, "client disconnected")
 			if cerr != nil {
-				log.Println("Failed to close websocket connection:", cerr)
-				return
+				log.Println(
+					"websocketMessageHandler: failed to close websocket connection:",
+					cerr,
+				)
 			}
+
+			return
 		}
 
 		var msg dtos.Message
 		if err := json.Unmarshal(message, &msg); err != nil {
-			log.Println("Failed to unmarshal websocketMessage:", err)
+			log.Println(
+				"websocketMessageHandler: failed to unmarshal websocket message:",
+				err,
+			)
+			http.Error(w, "", 500)
 		}
 
-		s.wsmr.routeMessage(p, msg.Type, message)
+		if err = s.wsmr.routeMessage(p, msg.Type, message); err != nil {
+			log.Println("websocketMessageHandler: failed to route websocket message:", err)
+			http.Error(w, "", 500)
+		}
 	}
 }

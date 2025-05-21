@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
 
 	"github.com/mgiks/ttyper/internal/dtos"
 )
@@ -10,10 +10,10 @@ import (
 func (s *server) searchForAMatch(
 	p *player,
 	message []byte,
-) {
+) error {
 	var msg dtos.SearchForMatchMessage
 	if err := json.Unmarshal(message, &msg); err != nil {
-		log.Println("Failed to unmarshal searching player message:", err)
+		return fmt.Errorf("searchForAMatch: failed to unmarshal message: %w", err)
 	}
 
 	p.name = msg.Data.PlayerName
@@ -22,4 +22,6 @@ func (s *server) searchForAMatch(
 	s.pm.mu.Lock()
 	s.pm.searchingPlayers[p.id] = p
 	s.pm.mu.Unlock()
+
+	return nil
 }

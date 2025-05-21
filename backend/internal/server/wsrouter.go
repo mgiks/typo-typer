@@ -1,10 +1,11 @@
 package server
 
 import (
-	"log"
+	"errors"
+	"fmt"
 )
 
-type wsMessageHandler func(p *player, message []byte)
+type wsMessageHandler func(p *player, message []byte) error
 
 type wsMessageRouter struct {
 	mhs map[string]wsMessageHandler
@@ -25,13 +26,15 @@ func (mr *wsMessageRouter) routeMessage(
 	p *player,
 	messageType string,
 	message []byte,
-) {
+) error {
 	messageHandler, exists := mr.mhs[messageType]
 	if !exists {
-		err := p.conn.CloseNow()
-		if err != nil {
-			log.Println("Failed to close websocket connection:", err)
-		}
+		return errors.New("routeMessage: failed to find message handler")
 	}
-	messageHandler(p, message)
+
+	if err := messageHandler(p, message); err != nil {
+		return fmt.Errorf("routeMessage: %w", err)
+	}
+
+	return nil
 }

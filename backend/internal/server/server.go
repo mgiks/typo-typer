@@ -82,7 +82,11 @@ func (s *server) matchMake() {
 
 		var text string
 		if err := row.Scan(nil, &text); err != nil {
-			log.Println("Failed to get random typing text row for matchmaking:", err)
+			log.Println(
+				"matchMake: failed to get random text row:",
+				err,
+			)
+			continue
 		}
 
 		msg := dtos.InitializeMatchFoundMessage()
@@ -95,17 +99,22 @@ func (s *server) matchMake() {
 
 		serializedMsg, err := json.Marshal(msg)
 		if err != nil {
-			return
+			log.Println(
+				"matchMake: failed to marshal random text row:",
+				err,
+			)
+			continue
 		}
 
 		for _, p := range s.mm.matches[matchID].players {
 			ctx := context.TODO()
 			err := p.conn.Write(ctx, websocket.MessageText, serializedMsg)
-
 			if err != nil {
+				log.Println("matchMake: failed to write message")
+
 				cerr := p.conn.CloseNow()
 				if cerr != nil {
-					log.Println("Failed to close websocket connection:", cerr)
+					log.Println("matchMake: failed to close websocket connection:", cerr)
 				}
 			}
 		}

@@ -19,13 +19,13 @@ func New(ctx context.Context) *Database {
 
 	dbpool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
-		log.Fatalln("Unable to connect to postgres database:", err)
+		log.Fatalln("unable to connect to postgres database:", err)
 	}
 
 	db := Database{dbpool}
 
 	if err := db.Ping(ctx); err != nil {
-		log.Fatalln("Unable to ping postgres database:", err)
+		log.Fatalln("unable to ping postgres database:", err)
 	}
 
 	return &db

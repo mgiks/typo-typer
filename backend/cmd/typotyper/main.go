@@ -8,14 +8,14 @@ import (
 	"github.com/mgiks/ttyper/internal/server"
 )
 
-func loadEnvs() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatalln("Failed to load environmental variables:", err)
-	}
-}
-
 func main() {
 	loadEnvs()
 
 	log.Fatal(http.ListenAndServe(":8000", server.New()))
+}
+
+func loadEnvs() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalln("failed to load environmental variables:", err)
+	}
 }
