@@ -62,6 +62,9 @@ func (db *Database) AddTypingTextRow(
 }
 
 func (db *Database) GetRandomTypingTextRow(ctx context.Context) pgx.Row {
-	row := db.QueryRow(ctx, `SELECT id, content, submitter, source FROM typing_text ORDER BY RANDOM()`)
-	return row
+	return db.QueryRow(
+		ctx,
+		`SELECT id, content, submitter, source 
+		FROM typing_text ORDER BY RANDOM()`,
+	)
 }
