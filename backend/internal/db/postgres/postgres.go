@@ -53,7 +53,7 @@ func (db *Database) AddTypingTextRow(
 	_, err := db.Query(
 		ctx,
 		`INSERT INTO typing_text(content, submitter, source) 
-		VALUES ($1, $2, $3) RETURNING text, submitter`,
+		VALUES ($1, $2, $3)`,
 		text,
 		uploaderName,
 		source,
