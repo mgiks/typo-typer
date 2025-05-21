@@ -17,9 +17,9 @@ export type MessageDataMap = {
 }
 
 export enum MessageType {
-  randomText = 0,
-  searchForMatch,
-  matchFound,
+  randomText = 'randomText',
+  searchForMatch = 'searchForMatch',
+  matchFound = 'matchFound',
 }
 
 export type Message = {
