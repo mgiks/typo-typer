@@ -92,6 +92,7 @@ func (s *server) websocketMessageHandler(
 				err,
 			)
 			http.Error(w, "", 500)
+			return
 		}
 
 		if err = s.wsmr.routeMessage(p, msg.Type, message); err != nil {
