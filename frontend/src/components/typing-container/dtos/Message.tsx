@@ -1,39 +1,43 @@
-type MessageType =
-  | 'randomText'
-  | 'searchForMatch'
-  | 'matchFound'
-  | 'gameUpdate'
+export type Message =
+  | SearchForMatchMessage
+  | RandomTextMessage
+  | MatchFoundMessage
 
-export interface Message {
-  type: MessageType
+export enum MessageType {
+  randomText = 0,
+  searchForMatch,
+  matchFound,
 }
 
-interface RandomTextData {
+type RandomTextData = {
   id: number
   text: string
   submitter: string
   source: string
 }
 
-export interface RandomTextMessage extends Message {
+export type RandomTextMessage = {
+  type: MessageType.randomText
   data: RandomTextData
 }
 
-interface SearchForMatchData {
+type SearchForMatchData = {
   playerName: string
   playerId: string
 }
 
-export interface SearchForMatchMessage extends Message {
+export type SearchForMatchMessage = {
+  type: MessageType.searchForMatch
   data: SearchForMatchData
 }
 
-export interface MatchFoundData {
+type MatchFoundData = {
   matchID: string
   text: string
   playerNames: string[]
 }
 
-export interface MatchFoundMessage extends Message {
+export type MatchFoundMessage = {
+  type: MessageType.matchFound
   data: MatchFoundData
 }

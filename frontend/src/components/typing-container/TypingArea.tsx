@@ -16,11 +16,7 @@ import {
   usePlayerName,
 } from '../../stores/MultiplayerStore'
 import { getRandomText } from './utils/getRandomText'
-import {
-  MatchFoundMessage,
-  Message,
-  SearchForMatchMessage,
-} from './dtos/Message'
+import { Message, MessageType, SearchForMatchMessage } from './dtos/Message'
 import { parseText } from './utils/parseText'
 
 function TypingArea(
@@ -64,7 +60,7 @@ function TypingArea(
       console.log('Connected to websocket server')
 
       const playerInfo: SearchForMatchMessage = {
-        type: 'searchForMatch',
+        type: MessageType.searchForMatch,
         data: { playerName, playerId },
       }
 
@@ -72,14 +68,11 @@ function TypingArea(
     }
 
     ws.onmessage = (event) => {
-      const data: Message = JSON.parse(event.data)
+      const message: Message = JSON.parse(event.data)
 
-      switch (data.type) {
-        case 'matchFound':
-          const matchFoundMessage = data as MatchFoundMessage
-          setMatchFoundData(matchFoundMessage.data)
-          break
-        case 'gameUpdate':
+      switch (message.type) {
+        case MessageType.matchFound:
+          setMatchFoundData(message)
           break
       }
     }
