@@ -1,4 +1,3 @@
-import PlayerMode from './PlayerMode'
 import singleplayerIcon from './icons/singleplayer-icon.svg'
 import multiplayerIcon from './icons/multiplayer-icon.svg'
 import privateRoomIcon from './icons/private-room-icon.svg'
