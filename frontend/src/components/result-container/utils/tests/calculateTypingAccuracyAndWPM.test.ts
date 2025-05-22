@@ -1,8 +1,8 @@
 import { calculateTypingAccuracyAndWPM } from '../calculateTypingAccuracyAndWPM'
-import * as accuracyModule from '../calculateTypingAccuracy.tsx'
-import * as gwpmModule from '../calculateGWPM.tsx'
-import * as nwpmModule from '../calculateNWPM.tsx'
-import * as wordCountModule from '../calculateWordCountForWPM.tsx'
+import * as accuracyModule from '../calculateTypingAccuracy.ts'
+import * as gwpmModule from '../calculateGWPM.ts'
+import * as nwpmModule from '../calculateNWPM.ts'
+import * as wordCountModule from '../calculateWordCountForWPM.ts'
 
 describe('calculateTypingAccuracyAndWPM', () => {
   it('should calculate GWPM, NWPM and typingAccuracy correctly', () => {
