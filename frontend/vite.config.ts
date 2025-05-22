@@ -10,5 +10,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     css: true,
+    coverage: {
+      enabled: true,
+      reporter: ['html'],
+    },
   },
 })
