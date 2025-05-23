@@ -3,16 +3,18 @@ import './InactivityCurtain.css'
 
 function InactivityCurtain() {
   // 'typing-area' is needed so that the curtain doesn't show initially
-  const [activeElementId, setActiveElementId] = useState('typing-area')
+  const [activeElementId, setActiveElementId] = useState('')
 
   useEffect(() => {
-    const updateActiveElementId = () => {
+    const updateActiveElement = () => {
       const activeElement = document.activeElement
       activeElement && setActiveElementId(activeElement.id)
     }
 
-    document.addEventListener('click', updateActiveElementId)
-    document.addEventListener('keypress', updateActiveElementId)
+    const events = ['click', 'keypress', 'focusin']
+    events.forEach((event) =>
+      document.addEventListener(event, updateActiveElement)
+    )
   }, [])
 
   const inactivityCurtain = (
