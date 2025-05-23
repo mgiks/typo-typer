@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import InactivityCurtain from '../InactivityCurtain'
 
 describe('InactivityCurtain', () => {
