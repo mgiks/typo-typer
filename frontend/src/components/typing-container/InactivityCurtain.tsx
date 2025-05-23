@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import './InactivityCurtain.css'
 
 function InactivityCurtain() {
-  // 'typing-area' is needed so that the curtain doesn't show initially
   const [activeElementId, setActiveElementId] = useState('')
 
   useEffect(() => {
