@@ -17,22 +17,29 @@ func enableCORS(w *http.ResponseWriter) {
 func (s *server) getTextHandler(w http.ResponseWriter, r *http.Request) {
 	enableCORS(&w)
 
+	type textData struct {
+		Id        string `json:"id"`
+		Text      string `json:"text"`
+		Submitter string `json:"submitter"`
+		Source    string `json:"source"`
+	}
+
 	ctx := context.TODO()
 	row := s.postgresDB.GetRandomTypingTextRow(ctx)
 
-	msg := dtos.InitializeRandomTextMessage()
+	var td textData
 	if err := row.Scan(
-		&msg.Data.Id,
-		&msg.Data.Text,
-		&msg.Data.Submitter,
-		&msg.Data.Source,
+		&td.Id,
+		&td.Text,
+		&td.Submitter,
+		&td.Source,
 	); err != nil {
 		log.Println("getRandomTextHandler: failed to get random text row:", err)
 		http.Error(w, "", 500)
 		return
 	}
 
-	serializedMsg, err := json.Marshal(msg)
+	serializedMsg, err := json.Marshal(td)
 	if err != nil {
 		log.Println("getRandomTextHandler: failed to marshal message:", err)
 		http.Error(w, "", 500)

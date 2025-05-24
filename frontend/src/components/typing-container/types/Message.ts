@@ -1,10 +1,4 @@
 export type MessageDataMap = {
-  [MessageType.randomText]: {
-    id: number
-    text: string
-    submitter: string
-    source: string
-  }
   [MessageType.searchForMatch]: {
     playerName: string
     playerId: string
@@ -17,7 +11,6 @@ export type MessageDataMap = {
 }
 
 export enum MessageType {
-  randomText = 'randomText',
   searchForMatch = 'searchForMatch',
   matchFound = 'matchFound',
 }

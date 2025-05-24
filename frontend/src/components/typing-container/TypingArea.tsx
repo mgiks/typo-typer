@@ -17,7 +17,7 @@ import {
 } from '../../stores/MultiplayerStore'
 import { Message, MessageType } from './types/Message'
 import { parseText } from './utils/parseText'
-import { MessageOf, NewMessage } from './types/MessageInitializers'
+import { NewMessage } from './types/MessageInitializers'
 
 function TypingArea(
   { ref }: { ref: React.RefObject<HTMLTextAreaElement | null> },
@@ -103,14 +103,21 @@ function TypingArea(
     isAtTheEndOfText && finishTypingGame()
   })
 
-  async function getRandomText() {
-    const response = await fetch('http://localhost:8000/texts')
-    const randomTextMessage = await response.json() as MessageOf<
-      MessageType.randomText
-    >
-    return randomTextMessage.data.text
-  }
   useEffect(() => {
+    async function getRandomText() {
+      const response = await fetch('http://localhost:8000/texts')
+
+      type TextData = {
+        id: string
+        text: string
+        submitter: string
+        source: string
+      }
+
+      const textData = await response.json() as TextData
+      return textData.text
+    }
+
     getRandomText().then((text) => setText(parseText(text)))
   }, [textRefreshCount])
 
@@ -122,15 +129,15 @@ function TypingArea(
     cursorIndex <= wrongTextStartIndex && setWrongTextStartIndex(-1)
   }, [cursorIndex, wrongTextStartIndex])
 
-  function updateCursorIndexByKey(key: string) {
-    key === 'Backspace' ? decreaseCursorIndex() : increaseCursorIndex()
-  }
-
-  function checkIfKeyIsWrong(key: string) {
-    return !(text.at(cursorIndex) === key)
-  }
-
   function handleKeypress(event: KeyboardEvent) {
+    function updateCursorIndexByKey(key: string) {
+      key === 'Backspace' ? decreaseCursorIndex() : increaseCursorIndex()
+    }
+
+    function checkIfKeyIsWrong(key: string) {
+      return !(text.at(cursorIndex) === key)
+    }
+
     const { key } = event
 
     if (isControlKey(key)) return

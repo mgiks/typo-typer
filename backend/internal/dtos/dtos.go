@@ -22,11 +22,6 @@ type Message struct {
 	Type string `json:"type"`
 }
 
-type RandomTextMessage struct {
-	Message
-	Data randomTextData `json:"data"`
-}
-
 type MatchFoundMessage struct {
 	Message
 	Data matchFoundData `json:"data"`
@@ -40,11 +35,5 @@ type SearchForMatchMessage struct {
 func InitializeMatchFoundMessage() *MatchFoundMessage {
 	msg := &MatchFoundMessage{}
 	msg.Type = "matchFound"
-	return msg
-}
-
-func InitializeRandomTextMessage() *RandomTextMessage {
-	msg := &RandomTextMessage{}
-	msg.Type = "randomText"
 	return msg
 }
