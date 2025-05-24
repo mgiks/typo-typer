@@ -8,13 +8,16 @@ import {
   usePlayerMode,
   useTypingStatsActions,
 } from './stores/TypingStatsStore'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTextActions } from './stores/TextStore'
 import { useMultiplayerActions } from './stores/MultiplayerStore'
 import HeaderContainer from './components/header-container/HeaderContainer'
 import MatchProgressContainer from './components/match-progress-container/MatchProgressContainer'
+import LogInFormFloatingWindow from './components/authentication-floating-window/LogInFormFloatingWindow'
 
 function App() {
+  const [shouldLogInFormBeShown, setShouldLogInFormBeShown] = useState(false)
+
   const isDoneTyping = useIsDoneTyping()
   const playerMode = usePlayerMode()
 
@@ -57,7 +60,12 @@ function App() {
 
   return (
     <>
-      <HeaderContainer />
+      <HeaderContainer
+        setShouldLogInFormBeShown={setShouldLogInFormBeShown}
+      />
+      <LogInFormFloatingWindow
+        shouldLogInFormBeShown={shouldLogInFormBeShown}
+      />
       <MatchProgressContainer />
       <div
         id='typing-container-with-stats'

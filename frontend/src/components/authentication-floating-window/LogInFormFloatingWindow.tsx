@@ -1,7 +1,9 @@
 import './LogInFormFloatingWindow.css'
 
-function LogInFormFloatingWindow() {
-  return (
+function LogInFormFloatingWindow(
+  { shouldLogInFormBeShown }: { shouldLogInFormBeShown: boolean },
+) {
+  const logInForm = (
     <div id='log-in-form-wrapper'>
       Log in:
       <form id='log-in-form'>
@@ -16,6 +18,8 @@ function LogInFormFloatingWindow() {
       </form>
     </div>
   )
+
+  return shouldLogInFormBeShown ? logInForm : null
 }
 
 export default LogInFormFloatingWindow
