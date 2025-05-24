@@ -45,6 +45,26 @@ func (s *server) getTextHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *server) postUserHandler(w http.ResponseWriter, r *http.Request) {
+	enableCORS(&w)
+
+	type userData struct {
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	var ud userData
+
+	err := json.NewDecoder(r.Body).Decode(&ud)
+	if err != nil {
+		log.Println("postUserHandler: failed to unmarshal request body:", err)
+		http.Error(w, "", 500)
+		return
+	}
+
+	w.WriteHeader(201)
+}
+
 var acceptOptions = &websocket.AcceptOptions{
 	OriginPatterns: []string{"localhost:5173"},
 }

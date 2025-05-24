@@ -1,26 +1,36 @@
-import { useRef } from 'react'
 import './SignUpFloatingWindow.css'
 
 function SignUpFloatingWindow(
   { shouldBeShown }: { shouldBeShown: boolean },
 ) {
-  const formRef = useRef<HTMLFormElement>(null)
+  interface FormElements extends HTMLFormControlsCollection {
+    name: HTMLInputElement
+    email: HTMLInputElement
+    password: HTMLInputElement
+  }
+  interface SignUpFormElement extends HTMLFormElement {
+    readonly elements: FormElements
+  }
 
-  function submitForm() {
-    if (!formRef.current) return
+  function submitForm(event: React.FormEvent<SignUpFormElement>) {
+    event.preventDefault()
 
-    const data = new FormData(formRef.current)
+    const name = event.currentTarget.elements.name.value
+    const email = event.currentTarget.elements.email.value
+    const password = event.currentTarget.elements.password.value
+
+    const data = { name, email, password }
 
     fetch('http://localhost:8000/users', {
-      method: 'post',
-      body: data,
-    })
+      method: 'POST',
+      body: JSON.stringify(data),
+    }).then((responce) => console.log(responce))
   }
 
   const form = (
     <div id='form-wrapper'>
       Sign-up form:
-      <form ref={formRef} id='form' onSubmit={submitForm}>
+      <form id='form' onSubmit={submitForm}>
         <label htmlFor='name'>Name:</label>
         <input type='text' id='name' />
 
@@ -30,7 +40,7 @@ function SignUpFloatingWindow(
         <label htmlFor='password'>Password:</label>
         <input type='password' id='password' />
 
-        <input type='submit' value={'Sign up'} />
+        <button type='submit'>Sign up</button>
       </form>
     </div>
   )
