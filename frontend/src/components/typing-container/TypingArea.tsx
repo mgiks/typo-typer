@@ -104,7 +104,7 @@ function TypingArea(
   })
 
   async function getRandomText() {
-    const response = await fetch('http://localhost:8000/random-texts')
+    const response = await fetch('http://localhost:8000/texts')
     const randomTextMessage = await response.json() as MessageOf<
       MessageType.randomText
     >
