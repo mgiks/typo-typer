@@ -1,8 +1,8 @@
 import { useRef } from 'react'
-import './LogInFormFloatingWindow.css'
+import './SignUpFloatingWindow.css'
 
-function LogInFormFloatingWindow(
-  { shouldLogInFormBeShown }: { shouldLogInFormBeShown: boolean },
+function SignUpFloatingWindow(
+  { shouldBeShown }: { shouldBeShown: boolean },
 ) {
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -17,10 +17,10 @@ function LogInFormFloatingWindow(
     })
   }
 
-  const logInForm = (
-    <div id='log-in-form-wrapper'>
-      Log in:
-      <form ref={formRef} id='log-in-form' onSubmit={submitForm}>
+  const form = (
+    <div id='form-wrapper'>
+      Sign-up form:
+      <form ref={formRef} id='form' onSubmit={submitForm}>
         <label htmlFor='name'>Name:</label>
         <input type='text' id='name' />
 
@@ -30,12 +30,12 @@ function LogInFormFloatingWindow(
         <label htmlFor='password'>Password:</label>
         <input type='password' id='password' />
 
-        <input type='submit' value={'Log In'} />
+        <input type='submit' value={'Sign up'} />
       </form>
     </div>
   )
 
-  return shouldLogInFormBeShown ? logInForm : null
+  return shouldBeShown ? form : null
 }
 
-export default LogInFormFloatingWindow
+export default SignUpFloatingWindow

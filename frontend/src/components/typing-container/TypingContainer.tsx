@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react'
 import { useIsDoneTyping } from '../../stores/TypingStatsStore'
 
 function TypingContainer(
-  { shouldLogInFormBeShown }: { shouldLogInFormBeShown: boolean },
+  { isAnyFormShown }: { isAnyFormShown: boolean },
 ) {
   const typingContainerRef = useRef<HTMLDivElement>(null)
   const typingAreaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -19,8 +19,8 @@ function TypingContainer(
 
   const areOutsideInputsNeeded = useRef(false)
   useEffect(() => {
-    areOutsideInputsNeeded.current = shouldLogInFormBeShown
-  }, [shouldLogInFormBeShown])
+    areOutsideInputsNeeded.current = isAnyFormShown
+  }, [isAnyFormShown])
 
   useEffect(() => {
     function handleKeyDown() {

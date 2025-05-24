@@ -13,10 +13,10 @@ import { useTextActions } from './stores/TextStore'
 import { useMultiplayerActions } from './stores/MultiplayerStore'
 import HeaderContainer from './components/header-container/HeaderContainer'
 import MatchProgressContainer from './components/match-progress-container/MatchProgressContainer'
-import LogInFormFloatingWindow from './components/authentication-floating-window/LogInFormFloatingWindow'
+import SignUpFloatingWindow from './components/sign-up-floating-window/SignUpFloatingWindow'
 
 function App() {
-  const [shouldLogInFormBeShown, setShouldLogInFormBeShown] = useState(false)
+  const [shouldSignUpFormBeShown, setShouldSignUpFormBeShown] = useState(false)
 
   const isDoneTyping = useIsDoneTyping()
   const playerMode = usePlayerMode()
@@ -61,18 +61,17 @@ function App() {
   return (
     <>
       <HeaderContainer
-        setShouldLogInFormBeShown={setShouldLogInFormBeShown}
+        shouldSignUpFromBeShownSetter={setShouldSignUpFormBeShown}
       />
-      <LogInFormFloatingWindow
-        shouldLogInFormBeShown={shouldLogInFormBeShown}
+      <SignUpFloatingWindow
+        shouldBeShown={shouldSignUpFormBeShown}
       />
       <MatchProgressContainer />
       <div
         id='typing-container-with-stats'
         className={isDoneTyping ? 'invisible' : undefined}
       >
-        <TypingContainer shouldLogInFormBeShown={shouldLogInFormBeShown} />
-
+        <TypingContainer isAnyFormShown={shouldSignUpFormBeShown} />
         <TypingStatsContainer />
       </div>
       <ResultContainer />

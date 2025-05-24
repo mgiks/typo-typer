@@ -2,8 +2,10 @@ import { usePlayerName } from '../../stores/MultiplayerStore'
 import './HeaderContainer.css'
 
 function HeaderContainer(
-  { setShouldLogInFormBeShown }: {
-    setShouldLogInFormBeShown: React.Dispatch<React.SetStateAction<boolean>>
+  { shouldSignUpFromBeShownSetter }: {
+    shouldSignUpFromBeShownSetter: React.Dispatch<
+      React.SetStateAction<boolean>
+    >
   },
 ) {
   const playerName = usePlayerName()
@@ -15,12 +17,11 @@ function HeaderContainer(
       </div>
       <div>
         <button
-          id='log-in-button'
           onClick={() => {
-            setShouldLogInFormBeShown((prev) => !prev)
+            shouldSignUpFromBeShownSetter((prev) => !prev)
           }}
         >
-          Log in
+          Sign Up
         </button>
       </div>
     </div>
