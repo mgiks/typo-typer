@@ -14,7 +14,7 @@ func enableCORS(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 }
 
-func (s *server) getRandomTextHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) getTextHandler(w http.ResponseWriter, r *http.Request) {
 	enableCORS(&w)
 
 	ctx := context.TODO()

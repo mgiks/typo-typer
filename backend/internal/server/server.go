@@ -30,7 +30,7 @@ func New() *server {
 	s.setupMatchMaker()
 
 	s.mux.HandleFunc("/", s.websocketMessageHandler)
-	s.mux.HandleFunc("GET /texts", s.getRandomTextHandler)
+	s.mux.HandleFunc("GET /texts", s.getTextHandler)
 
 	return &s
 }
