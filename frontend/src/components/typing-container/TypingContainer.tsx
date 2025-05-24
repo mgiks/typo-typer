@@ -5,19 +5,32 @@ import { focusElement } from './utils/focusElement'
 import { useEffect, useRef } from 'react'
 import { useIsDoneTyping } from '../../stores/TypingStatsStore'
 
-function TypingContainer() {
+function TypingContainer(
+  { shouldLogInFormBeShown }: { shouldLogInFormBeShown: boolean },
+) {
   const typingContainerRef = useRef<HTMLDivElement>(null)
   const typingAreaRef = useRef<HTMLTextAreaElement | null>(null)
+
   const isDoneTyping = useIsDoneTyping()
 
   function focusTypingArea() {
     typingAreaRef.current && focusElement(typingAreaRef.current)
   }
 
+  const areOutsideInputsNeeded = useRef(false)
   useEffect(() => {
-    document.addEventListener('keypress', () => {
+    areOutsideInputsNeeded.current = shouldLogInFormBeShown
+  }, [shouldLogInFormBeShown])
+
+  useEffect(() => {
+    function handleKeyDown() {
+      if (areOutsideInputsNeeded.current) return
+
       focusTypingArea()
-    })
+    }
+
+    document.addEventListener('keypress', handleKeyDown)
+    return () => document.removeEventListener('keypress', handleKeyDown)
   }, [])
 
   useEffect(() => {
