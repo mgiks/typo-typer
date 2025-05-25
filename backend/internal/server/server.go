@@ -13,12 +13,12 @@ import (
 )
 
 type server struct {
-	mux        http.ServeMux
-	pm         *playerManager
-	mm         *matchManager
-	postgresDB *postgres.Database
-	redisDB    *redis.Database
-	wsmr       *wsMessageRouter
+	mux  http.ServeMux
+	pm   *playerManager
+	mm   *matchManager
+	pdb  *postgres.Database
+	rdb  *redis.Database
+	wsmr *wsMessageRouter
 }
 
 func New() *server {
@@ -43,8 +43,8 @@ func (s *server) setupManagers() {
 
 func (s *server) setupDBs() {
 	ctx := context.TODO()
-	s.postgresDB = postgres.New(ctx)
-	s.redisDB = redis.New(ctx)
+	s.pdb = postgres.New(ctx)
+	s.rdb = redis.New(ctx)
 }
 
 func (s *server) setupWSRoutes() {
@@ -79,7 +79,7 @@ func (s *server) matchMake() {
 		s.mm.mu.Unlock()
 
 		ctx := context.TODO()
-		row := s.postgresDB.GetRandomTypingTextRow(ctx)
+		row := s.pdb.GetRandomTypingTextRow(ctx)
 
 		var text string
 		if err := row.Scan(nil, &text); err != nil {

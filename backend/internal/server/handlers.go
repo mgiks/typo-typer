@@ -25,7 +25,7 @@ func (s *server) getTextHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := context.TODO()
-	row := s.postgresDB.GetRandomTypingTextRow(ctx)
+	row := s.pdb.GetRandomTypingTextRow(ctx)
 
 	var td textData
 	if err := row.Scan(
