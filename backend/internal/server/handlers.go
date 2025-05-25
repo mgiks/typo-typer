@@ -39,14 +39,14 @@ func (s *server) getTextHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	serializedMsg, err := json.Marshal(td)
+	serializedTd, err := json.Marshal(td)
 	if err != nil {
 		log.Println("getRandomTextHandler: failed to marshal message:", err)
 		http.Error(w, "", 500)
 		return
 	}
 
-	if _, err = w.Write(serializedMsg); err != nil {
+	if _, err = w.Write(serializedTd); err != nil {
 		log.Println("getRandomTextHandler: failed to write message:", err)
 		http.Error(w, "", 500)
 	}
