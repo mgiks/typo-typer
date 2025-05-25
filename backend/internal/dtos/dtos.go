@@ -1,12 +1,5 @@
 package dtos
 
-type randomTextData struct {
-	Id        int    `json:"id"`
-	Text      string `json:"text"`
-	Submitter string `json:"submitter"`
-	Source    string `json:"source"`
-}
-
 type matchFoundData struct {
 	MatchID     string   `json:"matchID"`
 	Text        string   `json:"text"`
