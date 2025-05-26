@@ -61,6 +61,21 @@ func (db *Database) AddTypingTextRow(
 	return err
 }
 
+func (db *Database) AddUserRow(
+	ctx context.Context,
+	name string,
+	email string,
+	password string,
+) error {
+	_, err := db.Query(
+		ctx,
+		`INSERT INTO "user"(name, email, password)
+		VALUES ($1, $2, $3)`,
+		name, email, password,
+	)
+	return err
+}
+
 func (db *Database) GetRandomTypingTextRow(ctx context.Context) pgx.Row {
 	return db.QueryRow(
 		ctx,
