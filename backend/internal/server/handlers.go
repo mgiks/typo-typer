@@ -8,6 +8,7 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/mgiks/ttyper/internal/dtos"
+	"github.com/mgiks/ttyper/internal/hashing"
 )
 
 func enableCORS(w *http.ResponseWriter) {
@@ -68,6 +69,15 @@ func (s *server) postUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", 500)
 		return
 	}
+
+	salt, err := hashing.GenerateSalt()
+	if err != nil {
+		log.Println("postUserHandler: failed to generate salt:", err)
+		http.Error(w, "", 500)
+		return
+	}
+
+	ud.Password = hashing.HashAndSalt(ud.Password, salt)
 
 	w.WriteHeader(201)
 }
