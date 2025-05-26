@@ -58,7 +58,11 @@ func (db *Database) AddTypingTextRow(
 		uploaderName,
 		source,
 	)
-	return fmt.Errorf("AddTypingTextRow: failed to add row: %w", err)
+	if err != nil {
+		return fmt.Errorf("AddTypingTextRow: failed to add row: %w", err)
+	}
+
+	return nil
 }
 
 func (db *Database) AddUserRow(
@@ -73,7 +77,11 @@ func (db *Database) AddUserRow(
 		VALUES ($1, $2, $3)`,
 		name, email, hashedPassword,
 	)
-	return fmt.Errorf("AddUserRow: failed to add row: %w", err)
+	if err != nil {
+		return fmt.Errorf("AddUserRow: failed to add row: %w", err)
+	}
+
+	return nil
 }
 
 func (db *Database) GetRandomTypingTextRow(ctx context.Context) pgx.Row {
