@@ -65,13 +65,13 @@ func (db *Database) AddUserRow(
 	ctx context.Context,
 	name string,
 	email string,
-	password string,
+	hashedPassword string,
 ) error {
 	_, err := db.Query(
 		ctx,
-		`INSERT INTO "user"(name, email, password)
+		`INSERT INTO "user"(name, email, hashed_password)
 		VALUES ($1, $2, $3)`,
-		name, email, password,
+		name, email, hashedPassword,
 	)
 	return fmt.Errorf("AddUserRow: failed to add row: %w", err)
 }
