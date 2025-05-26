@@ -3,7 +3,7 @@ package hashing
 import (
 	"crypto/rand"
 	b64 "encoding/base64"
-	"log"
+	"fmt"
 	"math/big"
 	"strconv"
 	"strings"
@@ -12,31 +12,34 @@ import (
 )
 
 func GenerateSalt() (string, error) {
-	int := big.NewInt(256)
-	ints := make([]byte, 0)
+	salt := make([]byte, 0)
 
+	max := big.NewInt(256)
 	for range 16 {
-		n, err := rand.Int(rand.Reader, int)
+		n, err := rand.Int(rand.Reader, max)
 		if err != nil {
-			log.Println("random number generation failed:", err)
-			return "", err
+			return "", fmt.Errorf("GenerateSalt: failed to generate random number: %w", err)
 		}
-		ints = append(ints, byte(n.Int64()))
+
+		salt = append(salt, byte(n.Int64()))
 	}
 
-	return string(ints), nil
+	return string(salt), nil
 }
 
 func HashAndSalt(password string, salt string) string {
-	time := 1
-	memory := 64 * 1024
-	threads := 4
+	const (
+		time    = 1
+		memory  = 64 * 1024
+		threads = 4
+	)
+
 	hash := argon2.IDKey(
 		[]byte(password),
 		[]byte(salt),
-		uint32(time),
-		uint32(memory),
-		uint8(threads),
+		time,
+		memory,
+		threads,
 		32,
 	)
 
@@ -59,6 +62,7 @@ func HashAndSalt(password string, salt string) string {
 
 func CompareToHash(password string, hash string) bool {
 	salt := strings.Split(hash, "$")[4]
-	hp := HashAndSalt(password, salt)
-	return hp == hash
+
+	hashedPass := HashAndSalt(password, salt)
+	return hashedPass == hash
 }
