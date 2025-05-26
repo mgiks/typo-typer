@@ -79,6 +79,14 @@ func (s *server) postUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	ud.Password = hashing.HashAndSalt(ud.Password, salt)
 
+	ctx := context.TODO()
+	err = s.pdb.AddUserRow(ctx, ud.Name, ud.Email, ud.Password)
+	if err != nil {
+		log.Println("postUserHandler: failed to add user to database:", err)
+		http.Error(w, "", 500)
+		return
+	}
+
 	w.WriteHeader(201)
 }
 
