@@ -32,6 +32,7 @@ func New() *server {
 	s.mux.HandleFunc("/", s.websocketMessageHandler)
 	s.mux.HandleFunc("GET /texts", s.getTextHandler)
 	s.mux.HandleFunc("POST /users", s.postUserHandler)
+	s.mux.HandleFunc("POST /auth/signin", s.signInHandler)
 
 	return &s
 }

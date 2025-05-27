@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -88,6 +89,24 @@ func (s *server) postUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(201)
+}
+
+func (s *server) signInHandler(w http.ResponseWriter, r *http.Request) {
+	enableCORS(&w)
+
+	type userData struct {
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	var ud userData
+
+	err := json.NewDecoder(r.Body).Decode(&ud)
+	if err != nil {
+		log.Println("signInHandler: failed to unmarshal request body:", err)
+		http.Error(w, "", 500)
+		return
+	}
 }
 
 var acceptOptions = &websocket.AcceptOptions{
