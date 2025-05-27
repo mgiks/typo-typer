@@ -29,7 +29,7 @@ function SignInFloatingWindow(
 
   const form = (
     <div id='form-wrapper'>
-      Sign-up form:
+      Sign-in form:
       <form id='form' onSubmit={submitForm}>
         <label htmlFor='name'>Name:</label>
         <input type='text' id='name' />
@@ -40,7 +40,7 @@ function SignInFloatingWindow(
         <label htmlFor='password'>Password:</label>
         <input type='password' id='password' />
 
-        <button type='submit'>Sign up</button>
+        <button type='submit'>Sign in</button>
       </form>
     </div>
   )
