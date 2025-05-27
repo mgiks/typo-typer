@@ -9,7 +9,7 @@ import (
 	"github.com/coder/websocket"
 	"github.com/mgiks/ttyper/internal/db/postgres"
 	"github.com/mgiks/ttyper/internal/db/redis"
-	"github.com/mgiks/ttyper/internal/dtos"
+	"github.com/mgiks/ttyper/internal/message"
 )
 
 type server struct {
@@ -90,7 +90,7 @@ func (s *server) matchMake() {
 			continue
 		}
 
-		msg := dtos.InitializeMatchFoundMessage()
+		msg := message.InitializeMatchFound()
 		msg.Data.MatchID = matchID
 		msg.Data.Text = text
 		msg.Data.PlayerNames = []string{
