@@ -1,4 +1,4 @@
-package dtos
+package message
 
 type matchFoundData struct {
 	MatchID     string   `json:"matchID"`
@@ -11,22 +11,20 @@ type searchForMatchData struct {
 	PlayerId   string `json:"playerId"`
 }
 
-type Message struct {
+type Struct struct {
 	Type string `json:"type"`
 }
 
-type MatchFoundMessage struct {
-	Message
+type MatchFound struct {
+	Struct
 	Data matchFoundData `json:"data"`
 }
 
-type SearchForMatchMessage struct {
-	Message
+type SearchForMatch struct {
+	Struct
 	Data searchForMatchData `json:"data"`
 }
 
-func InitializeMatchFoundMessage() *MatchFoundMessage {
-	msg := &MatchFoundMessage{}
-	msg.Type = "matchFound"
-	return msg
+func InitializeMatchFound() *MatchFound {
+	return &MatchFound{Struct: Struct{Type: "matchFound"}}
 }
