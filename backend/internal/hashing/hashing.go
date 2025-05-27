@@ -5,6 +5,7 @@ import (
 	b64 "encoding/base64"
 	"fmt"
 	"math/big"
+	"os"
 	"strconv"
 	"strings"
 
@@ -34,8 +35,10 @@ func HashAndSalt(password string, salt string) string {
 		threads = 4
 	)
 
+	pepperedPassword := []byte(password + os.Getenv("pepper"))
+
 	hash := argon2.IDKey(
-		[]byte(password),
+		pepperedPassword,
 		[]byte(salt),
 		time,
 		memory,
