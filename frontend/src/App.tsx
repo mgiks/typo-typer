@@ -14,9 +14,11 @@ import { useMultiplayerActions } from './stores/MultiplayerStore'
 import HeaderContainer from './components/header-container/HeaderContainer'
 import MatchProgressContainer from './components/match-progress-container/MatchProgressContainer'
 import SignUpFloatingWindow from './components/sign-up-floating-window/SignUpFloatingWindow'
+import SignInFloatingWindow from './components/sign-in-floating-window/SignInFloatingWindow'
 
 function App() {
   const [shouldSignUpFormBeShown, setShouldSignUpFormBeShown] = useState(false)
+  const [shouldSignInFormBeShown, setShouldSignInFormBeShown] = useState(false)
 
   const isDoneTyping = useIsDoneTyping()
   const playerMode = usePlayerMode()
@@ -61,11 +63,11 @@ function App() {
   return (
     <>
       <HeaderContainer
-        shouldSignUpFromBeShownSetter={setShouldSignUpFormBeShown}
+        shouldSignUpFormBeShownSetter={setShouldSignUpFormBeShown}
+        shouldSignInFormBeShownSetter={setShouldSignInFormBeShown}
       />
-      <SignUpFloatingWindow
-        shouldBeShown={shouldSignUpFormBeShown}
-      />
+      <SignInFloatingWindow shouldBeShown={shouldSignInFormBeShown} />
+      <SignUpFloatingWindow shouldBeShown={shouldSignUpFormBeShown} />
       <MatchProgressContainer />
       <div
         id='typing-container-with-stats'

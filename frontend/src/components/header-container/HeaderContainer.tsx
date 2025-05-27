@@ -2,8 +2,11 @@ import { usePlayerName } from '../../stores/MultiplayerStore'
 import './HeaderContainer.css'
 
 function HeaderContainer(
-  { shouldSignUpFromBeShownSetter }: {
-    shouldSignUpFromBeShownSetter: React.Dispatch<
+  { shouldSignUpFormBeShownSetter, shouldSignInFormBeShownSetter }: {
+    shouldSignUpFormBeShownSetter: React.Dispatch<
+      React.SetStateAction<boolean>
+    >
+    shouldSignInFormBeShownSetter: React.Dispatch<
       React.SetStateAction<boolean>
     >
   },
@@ -18,10 +21,17 @@ function HeaderContainer(
       <div>
         <button
           onClick={() => {
-            shouldSignUpFromBeShownSetter((prev) => !prev)
+            shouldSignUpFormBeShownSetter((prev) => !prev)
           }}
         >
           Sign Up
+        </button>
+        <button
+          onClick={() => {
+            shouldSignInFormBeShownSetter((prev) => !prev)
+          }}
+        >
+          Sign In
         </button>
       </div>
     </div>
