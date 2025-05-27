@@ -21,7 +21,7 @@ function SignInFloatingWindow(
 
     const data = { name, email, password }
 
-    fetch('http://localhost:8000/auth/login', {
+    fetch('http://localhost:8000/auth/signin', {
       method: 'POST',
       body: JSON.stringify(data),
     }).then((responce) => console.log(responce))
