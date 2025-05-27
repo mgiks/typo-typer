@@ -5,10 +5,11 @@ import (
 	"os"
 )
 
-func FindEnvOrFail(env string) string {
-	envVal := os.Getenv(env)
-	if len(envVal) == 0 {
-		log.Fatalf(`Environmental variable "%v" not found`, env)
+func FindEnvOrFail(key string) string {
+	val, ok := os.LookupEnv(key)
+	if !ok {
+		log.Fatalf(`Environmental variable "%v" not found`, key)
 	}
-	return envVal
+
+	return val
 }
