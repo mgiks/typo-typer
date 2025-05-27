@@ -73,7 +73,9 @@ function App() {
         id='typing-container-with-stats'
         className={isDoneTyping ? 'invisible' : undefined}
       >
-        <TypingContainer isAnyFormShown={shouldSignUpFormBeShown} />
+        <TypingContainer
+          isAnyFormShown={shouldSignUpFormBeShown || shouldSignInFormBeShown}
+        />
         <TypingStatsContainer />
       </div>
       <ResultContainer />
