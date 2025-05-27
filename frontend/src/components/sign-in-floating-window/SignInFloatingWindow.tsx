@@ -24,7 +24,7 @@ function SignInFloatingWindow(
     fetch('http://localhost:8000/auth/signin', {
       method: 'POST',
       body: JSON.stringify(data),
-    }).then((responce) => console.log(responce))
+    })
   }
 
   const form = (

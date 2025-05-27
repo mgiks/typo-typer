@@ -24,7 +24,7 @@ function SignUpFloatingWindow(
     fetch('http://localhost:8000/users', {
       method: 'POST',
       body: JSON.stringify(data),
-    }).then((responce) => console.log(responce))
+    })
   }
 
   const form = (
