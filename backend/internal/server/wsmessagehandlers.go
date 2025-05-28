@@ -3,20 +3,19 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	msg "github.com/mgiks/ttyper/internal/message"
 )
 
 func (s *server) searchForAMatch(
 	p *player,
 	message []byte,
 ) error {
-	var unserializedMsg msg.SearchForMatch
-	if err := json.Unmarshal(message, &unserializedMsg); err != nil {
+	var msg searchForMatchMessage
+	if err := json.Unmarshal(message, &msg); err != nil {
 		return fmt.Errorf("searchForAMatch: failed to unmarshal message: %w", err)
 	}
 
-	p.name = unserializedMsg.Data.PlayerName
-	p.id = unserializedMsg.Data.PlayerId
+	p.name = msg.Data.PlayerName
+	p.id = msg.Data.PlayerId
 
 	s.pm.mu.Lock()
 	s.pm.searchingPlayers[p.id] = p

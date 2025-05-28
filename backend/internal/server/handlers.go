@@ -8,7 +8,6 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/mgiks/ttyper/internal/hashing"
-	"github.com/mgiks/ttyper/internal/message"
 )
 
 func enableCORS(w *http.ResponseWriter) {
@@ -126,12 +125,9 @@ func (s *server) websocketMessageHandler(
 	p := &player{conn: wsc}
 	ctx := context.TODO()
 	for {
-		wsMessageType, wsMessage, err := p.conn.Read(ctx)
-		if err != nil || wsMessageType != websocket.MessageText {
-			log.Println(
-				"websocketMessageHandler: failed to read from websocket connection:",
-				err,
-			)
+		messageType, message, err := p.conn.Read(ctx)
+		if err != nil || messageType != websocket.MessageText {
+			log.Println("websocketMessageHandler: failed to read from websocket connection:", err)
 
 			s.pm.mu.Lock()
 			delete(s.pm.searchingPlayers, p.id)
@@ -139,23 +135,20 @@ func (s *server) websocketMessageHandler(
 
 			cerr := p.conn.Close(1000, "client disconnected")
 			if cerr != nil {
-				log.Println(
-					"websocketMessageHandler: failed to close websocket connection:",
-					cerr,
-				)
+				log.Println("websocketMessageHandler: failed to close websocket connection:", cerr)
 			}
 
 			return
 		}
 
-		var msg message.Struct
-		if err := json.Unmarshal(wsMessage, &msg); err != nil {
+		var msg wsMessage
+		if err := json.Unmarshal(message, &msg); err != nil {
 			log.Println("websocketMessageHandler: failed to unmarshal websocket message:", err)
 			http.Error(w, "", 500)
 			return
 		}
 
-		if err = s.wsmr.routeMessage(p, msg.Type, wsMessage); err != nil {
+		if err = s.wsmr.routeMessage(p, msg.Type, message); err != nil {
 			log.Println("websocketMessageHandler: failed to route websocket message:", err)
 			http.Error(w, "", 500)
 		}

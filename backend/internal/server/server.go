@@ -9,7 +9,6 @@ import (
 	"github.com/coder/websocket"
 	"github.com/mgiks/ttyper/internal/db/postgres"
 	"github.com/mgiks/ttyper/internal/db/redis"
-	"github.com/mgiks/ttyper/internal/message"
 )
 
 type server struct {
@@ -84,14 +83,11 @@ func (s *server) matchMake() {
 
 		var text string
 		if err := row.Scan(nil, &text); err != nil {
-			log.Println(
-				"matchMake: failed to get random text row:",
-				err,
-			)
+			log.Println("matchMake: failed to get random text row:", err)
 			continue
 		}
 
-		msg := message.InitializeMatchFound()
+		msg := initializeMatchFoundMessage()
 		msg.Data.MatchID = matchID
 		msg.Data.Text = text
 		msg.Data.PlayerNames = []string{
@@ -101,10 +97,7 @@ func (s *server) matchMake() {
 
 		serializedMsg, err := json.Marshal(msg)
 		if err != nil {
-			log.Println(
-				"matchMake: failed to marshal random text row:",
-				err,
-			)
+			log.Println("matchMake: failed to marshal random text row:", err)
 			continue
 		}
 

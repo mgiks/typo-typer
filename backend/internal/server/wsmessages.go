@@ -1,4 +1,8 @@
-package message
+package server
+
+type wsMessage struct {
+	Type string `json:"type"`
+}
 
 type matchFoundData struct {
 	MatchID     string   `json:"matchID"`
@@ -11,20 +15,16 @@ type searchForMatchData struct {
 	PlayerId   string `json:"playerId"`
 }
 
-type Struct struct {
-	Type string `json:"type"`
-}
-
-type MatchFound struct {
-	Struct
+type matchFoundMessage struct {
+	wsMessage
 	Data matchFoundData `json:"data"`
 }
 
-type SearchForMatch struct {
-	Struct
+type searchForMatchMessage struct {
+	wsMessage
 	Data searchForMatchData `json:"data"`
 }
 
-func InitializeMatchFound() *MatchFound {
-	return &MatchFound{Struct: Struct{Type: "matchFound"}}
+func initializeMatchFoundMessage() *matchFoundMessage {
+	return &matchFoundMessage{wsMessage: wsMessage{Type: "matchFound"}}
 }
