@@ -35,7 +35,7 @@ func HashAndSalt(password string, salt string) string {
 		threads = 4
 	)
 
-	pepperedPassword := []byte(password + os.Getenv("pepper"))
+	pepperedPassword := []byte(password + os.Getenv("pepper")) // Pepper is optional
 
 	hash := argon2.IDKey(
 		pepperedPassword,
