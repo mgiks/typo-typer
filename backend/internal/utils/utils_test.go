@@ -9,10 +9,7 @@ func TestFindEnvOr(t *testing.T) {
 	t.Run("should call callback if no env found", func(t *testing.T) {
 		key := "nonexistentkey"
 
-		err := os.Unsetenv(key)
-		if err != nil {
-			t.Errorf("failed to unset %q", key)
-		}
+		unsetEnv(t, key)
 
 		cb := callback{called: false}
 		FindEnvOr("nonexistentkey", cb.call)
@@ -26,17 +23,8 @@ func TestFindEnvOr(t *testing.T) {
 		key := "existentkey"
 		want := "something"
 
-		err := os.Setenv(key, want)
-		defer func() {
-			err = os.Unsetenv("existentkey")
-			if err != nil {
-				t.Errorf("failed to unset %q", key)
-			}
-		}()
-
-		if err != nil {
-			t.Errorf("failed to set %q", key)
-		}
+		setEnv(t, key, want)
+		defer unsetEnv(t, key)
 
 		got := FindEnvOr(key, func() {})
 
@@ -52,4 +40,18 @@ type callback struct {
 
 func (c *callback) call() {
 	c.called = true
+}
+
+func setEnv(t testing.TB, key, value string) {
+	t.Helper()
+	if os.Setenv(key, value) != nil {
+		t.Fatalf("failed to set %q", key)
+	}
+}
+
+func unsetEnv(t testing.TB, key string) {
+	t.Helper()
+	if os.Unsetenv(key) != nil {
+		t.Fatalf("failed to unset %q", key)
+	}
 }
