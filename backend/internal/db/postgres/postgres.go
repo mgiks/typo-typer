@@ -32,9 +32,21 @@ func New(ctx context.Context) *Database {
 }
 
 func getDBURL() string {
-	dbPass := utils.FindEnvOrFail("POSTGRES_PASSWORD")
-	dbPort := utils.FindEnvOrFail("POSTGRES_PORT")
-	dbName := utils.FindEnvOrFail("POSTGRES_DB")
+	const (
+		pass = "POSTGRES_PASSWORD"
+		port = "POSTGRES_PORT"
+		db   = "POSTGRES_DB"
+	)
+
+	makeCallback := func(key string) func() {
+		return func() {
+			log.Fatalf("getDBURL: failed to find %q environmental variable", key)
+		}
+	}
+
+	dbPass := utils.FindEnvOr(pass, makeCallback(pass))
+	dbPort := utils.FindEnvOr(port, makeCallback(port))
+	dbName := utils.FindEnvOr(db, makeCallback(db))
 
 	return fmt.Sprintf(
 		"postgres://postgres:%s@localhost:%s/%s",
