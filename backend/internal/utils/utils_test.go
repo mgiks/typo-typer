@@ -27,6 +27,13 @@ func TestFindEnvOr(t *testing.T) {
 		want := "something"
 
 		err := os.Setenv(key, want)
+		defer func() {
+			err = os.Unsetenv("existentkey")
+			if err != nil {
+				t.Errorf("failed to unset %q", key)
+			}
+		}()
+
 		if err != nil {
 			t.Errorf("failed to set %q", key)
 		}
