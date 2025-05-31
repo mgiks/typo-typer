@@ -15,7 +15,7 @@ func TestFindEnvOr(t *testing.T) {
 		FindEnvOr("nonexistentkey", cb.call)
 
 		if !cb.called {
-			t.Errorf("should have called callback but didn't")
+			t.Errorf("should call callback but doesn't")
 		}
 	})
 
