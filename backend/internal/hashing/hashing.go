@@ -28,18 +28,20 @@ func GenerateSalt() (string, error) {
 	return string(salt), nil
 }
 
-func HashAndSalt(password string, salt string) string {
+func Hash(password string, salt string) string {
 	const (
 		time    = 1
 		memory  = 64 * 1024
 		threads = 4
 	)
 
+	byteSalt := []byte(salt)
+
 	pepperedPassword := []byte(password + os.Getenv("pepper")) // Pepper is optional
 
 	hash := argon2.IDKey(
 		pepperedPassword,
-		[]byte(salt),
+		byteSalt,
 		time,
 		memory,
 		threads,
@@ -47,7 +49,7 @@ func HashAndSalt(password string, salt string) string {
 	)
 
 	b64Hash := b64.StdEncoding.EncodeToString(hash)
-	b64Salt := b64.StdEncoding.EncodeToString([]byte(salt))
+	b64Salt := b64.StdEncoding.EncodeToString(byteSalt)
 
 	conv := strconv.Itoa
 	params := []string{
@@ -63,9 +65,18 @@ func HashAndSalt(password string, salt string) string {
 	return result
 }
 
-func CompareToHash(password string, hash string) bool {
-	salt := strings.Split(hash, "$")[4]
+func IsEqualToHash(password string, hash string) (bool, error) {
+	hashParts := strings.Split(hash, "$")
+	if len(hashParts) < 6 {
+		return false, fmt.Errorf("IsEqualToHash: invalid hash")
+	}
 
-	hashedPass := HashAndSalt(password, salt)
-	return hashedPass == hash
+	salt, err := b64.StdEncoding.DecodeString(hashParts[len(hashParts)-2])
+	if err != nil {
+		return false, fmt.Errorf("IsEqualToHash: failed to decode salt string: %v", err)
+	}
+
+	hashedPass := Hash(password, string(salt))
+
+	return hashedPass == hash, nil
 }
