@@ -29,7 +29,7 @@ func TestFindEnvOr(t *testing.T) {
 		got := FindEnvOr(key, func() {})
 
 		if got != want {
-			t.Errorf("got %v want %v", got, want)
+			t.Errorf("got %q want %q", got, want)
 		}
 	})
 }
