@@ -88,6 +88,6 @@ func assertNoError(t testing.TB, err error) {
 func assertNotEmpty(t testing.TB, str string) {
 	t.Helper()
 	if len(str) == 0 {
-		t.Fatalf("should have returned non-empty string")
+		t.Errorf("should have returned non-empty string")
 	}
 }
