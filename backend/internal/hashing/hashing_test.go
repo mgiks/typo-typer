@@ -12,53 +12,40 @@ func TestGenerateSalt(t *testing.T) {
 }
 
 func TestHash(t *testing.T) {
-	t.Run("should generate a hash", func(t *testing.T) {
-		password := "somePassword123"
-		salt := "someSalt"
+	password := "somePass"
+	salt := "someSalt"
 
+	t.Run("should generate a hash", func(t *testing.T) {
 		hash := Hash(password, salt)
 
 		assertNotEmpty(t, hash)
 	})
 
 	t.Run("should be idempotent", func(t *testing.T) {
-		password := "somePassword123"
-		salt := "someSalt"
-
 		got1 := Hash(password, salt)
 		got2 := Hash(password, salt)
 
-		if got1 != got2 {
-			t.Errorf("should produce equal outputs but doesn't")
-		}
+		assertStringEquality(t, got1, got2)
 	})
 }
 
 func TestIsEqualToHash(t *testing.T) {
 	t.Run("should return error on invalid hash", func(t *testing.T) {
-		_, err := IsEqualToHash("somePassword123", "invalidHash")
+		_, err := IsEqualToHash("", "invalidHash")
 
 		assertError(t, err)
 	})
 
+	hashedPass := Hash("correctPassword", "someSalt")
+
 	t.Run("should return 'true' for correct password", func(t *testing.T) {
-		password := "somePassword123"
-		salt := "someSalt"
-
-		hashedPass := Hash(password, salt)
-
-		isEqual, err := IsEqualToHash("somePassword123", hashedPass)
+		isEqual, err := IsEqualToHash("correctPassword", hashedPass)
 
 		assertNoError(t, err)
 		assertTruthiness(t, isEqual)
 	})
 
 	t.Run("should return 'false' for incorrect password", func(t *testing.T) {
-		password := "somePassword123"
-		salt := "someSalt"
-
-		hashedPass := Hash(password, salt)
-
 		isEqual, err := IsEqualToHash("wrongPassword", hashedPass)
 
 		assertNoError(t, err)
@@ -66,35 +53,41 @@ func TestIsEqualToHash(t *testing.T) {
 	})
 }
 
+func assertStringEquality(t testing.TB, str1, str2 string) {
+	if str1 != str2 {
+		t.Errorf("should have produced equal strings")
+	}
+}
+
 func assertTruthiness(t testing.TB, boolean bool) {
 	if !boolean {
-		t.Errorf("should return true but doesn't")
+		t.Errorf("should have returned true")
 	}
 }
 
 func assertFalsiness(t testing.TB, boolean bool) {
 	if boolean {
-		t.Errorf("should return false but doesn't")
+		t.Errorf("should have returned false")
 	}
 }
 
 func assertError(t testing.TB, err error) {
 	t.Helper()
 	if err == nil {
-		t.Errorf("should return an error but doesn't")
+		t.Errorf("should have returned an error")
 	}
 }
 
 func assertNoError(t testing.TB, err error) {
 	t.Helper()
 	if err != nil {
-		t.Fatal("should run without any errors but doesn't")
+		t.Fatal("should have returned no errors")
 	}
 }
 
 func assertNotEmpty(t testing.TB, str string) {
 	t.Helper()
 	if len(str) == 0 {
-		t.Errorf("should return non-empty string but doesn't")
+		t.Fatalf("should have returned non-empty string")
 	}
 }
