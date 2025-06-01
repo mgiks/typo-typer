@@ -21,7 +21,7 @@ func TestGenerateJWT(t *testing.T) {
 
 		parts := bytes.Split([]byte(token), []byte("."))
 
-		if len(parts) < 3 {
+		if len(parts) != 3 {
 			t.Errorf("token doesn't consist of 3 parts: %v", token)
 		}
 	})
