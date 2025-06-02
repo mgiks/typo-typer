@@ -8,18 +8,17 @@ import (
 func TestFindEnvOr(t *testing.T) {
 	t.Run("should call callback if no env found", func(t *testing.T) {
 		key := "nonexistentkey"
-
 		unsetEnv(t, key)
 
-		cb := callback{called: false}
-		FindEnvOr("nonexistentkey", cb.call)
+		cb := callback{}
+		FindEnvOr(key, cb.call)
 
 		if !cb.called {
-			t.Errorf("should call callback but doesn't")
+			t.Errorf("should have called callback")
 		}
 	})
 
-	t.Run("should return environmental variable if set", func(t *testing.T) {
+	t.Run("should return env if set", func(t *testing.T) {
 		key := "existentkey"
 		want := "something"
 
