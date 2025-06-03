@@ -1,7 +1,6 @@
 import './TypingContainer.css'
 import TextArea from './TextArea'
 import TypingArea from './TypingArea'
-import { focusElement } from './utils/focusElement'
 import { useEffect, useRef } from 'react'
 import { useIsDoneTyping } from '../../stores/TypingStatsStore'
 
@@ -47,6 +46,10 @@ function TypingContainer(
       <TextArea typingContainerRef={typingContainerRef} />
     </div>
   )
+}
+
+export function focusElement(element: HTMLElement) {
+  element.focus()
 }
 
 export default TypingContainer

@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import './TextArea.css'
-import { extractCorrectText } from './utils/extractCorrectText'
-import { extractWrongText } from './utils/extractWrongText'
 import InactivityCurtain from './InactivityCurtain'
 import {
   useTextActions,
@@ -118,6 +116,24 @@ function keepCursorInView(
   if (!isCursorInsideTextArea) {
     cursor.scrollIntoView({ behavior: 'smooth' })
   }
+}
+
+export function extractCorrectText(
+  textBeforeCursor: string,
+  wrongTextStartIndex: number,
+) {
+  return wrongTextStartIndex > -1
+    ? textBeforeCursor.slice(0, wrongTextStartIndex)
+    : textBeforeCursor
+}
+
+export function extractWrongText(
+  textBeforeCursor: string,
+  wrongTextStartIndex: number,
+) {
+  return wrongTextStartIndex > -1
+    ? textBeforeCursor.slice(wrongTextStartIndex)
+    : ''
 }
 
 export default TextArea

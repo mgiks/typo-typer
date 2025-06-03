@@ -1,6 +1,5 @@
 import { KeyboardEvent, useEffect, useRef } from 'react'
 import './TypingArea.css'
-import { isControlKey } from './utils/isControlKey'
 import {
   useCursorIndex,
   useText,
@@ -16,7 +15,6 @@ import {
   usePlayerName,
 } from '../../stores/MultiplayerStore'
 import { Message, MessageType } from './types/Message'
-import { parseText } from './utils/parseText'
 import { NewMessage } from './types/MessageInitializers'
 
 function TypingArea(
@@ -161,6 +159,14 @@ function TypingArea(
       autoFocus
     />
   )
+}
+
+export function isControlKey(key: string) {
+  return key !== 'Backspace' && key.length > 1
+}
+
+export function parseText(text: string) {
+  return text.replaceAll(/\r?\n|\r|\s+/g, ' ')
 }
 
 export default TypingArea

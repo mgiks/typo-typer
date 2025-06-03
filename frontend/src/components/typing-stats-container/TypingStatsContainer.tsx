@@ -13,7 +13,6 @@ import {
 import PlayerModeSwitcher from './PlayerModeSwitcher'
 import { Result, useResultActions } from '../../stores/ResultStore'
 import { calculateTypingAccuracyAndWPM } from '../result-container/utils/calculateTypingAccuracyAndWPM'
-import { calculateWordCount } from './utils/calculateWordCount'
 
 function TypingStatsContainer() {
   const cursorMoved = useCursorMoved()
@@ -89,6 +88,13 @@ function TypingStatsContainer() {
       </div>
     </div>
   )
+}
+
+export function calculateWordCount(text: string) {
+  text = text.trim()
+  text = text.replaceAll(/\s+/g, ' ')
+  if (!text) return 0
+  return text.split(' ').length
 }
 
 export default TypingStatsContainer

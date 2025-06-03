@@ -3,17 +3,18 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import TypingContainer from '../TypingContainer'
 import * as typingStatsModule from '../../../stores/TypingStatsStore.tsx'
 import { useState } from 'react'
+import { focusElement } from '../TypingContainer'
 
 describe('TypingContainer', () => {
   it('should display child components', () => {
-    render(<TypingContainer />)
+    render(<TypingContainer isAnyFormShown={false} />)
 
     expect(screen.getByTestId(/typing-area/)).toBeInTheDocument()
     expect(screen.getByTestId(/text-area/)).toBeInTheDocument()
   })
 
   it("should focus 'typing-area' on keypress", () => {
-    render(<TypingContainer />)
+    render(<TypingContainer isAnyFormShown={false} />)
 
     const typingArea = screen.getByTestId(/typing-area/)
     typingArea.blur()
@@ -47,7 +48,7 @@ function TestWrapper() {
   return (
     <>
       <button onClick={() => setIsDoneTyping(true)}>Trigger</button>
-      <TypingContainer />
+      <TypingContainer isAnyFormShown={false} />
     </>
   )
 }
@@ -84,3 +85,12 @@ vi.mock('../TextArea', () => {
 vi.mock('../../../stores/TypingStatsStore', () => ({
   useIsDoneTyping: () => true,
 }))
+
+describe('focusElement', () => {
+  it('should focus an element ', async () => {
+    render(<textarea data-testid='elementToFocus' />)
+    const elementToFocus = await screen.findByTestId(/elementToFocus/)
+    focusElement(elementToFocus)
+    expect(elementToFocus).toHaveFocus()
+  })
+})

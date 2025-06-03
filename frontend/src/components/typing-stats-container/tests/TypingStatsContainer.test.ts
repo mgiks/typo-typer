@@ -1,9 +1,9 @@
-import {
-  emptyTextWithWhitespaces,
-  text,
-  textWithIrregularSpacing,
-} from './fixtures'
-import { calculateWordCount } from '../calculateWordCount'
+import { calculateWordCount } from '../TypingStatsContainer.tsx'
+
+const text = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+const emptyTextWithWhitespaces = '       \t'
+const textWithIrregularSpacing =
+  'Lorem     ipsum  dolor     \tsit  amet,  consectetur   adipiscing    elit.'
 
 describe('calculateWordCount', () => {
   it('should count 8 words from regular text', () =>
