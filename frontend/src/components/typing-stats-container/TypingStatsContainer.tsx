@@ -12,7 +12,7 @@ import {
 } from '../../stores/TypingStatsStore'
 import PlayerModeSwitcher from './PlayerModeSwitcher'
 import { Result, useResultActions } from '../../stores/ResultStore'
-import { calculateTypingAccuracyAndWPM } from '../result-container/utils/calculateTypingAccuracyAndWPM'
+import { calculateTypingAccuracyAndWPM } from '../../utils/utils'
 
 function TypingStatsContainer() {
   const cursorMoved = useCursorMoved()
