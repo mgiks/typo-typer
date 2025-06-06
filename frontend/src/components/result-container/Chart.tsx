@@ -1,6 +1,5 @@
 import { Line } from 'react-chartjs-2'
 import { Result } from '../../stores/ResultStore'
-import { secondsToStringArray } from './utils/secondsToStringArray'
 import './Chart.css'
 import {
   CategoryScale,
