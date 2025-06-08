@@ -76,7 +76,7 @@ func (s *server) postUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ud.Password = hashing.HashAndSalt(ud.Password, salt)
+	ud.Password = hashing.Hash(ud.Password, salt)
 
 	ctx := context.TODO()
 	err = s.pdb.AddUserRow(ctx, ud.Name, ud.Email, ud.Password)
