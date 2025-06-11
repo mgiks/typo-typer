@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "user" (
+CREATE TABLE IF NOT EXISTS "player" (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     name varchar(128) NOT NULL,
     email varchar(320) NOT NULL,
