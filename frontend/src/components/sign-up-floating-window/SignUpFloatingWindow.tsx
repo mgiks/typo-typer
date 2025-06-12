@@ -21,7 +21,7 @@ function SignUpFloatingWindow(
 
     const data = { name, email, password }
 
-    fetch('http://localhost:8000/users', {
+    fetch('http://localhost:8000/players', {
       method: 'POST',
       body: JSON.stringify(data),
     })

@@ -52,7 +52,7 @@ func (s *server) getTextHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *server) createUserHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) createPlayerHandler(w http.ResponseWriter, r *http.Request) {
 	enableCORS(&w)
 
 	type userData struct {
@@ -64,14 +64,14 @@ func (s *server) createUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&ud)
 	if err != nil {
-		log.Println("createUserHandler: failed to unmarshal request body:", err)
+		log.Println("createPlayerHandler: failed to unmarshal request body:", err)
 		http.Error(w, "", 500)
 		return
 	}
 
 	salt, err := hashing.GenerateSalt()
 	if err != nil {
-		log.Println("createUserHandler: failed to generate salt:", err)
+		log.Println("createPlayerHandler: failed to generate salt:", err)
 		http.Error(w, "", 500)
 		return
 	}
@@ -81,7 +81,7 @@ func (s *server) createUserHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.TODO()
 	err = s.pdb.AddUserRow(ctx, ud.Name, ud.Email, ud.Password)
 	if err != nil {
-		log.Println("createUserHandler: failed to add user to database:", err)
+		log.Println("createPlayerHandler: failed to add user to database:", err)
 		http.Error(w, "", 500)
 		return
 	}
