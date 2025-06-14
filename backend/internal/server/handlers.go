@@ -79,7 +79,7 @@ func (s *server) createPlayerHandler(w http.ResponseWriter, r *http.Request) {
 	ud.Password = hashing.Hash(ud.Password, salt)
 
 	ctx := context.TODO()
-	err = s.pdb.AddUserRow(ctx, ud.Name, ud.Email, ud.Password)
+	err = s.pdb.AddPlayerRow(ctx, ud.Name, ud.Email, ud.Password)
 	if err != nil {
 		log.Println("createPlayerHandler: failed to add user to database:", err)
 		http.Error(w, "", 500)

@@ -77,7 +77,7 @@ func (db *Database) AddTypingTextRow(
 	return nil
 }
 
-func (db *Database) AddUserRow(
+func (db *Database) AddPlayerRow(
 	ctx context.Context,
 	name string,
 	email string,
@@ -85,12 +85,12 @@ func (db *Database) AddUserRow(
 ) error {
 	_, err := db.Query(
 		ctx,
-		`INSERT INTO "user"(name, email, hashed_password)
+		`INSERT INTO "player"(name, email, hashed_password)
 		VALUES ($1, $2, $3)`,
 		name, email, hashedPassword,
 	)
 	if err != nil {
-		return fmt.Errorf("AddUserRow: failed to add row: %w", err)
+		return fmt.Errorf("AddPlayerRow: failed to add row: %w", err)
 	}
 
 	return nil
