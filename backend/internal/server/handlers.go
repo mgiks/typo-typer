@@ -5,9 +5,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/coder/websocket"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/mgiks/ttyper/internal/auth"
 	"github.com/mgiks/ttyper/internal/hashing"
+	"github.com/mgiks/ttyper/internal/utils"
 )
 
 func enableCORS(w *http.ResponseWriter) {
@@ -104,6 +108,62 @@ func (s *server) signInHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("signInHandler: failed to unmarshal request body:", err)
 		http.Error(w, "", 500)
 		return
+	}
+
+	ctx := context.TODO()
+	pr := s.pdb.GetPlayerRow(ctx, ud.Name, ud.Email)
+
+	var hashedPass string
+	err = pr.Scan(&hashedPass)
+	if err != nil {
+		log.Println("signInHandler: failed to scan player row:", err)
+		http.Error(w, "", 500)
+		return
+	}
+
+	isCorrect, err := hashing.IsEqualToHash(ud.Password, hashedPass)
+	if err != nil {
+		log.Println("signInHandler: failed to compare password to hashed password:", err)
+		http.Error(w, "", 500)
+		return
+	}
+
+	if !isCorrect {
+		http.Error(w, "Authenticatio failed: Invalid username or password", http.StatusUnauthorized)
+		return
+	}
+
+	seed := []byte(utils.FindEnvOr("privatekeyseed", func() {
+		log.Fatal("signInHandler: failed to find 'privatekeyseed' env")
+	}))
+
+	expiresAt := time.Now().UTC().Add(time.Minute * 15)
+	jwt, err := auth.GenerateJWT(seed, jwt.MapClaims{
+		"player": ud.Name,
+		"nbf":    expiresAt.Unix(),
+	})
+	if err != nil {
+		log.Println("signInHandler: failed to generate jwt:", err)
+		http.Error(w, "", 500)
+		return
+	}
+
+	type jwtData struct {
+		AccessToken string `json:"access_token"`
+		TokenType   string `json:"token_type"`
+		ExpiresIn   int64  `json:"expires_in"`
+	}
+
+	data, err := json.Marshal(jwtData{jwt, "bearer", int64(expiresAt.Sub(time.Now().UTC()).Seconds())})
+	if err != nil {
+		log.Println("signInHandler: failed to marshal json:", err)
+		http.Error(w, "", 500)
+		return
+	}
+
+	if _, err := w.Write(data); err != nil {
+		log.Println("signInHandler: failed to write message:", err)
+		http.Error(w, "", 500)
 	}
 }
 

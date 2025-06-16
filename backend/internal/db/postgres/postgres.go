@@ -96,6 +96,13 @@ func (db *Database) AddPlayerRow(
 	return nil
 }
 
+func (db *Database) GetPlayerRow(ctx context.Context,
+	name string,
+	email string,
+) pgx.Row {
+	return db.QueryRow(ctx, `SELECT hashedPassword FROM "player" WHERE name = $1 OR email = $2`, name, email)
+}
+
 func (db *Database) GetRandomTypingTextRow(ctx context.Context) pgx.Row {
 	return db.QueryRow(
 		ctx,
