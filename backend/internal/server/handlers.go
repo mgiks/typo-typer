@@ -114,7 +114,7 @@ func (s *server) signInHandler(w http.ResponseWriter, r *http.Request) {
 	pr := s.pdb.GetPlayerRow(ctx, ud.Name, ud.Email)
 
 	var hashedPass string
-	err = pr.Scan(&hashedPass)
+	err = pr.Scan(nil, nil, &hashedPass)
 	if err != nil {
 		log.Println("signInHandler: failed to scan player row:", err)
 		http.Error(w, "", 500)
