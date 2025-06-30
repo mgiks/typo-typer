@@ -1,6 +1,5 @@
 import { Line } from 'react-chartjs-2'
 import { Result } from '../../stores/ResultStore'
-import { secondsToArray } from './utils/secondsToArray'
 import './Chart.css'
 import {
   CategoryScale,
@@ -73,7 +72,7 @@ function Chart(
               },
             },
             x: {
-              labels: secondsToArray(finalTime),
+              labels: secondsToStringArray(finalTime),
             },
           },
           plugins: {
@@ -85,6 +84,12 @@ function Chart(
       />
     </div>
   )
+}
+
+export function secondsToStringArray(seconds: number) {
+  if (seconds <= 0) return []
+  return Array(seconds).fill(0).map((_, i) => (seconds - i).toString())
+    .reverse()
 }
 
 export default Chart

@@ -1,4 +1,11 @@
 #header-container {
+  position: fixed;
+  z-index: 10000;
   height: fit-content;
-  width: fit-content;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

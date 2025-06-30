@@ -10,6 +10,7 @@ function GameSearchReminderCurtain() {
       Press <kbd>Tab</kbd> to search for a game
     </div>
   )
+
   return playerMode === PlayerModes.Multiplayer && !isSearchingForPlayers
     ? gameSearchReminderCurtain
     : null

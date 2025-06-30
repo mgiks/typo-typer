@@ -1,6 +1,5 @@
 import './ResultContainer.css'
 import { useCursorIndex, useTextRefreshCount } from '../../stores/TextStore'
-import { getTypingSpeedAndAccuracy } from './utils/getTypingAccuracyAndWPM'
 import { useEffect } from 'react'
 import {
   useCorrectKeyCount,
@@ -15,6 +14,7 @@ import {
   useResultsPerSecond,
 } from '../../stores/ResultStore'
 import Chart from './Chart'
+import { calculateTypingAccuracyAndWPM } from '../../utils/utils'
 
 function ResultContainer() {
   const isDoneTyping = useIsDoneTyping()
@@ -24,8 +24,10 @@ function ResultContainer() {
   const textRefreshCount = useTextRefreshCount()
   const results = useResultsPerSecond()
   const cursorIndex = useCursorIndex()
+
   const { clearResults } = useResultActions()
   const { startTypingGame } = useTypingStatsActions()
+
   useEffect(() => {
     clearResults()
     startTypingGame()
@@ -35,7 +37,7 @@ function ResultContainer() {
     return null
   }
 
-  const { GWPM, NWPM, typingAccuracy } = getTypingSpeedAndAccuracy(
+  const { GWPM, NWPM, typingAccuracy } = calculateTypingAccuracyAndWPM(
     cursorIndex,
     typingTime,
     correctKeyPresses,

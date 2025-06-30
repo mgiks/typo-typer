@@ -2,16 +2,18 @@ import { useEffect, useState } from 'react'
 import './InactivityCurtain.css'
 
 function InactivityCurtain() {
-  // Needed so that on the initial page load curtain doesn't show up
-  const [activeElementId, setActiveElementId] = useState('typing-area')
+  const [activeElementId, setActiveElementId] = useState('')
 
   useEffect(() => {
-    const updateActiveElementId = () => {
+    const updateActiveElement = () => {
       const activeElement = document.activeElement
       activeElement && setActiveElementId(activeElement.id)
     }
-    document.addEventListener('click', updateActiveElementId)
-    document.addEventListener('keypress', updateActiveElementId)
+
+    const events = ['click', 'keypress', 'focusin']
+    events.forEach((event) =>
+      document.addEventListener(event, updateActiveElement)
+    )
   }, [])
 
   const inactivityCurtain = (
@@ -19,10 +21,6 @@ function InactivityCurtain() {
       Click here or type any key to continue
     </div>
   )
-
-  if (activeElementId === undefined) {
-    return null
-  }
 
   return activeElementId !== 'typing-area' ? inactivityCurtain : null
 }

@@ -1,6 +1,5 @@
 import { KeyboardEvent, useEffect, useRef } from 'react'
 import './TypingArea.css'
-import { isControlKey } from './utils/isControlKey'
 import {
   useCursorIndex,
   useText,
@@ -15,8 +14,8 @@ import {
   usePlayerId,
   usePlayerName,
 } from '../../stores/MultiplayerStore'
-import { getRandomText } from './utils/getRandomText'
-import { Message, SearchForMatchMessage } from './dtos/Message'
+import { Message, MessageType } from './types/Message'
+import { NewMessage } from './types/MessageInitializers'
 
 function TypingArea(
   { ref }: { ref: React.RefObject<HTMLTextAreaElement | null> },
@@ -26,6 +25,7 @@ function TypingArea(
   const isSearchingForMatch = useIsSearchingForMatch()
   const text = useText()
   const wrongTextStartIndex = useWrongTextStartIndex()
+
   const {
     setTextBeforeCursor,
     setTextAfterCursor,
@@ -34,73 +34,54 @@ function TypingArea(
     increaseCursorIndex,
     decreaseCursorIndex,
   } = useTextActions()
+
   const {
     finishTypingGame,
     increaseWrongKeyCount,
     increaseCorrectKeyCount,
     setCursorToMoved,
   } = useTypingStatsActions()
+
   const {
     stopSearchingForMatch,
+    setMatchFoundData,
   } = useMultiplayerActions()
-
-  useEffect(() => {
-    getRandomText().then((text) => setText(text))
-  }, [textRefreshCount])
 
   const playerId = usePlayerId()
   const playerName = usePlayerName()
   useEffect(() => {
     if (!isSearchingForMatch) return
+
     const ws = new WebSocket('ws://localhost:8000')
 
     ws.onopen = () => {
       console.log('Connected to websocket server')
-      const playerInfo: SearchForMatchMessage = {
-        type: 'searchForMatch',
-        data: { playerName, playerId },
-      }
-      ws.send(JSON.stringify(playerInfo))
+
+      const message = NewMessage(MessageType.searchForMatch, {
+        playerName,
+        playerId,
+      })
+
+      ws.send(JSON.stringify(message))
     }
 
     ws.onmessage = (event) => {
-      const data: Message = JSON.parse(event.data)
-      switch (data.type) {
-        case 'matchFound':
-          break
-        case 'gameUpdate':
+      const message: Message = JSON.parse(event.data)
+
+      switch (message.type) {
+        case MessageType.matchFound:
+          setMatchFoundData(message)
           break
       }
     }
 
     ws.onclose = () => {
-      console.log('Closed websocket connection')
       stopSearchingForMatch()
+      console.log('Closed websocket connection')
     }
 
     return () => ws.close()
   }, [isSearchingForMatch])
-
-  useEffect(() => {
-    cursorIndex > 0 && setCursorToMoved()
-  }, [cursorIndex])
-
-  useEffect(() => {
-    const textBeforeCursor = text.split('').slice(0, cursorIndex).join('')
-    const textAfterCursor = text.split('').slice(cursorIndex).join('')
-    setTextAfterCursor(textAfterCursor)
-    setTextBeforeCursor(textBeforeCursor)
-    const isAtTheEndOfText = textBeforeCursor && !textAfterCursor
-    isAtTheEndOfText && finishTypingGame()
-  })
-
-  function updateCursorIndexByKey(key: string) {
-    key === 'Backspace' ? decreaseCursorIndex() : increaseCursorIndex()
-  }
-
-  function checkIfKeyIsWrong(key: string) {
-    return !(text.at(cursorIndex) === key)
-  }
 
   const lastPressedKey = useRef('')
   useEffect(() => {
@@ -110,17 +91,61 @@ function TypingArea(
   }, [wrongTextStartIndex, cursorIndex])
 
   useEffect(() => {
-    if (cursorIndex <= wrongTextStartIndex) setWrongTextStartIndex(-1)
+    const textBeforeCursor = text.split('').slice(0, cursorIndex).join('')
+    const textAfterCursor = text.split('').slice(cursorIndex).join('')
+
+    setTextAfterCursor(textAfterCursor)
+    setTextBeforeCursor(textBeforeCursor)
+
+    const isAtTheEndOfText = textBeforeCursor && !textAfterCursor
+    isAtTheEndOfText && finishTypingGame()
+  })
+
+  useEffect(() => {
+    async function getRandomText() {
+      const response = await fetch('http://localhost:8000/texts')
+
+      type TextData = {
+        id: string
+        text: string
+        submitter: string
+        source: string
+      }
+
+      const textData = await response.json() as TextData
+      return textData.text
+    }
+
+    getRandomText().then((text) => setText(parseText(text)))
+  }, [textRefreshCount])
+
+  useEffect(() => {
+    cursorIndex > 0 && setCursorToMoved()
+  }, [cursorIndex])
+
+  useEffect(() => {
+    cursorIndex <= wrongTextStartIndex && setWrongTextStartIndex(-1)
   }, [cursorIndex, wrongTextStartIndex])
 
   function handleKeypress(event: KeyboardEvent) {
+    function updateCursorIndexByKey(key: string) {
+      key === 'Backspace' ? decreaseCursorIndex() : increaseCursorIndex()
+    }
+
+    function checkIfKeyIsWrong(key: string) {
+      return !(text.at(cursorIndex) === key)
+    }
+
     const { key } = event
 
     if (isControlKey(key)) return
+
     lastPressedKey.current = key
+
     updateCursorIndexByKey(key)
 
     if (key === 'Backspace') return
+
     if (checkIfKeyIsWrong(key) && wrongTextStartIndex === -1) {
       setWrongTextStartIndex(cursorIndex)
     }
@@ -134,6 +159,14 @@ function TypingArea(
       autoFocus
     />
   )
+}
+
+export function isControlKey(key: string) {
+  return key !== 'Backspace' && key.length > 1
+}
+
+export function parseText(text: string) {
+  return text.replaceAll(/\r?\n|\r|\s+/g, ' ')
 }
 
 export default TypingArea
