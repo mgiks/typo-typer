@@ -1,3 +1,4 @@
+import { useAuthActions } from '../../stores/AuthStore'
 import './SignInFloatingWindow.css'
 
 function SignInFloatingWindow(
@@ -8,9 +9,12 @@ function SignInFloatingWindow(
     email: HTMLInputElement
     password: HTMLInputElement
   }
+
   interface SignInFormElement extends HTMLFormElement {
     readonly elements: FormElements
   }
+
+  const { setAccessToken } = useAuthActions()
 
   function submitForm(event: React.FormEvent<SignInFormElement>) {
     event.preventDefault()
@@ -30,9 +34,9 @@ function SignInFloatingWindow(
     fetch('http://localhost:8000/auth/signin', {
       method: 'POST',
       body: JSON.stringify(data),
-    }).then((res) => res.json()).then((res) => res as jwtData).then((data) =>
-      console.log(data)
-    )
+    }).then((res) => res.json()).then((res) => res as jwtData).then((
+      data,
+    ) => (setAccessToken(data.accessToken), console.log(data)))
   }
 
   const form = (
