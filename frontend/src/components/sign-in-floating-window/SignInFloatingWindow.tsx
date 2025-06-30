@@ -21,10 +21,18 @@ function SignInFloatingWindow(
 
     const data = { name, email, password }
 
+    type jwtData = {
+      accessToken: string
+      tokenType: string
+      expiresIn: number
+    }
+
     fetch('http://localhost:8000/auth/signin', {
       method: 'POST',
       body: JSON.stringify(data),
-    })
+    }).then((res) => res.json()).then((res) => res as jwtData).then((data) =>
+      console.log(data)
+    )
   }
 
   const form = (

@@ -162,9 +162,9 @@ func (s *server) signInHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type jwtData struct {
-		AccessToken string `json:"access_token"`
-		TokenType   string `json:"token_type"`
-		ExpiresIn   int64  `json:"expires_in"`
+		AccessToken string `json:"accessToken"`
+		TokenType   string `json:"tokenType"`
+		ExpiresIn   int64  `json:"expiresIn"`
 	}
 
 	data, err := json.Marshal(jwtData{jwt, "bearer", int64(expiresAt.Sub(time.Now().UTC()).Seconds())})
