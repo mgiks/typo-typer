@@ -100,7 +100,7 @@ func (db *Database) GetPlayerRow(ctx context.Context,
 	name string,
 	email string,
 ) pgx.Row {
-	return db.QueryRow(ctx, `SELECT name, email, hashedPassword FROM "player" WHERE name = $1 OR email = $2`, name, email)
+	return db.QueryRow(ctx, `SELECT name, email, hashed_password FROM "player" WHERE name = $1 OR email = $2`, name, email)
 }
 
 func (db *Database) GetRandomTypingTextRow(ctx context.Context) pgx.Row {
