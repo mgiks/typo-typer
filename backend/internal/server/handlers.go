@@ -73,6 +73,19 @@ func (s *server) createPlayerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ctx1 := context.TODO()
+	err = s.pdb.QueryRow(ctx1, `SELECT email FROM "player" WHERE email = $1`, ud.Email).Scan()
+	if err == nil {
+		http.Error(w, "Email already registered", http.StatusConflict)
+		return
+	}
+
+	err = s.pdb.QueryRow(ctx1, `SELECT name FROM "player" WHERE name = $1`, ud.Name).Scan()
+	if err == nil {
+		http.Error(w, "Username already taken", http.StatusConflict)
+		return
+	}
+
 	salt, err := hashing.GenerateSalt()
 	if err != nil {
 		log.Println("createPlayerHandler: failed to generate salt:", err)
