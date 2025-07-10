@@ -1,4 +1,3 @@
-import './InputCatcher.scss'
 import { render, screen } from '@testing-library/react'
 import InputCatcher from './InputCatcher.tsx'
 

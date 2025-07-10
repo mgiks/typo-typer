@@ -1,0 +1,9 @@
+.typing-box {
+  border: 1px solid black;
+  height: 100%;
+
+  &__input-catcher {
+    position: fixed;
+    left: -10000px;
+  }
+}

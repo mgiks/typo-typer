@@ -1,5 +1,3 @@
-import './InputCatcher.scss'
-
 function InputCatcher() {
   return (
     <textarea
