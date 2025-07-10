@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"net/http"
+
+	"github.com/mgiks/typo-typer/server"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	http.HandleFunc("GET /texts", server.GETTextHandler)
+
+	log.Fatal(http.ListenAndServe(":8000", nil))
 }
