@@ -1,9 +1,10 @@
-import './App.css'
+import './App.scss'
 import TypingBox from './components/typing-box/TypingBox'
 
 function App() {
   return (
-    <div>
+    <div className='app'>
+      <div />
       <TypingBox />
     </div>
   )
