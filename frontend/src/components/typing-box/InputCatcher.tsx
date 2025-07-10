@@ -1,5 +1,14 @@
+import './InputCatcher.scss'
+
 function InputCatcher() {
-  return <textarea data-testid='input-catcher' autoFocus></textarea>
+  return (
+    <textarea
+      className='typing-box__input-catcher'
+      data-testid='input-catcher'
+      autoFocus
+    >
+    </textarea>
+  )
 }
 
 export default InputCatcher
