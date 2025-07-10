@@ -1,4 +1,4 @@
-import InputCatcher from './InputCatcher'
+import InputCatcher from './input-catcher/InputCatcher'
 
 function TypingBox() {
   return (
