@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/mgiks/typo-typer/server"
+	"github.com/mgiks/typo-typer/internal/server"
 )
 
 func main() {
