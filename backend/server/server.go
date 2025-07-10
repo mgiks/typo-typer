@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -12,13 +13,9 @@ type GETTextResponse struct {
 func GETTextHandler(w http.ResponseWriter, r *http.Request) {
 	resp := GETTextResponse{Text: "Some Text"}
 
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		http.Error(w, "", http.StatusInternalServerError)
-		return
-	}
-
-	if _, err := w.Write(jsonResp); err != nil {
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Println("GETTextHandler: failed to encode json:", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}
 }
