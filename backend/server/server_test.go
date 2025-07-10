@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -16,9 +17,14 @@ func TestGETTextHandler(t *testing.T) {
 
 	GETTextHandler(response, request)
 
-	got := response.Body.String()
+	var got GETTextResponse
 
-	if len(got) == 0 {
+	err = json.Unmarshal(response.Body.Bytes(), &got)
+	if err != nil {
+		t.Error("failed to unmarshal response")
+	}
+
+	if len(got.Text) == 0 {
 		t.Error("should respond with non-empty text")
 	}
 }
