@@ -18,6 +18,7 @@ function TypingBox() {
         .then((resp) => resp as GETTextResponse)
         .then((json) => setText(json.text))
     } catch (e) {
+      console.error('failed to fetch text')
     }
   })
 
