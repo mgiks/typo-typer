@@ -3,7 +3,9 @@ name: typo-typer
 services:
   postgres:
     container_name: postgres
-    image: postgres:17.5-alpine
+    build:
+      context: ./docker/postgres/
+      dockerfile: initialize.dockerfile
     volumes:
       - postgres:/data/postgres
     env_file: ./.env
