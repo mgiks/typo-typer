@@ -11,7 +11,7 @@ import (
 
 var (
 	pgUser = "POSTGRES_USER"
-	pgPass = "POSTGRES_PASS"
+	pgPass = "POSTGRES_PASSWORD"
 	pgHost = "POSTGRES_HOST"
 	pgPort = "POSTGRES_PORT"
 	pgDB   = "POSTGRES_DB"
