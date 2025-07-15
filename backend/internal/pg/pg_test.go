@@ -7,11 +7,11 @@ import (
 )
 
 func TestConnect(t *testing.T) {
-	os.Unsetenv("POSTGRES_DB")
-	os.Unsetenv("POSTGRES_PASSWORD")
-	os.Unsetenv("POSTGRES_PORT")
-	os.Unsetenv("POSTGRES_USER")
-	os.Unsetenv("POSTGRES_HOST")
+	os.Unsetenv(pgUser)
+	os.Unsetenv(pgPass)
+	os.Unsetenv(pgHost)
+	os.Unsetenv(pgPort)
+	os.Unsetenv(pgDB)
 
 	_, err := Connect(context.Background())
 	if err == nil {

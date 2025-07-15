@@ -9,13 +9,21 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+var (
+	pgUser = "POSTGRES_USER"
+	pgPass = "POSTGRES_PASS"
+	pgHost = "POSTGRES_HOST"
+	pgPort = "POSTGRES_PORT"
+	pgDB   = "POSTGRES_DB"
+)
+
 func Connect(ctx context.Context) (*pgxpool.Pool, error) {
-	vals, err := checkEnvs("POSTGRES_USER", "POSTGRES_PASS", "POSTGRES_HOST", "POSTGRES_PORT", "POSTGRES_DB")
+	vals, err := checkEnvs(pgUser, pgPass, pgHost, pgPort, pgDB)
 	if err != nil {
 		return &pgxpool.Pool{}, fmt.Errorf("Connect: failed to connect: %w", err)
 	}
 
-	dbURL := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", vals[0], vals[1], vals[2], vals[3], vals[4])
+	dbURL := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", vals[pgUser], vals[pgPass], vals[pgHost], vals[pgPort], vals[pgDB])
 
 	dbPool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
@@ -25,18 +33,18 @@ func Connect(ctx context.Context) (*pgxpool.Pool, error) {
 	return dbPool, nil
 }
 
-func checkEnvs(envs ...string) ([]string, error) {
-	vals := make([]string, len(envs))
+func checkEnvs(envs ...string) (map[string]string, error) {
+	keyValPairs := make(map[string]string)
 
 	for _, key := range envs {
 		val := os.Getenv(key)
 
 		if len(val) == 0 {
-			return make([]string, 0), errors.New(fmt.Sprint("failed to find environmental variable:", key))
+			return make(map[string]string), errors.New(fmt.Sprint("failed to find environmental variable:", key))
 		}
 
-		vals = append(vals, val)
+		keyValPairs[key] = val
 	}
 
-	return vals, nil
+	return keyValPairs, nil
 }
