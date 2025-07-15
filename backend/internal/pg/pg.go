@@ -18,12 +18,12 @@ var (
 )
 
 func Connect(ctx context.Context) (*pgxpool.Pool, error) {
-	vals, err := checkEnvs(pgUser, pgPass, pgHost, pgPort, pgDB)
+	envs, err := checkEnvs(pgUser, pgPass, pgHost, pgPort, pgDB)
 	if err != nil {
 		return &pgxpool.Pool{}, fmt.Errorf("Connect: failed to connect: %w", err)
 	}
 
-	dbURL := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", vals[pgUser], vals[pgPass], vals[pgHost], vals[pgPort], vals[pgDB])
+	dbURL := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", envs[pgUser], envs[pgPass], envs[pgHost], envs[pgPort], envs[pgDB])
 
 	dbPool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
