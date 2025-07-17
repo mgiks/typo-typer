@@ -23,7 +23,7 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    /* For vitest*/
+    /* For vitest */
     "types": ["vitest/globals"]
   },
   "include": ["src", "src/test/setup.ts"]
