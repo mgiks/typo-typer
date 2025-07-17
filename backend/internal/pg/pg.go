@@ -17,20 +17,28 @@ var (
 	pgDB   = "POSTGRES_DB"
 )
 
-func Connect(ctx context.Context) (*pgxpool.Pool, error) {
+type DB struct {
+	pool *pgxpool.Pool
+}
+
+func Connect(ctx context.Context) (*DB, error) {
 	envs, err := checkEnvs(pgUser, pgPass, pgHost, pgPort, pgDB)
 	if err != nil {
-		return &pgxpool.Pool{}, fmt.Errorf("Connect: failed to connect: %w", err)
+		return &DB{}, fmt.Errorf("Connect: failed to connect: %w", err)
 	}
 
 	dbURL := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", envs[pgUser], envs[pgPass], envs[pgHost], envs[pgPort], envs[pgDB])
 
 	dbPool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
-		return &pgxpool.Pool{}, fmt.Errorf("Connect: failed to connect: %w", err)
+		return &DB{}, fmt.Errorf("Connect: failed to connect: %w", err)
 	}
 
-	return dbPool, nil
+	db := &DB{
+		pool: dbPool,
+	}
+
+	return db, nil
 }
 
 func checkEnvs(envs ...string) (map[string]string, error) {
