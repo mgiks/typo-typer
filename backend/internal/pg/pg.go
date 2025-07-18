@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -17,8 +18,13 @@ var (
 	pgDB   = "POSTGRES_DB"
 )
 
+type Quierier interface {
+	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
+}
+
 type DB struct {
-	pool *pgxpool.Pool
+	pool Quierier
 }
 
 func Connect(ctx context.Context) (*DB, error) {
@@ -39,6 +45,17 @@ func Connect(ctx context.Context) (*DB, error) {
 	}
 
 	return db, nil
+}
+
+func (db *DB) GetRandomText(ctx context.Context) (string, error) {
+	var text string
+
+	err := db.pool.QueryRow(ctx, `SELECT 'text' FROM typing_text`).Scan(&text)
+	if err != nil {
+		return "", err
+	}
+
+	return text, nil
 }
 
 func checkEnvs(envs ...string) (map[string]string, error) {
