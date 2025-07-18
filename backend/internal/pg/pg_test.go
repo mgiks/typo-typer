@@ -8,6 +8,8 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+const testText = "Test text."
+
 func TestConnect(t *testing.T) {
 	unsetEnvs(t, pgUser, pgPass, pgHost, pgPort, pgDB)
 
@@ -25,28 +27,28 @@ func TestGetRandomText(t *testing.T) {
 		t.Fatal("should not return any errors")
 	}
 
-	if text != "test text" {
+	if text != testText {
 		t.Error("should return mocked data")
 	}
 }
 
-type (
-	mockedPool struct{}
-	mockerRow  struct{}
-)
+type mockedPool struct{}
 
 func (p mockedPool) QueryRow(_ context.Context, _ string, _ ...any) pgx.Row {
 	return mockerRow{}
 }
 
+type mockerRow struct{}
+
 func (r mockerRow) Scan(dest ...any) error {
 	variable, _ := dest[0].(*string)
 
-	*variable = "test text"
+	*variable = testText
 
 	return nil
 }
 
+// Just so it implements 'Quierier' interface
 func (p mockedPool) Query(_ context.Context, _ string, _ ...any) (pgx.Rows, error) {
 	return nil, nil
 }
