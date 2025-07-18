@@ -9,11 +9,11 @@ import (
 )
 
 type Server struct {
-	Pg *pg.DB
+	pg *pg.DB
 }
 
 func New(pgDB *pg.DB) (*Server, error) {
-	return &Server{Pg: pgDB}, nil
+	return &Server{pg: pgDB}, nil
 }
 
 type GETTextResponse struct {
