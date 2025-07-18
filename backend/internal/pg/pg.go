@@ -54,7 +54,7 @@ type RandomTextGetter interface {
 func (db *DB) GetRandomText(ctx context.Context) (string, error) {
 	var text string
 
-	err := db.pool.QueryRow(ctx, `SELECT 'text' FROM typing_text`).Scan(&text)
+	err := db.pool.QueryRow(ctx, `SELECT text FROM typing_text`).Scan(&text)
 	if err != nil {
 		return "", err
 	}
