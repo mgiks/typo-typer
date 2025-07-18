@@ -5,11 +5,17 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/joho/godotenv"
 	"github.com/mgiks/typo-typer/internal/pg"
 	"github.com/mgiks/typo-typer/internal/server"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	pgDB, err := pg.Connect(context.TODO())
 	if err != nil {
 		log.Fatal(err)
