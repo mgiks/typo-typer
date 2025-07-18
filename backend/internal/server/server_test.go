@@ -1,11 +1,23 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
+
+func TestNew(t *testing.T) {
+	s, err := New(nil)
+	if err != nil {
+		t.Fatal("failed to create server")
+	}
+
+	if s == nil {
+		t.Error("should return a non-nil value")
+	}
+}
 
 func TestGETTextHandler(t *testing.T) {
 	request, err := http.NewRequest(http.MethodGet, "/texts", nil)
@@ -13,9 +25,11 @@ func TestGETTextHandler(t *testing.T) {
 		t.Error("failed to create request")
 	}
 
+	getTextHandler := NewGETTextHandler(mockedRandomTextGetter{})
+
 	response := httptest.NewRecorder()
 
-	GETTextHandler(response, request)
+	getTextHandler(response, request)
 
 	var got GETTextResponse
 
@@ -27,4 +41,10 @@ func TestGETTextHandler(t *testing.T) {
 	if len(got.Text) == 0 {
 		t.Error("should respond with non-empty text")
 	}
+}
+
+type mockedRandomTextGetter struct{}
+
+func (g mockedRandomTextGetter) GetRandomText(ctx context.Context) (string, error) {
+	return "Test text.", nil
 }
