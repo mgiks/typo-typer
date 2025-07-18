@@ -1,14 +1,26 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
+	"github.com/mgiks/typo-typer/internal/pg"
 	"github.com/mgiks/typo-typer/internal/server"
 )
 
 func main() {
-	http.HandleFunc("GET /texts", server.GETTextHandler)
+	pgDB, err := pg.Connect(context.TODO())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	s, err := server.New(pgDB)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	http.HandleFunc("GET /texts", server.NewGETTextHandler(s.Pg))
 
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
