@@ -4,7 +4,17 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/mgiks/typo-typer/internal/pg"
 )
+
+type Server struct {
+	Pg *pg.DB
+}
+
+func New(pgDB *pg.DB) (*Server, error) {
+	return &Server{Pg: pgDB}, nil
+}
 
 type GETTextResponse struct {
 	Text string `json:"text"`

@@ -7,6 +7,17 @@ import (
 	"testing"
 )
 
+func TestNew(t *testing.T) {
+	s, err := New(nil)
+	if err != nil {
+		t.Fatal("failed to create server")
+	}
+
+	if s == nil {
+		t.Error("should return a non-nil value")
+	}
+}
+
 func TestGETTextHandler(t *testing.T) {
 	request, err := http.NewRequest(http.MethodGet, "/texts", nil)
 	if err != nil {
