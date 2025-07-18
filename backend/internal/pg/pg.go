@@ -18,13 +18,13 @@ var (
 	pgDB   = "POSTGRES_DB"
 )
 
-type Quierier interface {
+type Querier interface {
 	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
 	QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
 }
 
 type DB struct {
-	pool Quierier
+	pool Querier
 }
 
 func Connect(ctx context.Context) (*DB, error) {
@@ -45,6 +45,10 @@ func Connect(ctx context.Context) (*DB, error) {
 	}
 
 	return db, nil
+}
+
+type RandomTextGetter interface {
+	GetRandomText(ctx context.Context) (string, error)
 }
 
 func (db *DB) GetRandomText(ctx context.Context) (string, error) {
