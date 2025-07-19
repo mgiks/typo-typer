@@ -24,7 +24,7 @@ func TestGetRandomText(t *testing.T) {
 
 	text, err := db.GetRandomText(context.Background())
 	if err != nil {
-		t.Fatal("should not return any errors")
+		t.Fatal("returned an error")
 	}
 
 	if text != testText {
@@ -48,7 +48,7 @@ func (r mockerRow) Scan(dest ...any) error {
 	return nil
 }
 
-// Just so it implements 'Quierier' interface
+// Just so it implements 'Querier' interface
 func (p mockedPool) Query(_ context.Context, _ string, _ ...any) (pgx.Rows, error) {
 	return nil, nil
 }

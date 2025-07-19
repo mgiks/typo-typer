@@ -12,15 +12,12 @@ function TypingBox() {
   const [text, setText] = useState('')
 
   useEffect(() => {
-    try {
-      fetch(TEXTS_URL)
-        .then((resp) => resp.json())
-        .then((resp) => resp as GETTextResponse)
-        .then((json) => setText(json.text))
-    } catch (e) {
-      console.error('failed to fetch text')
-    }
-  })
+    fetch(TEXTS_URL)
+      .then((resp) => resp.json())
+      .then((resp) => resp as GETTextResponse)
+      .then((json) => setText(json.text))
+      .catch((_) => console.error('Network error'))
+  }, [])
 
   return (
     <div className='typing-box' data-testid='typing-box'>
