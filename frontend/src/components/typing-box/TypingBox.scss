@@ -1,6 +1,11 @@
 .typing-box {
   border: 1px solid black;
-  height: 100%;
+  margin: 0px 30px;
+  height: 153px;
+  font-size: 2rem;
+  overflow-y: hidden;
+  padding: 0px;
+  line-height: 51px;
 
   &__input-catcher {
     position: fixed;
