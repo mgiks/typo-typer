@@ -22,7 +22,7 @@ func TestNew(t *testing.T) {
 func TestGETTextHandler(t *testing.T) {
 	request, err := http.NewRequest(http.MethodGet, "/texts", nil)
 	if err != nil {
-		t.Error("failed to create request")
+		t.Fatal("failed to create request")
 	}
 
 	getTextHandler := NewGETTextHandler(mockedRandomTextGetter{})
@@ -35,7 +35,7 @@ func TestGETTextHandler(t *testing.T) {
 
 	err = json.Unmarshal(response.Body.Bytes(), &got)
 	if err != nil {
-		t.Error("failed to unmarshal response")
+		t.Fatal("failed to unmarshal response")
 	}
 
 	if len(got.Text) == 0 {
