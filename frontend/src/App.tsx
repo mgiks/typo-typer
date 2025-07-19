@@ -6,6 +6,7 @@ function App() {
     <div className='app'>
       <div />
       <TypingBox />
+      <div />
     </div>
   )
 }
