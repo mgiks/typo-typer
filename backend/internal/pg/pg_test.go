@@ -24,7 +24,7 @@ func TestGetRandomText(t *testing.T) {
 
 	text, err := db.GetRandomText(context.Background())
 	if err != nil {
-		t.Fatal("should not return any errors")
+		t.Fatal("returned an error")
 	}
 
 	if text != testText {

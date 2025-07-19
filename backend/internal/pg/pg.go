@@ -30,19 +30,17 @@ type DB struct {
 func Connect(ctx context.Context) (*DB, error) {
 	envs, err := checkEnvs(pgUser, pgPass, pgHost, pgPort, pgDB)
 	if err != nil {
-		return &DB{}, fmt.Errorf("Connect: failed to connect: %w", err)
+		return &DB{}, fmt.Errorf("pg.Connect: environmental variable failure: %w", err)
 	}
 
 	dbURL := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", envs[pgUser], envs[pgPass], envs[pgHost], envs[pgPort], envs[pgDB])
 
 	dbPool, err := pgxpool.New(ctx, dbURL)
 	if err != nil {
-		return &DB{}, fmt.Errorf("Connect: failed to connect: %w", err)
+		return &DB{}, fmt.Errorf("pg.Connect: failed to create database pool: %w", err)
 	}
 
-	db := &DB{
-		pool: dbPool,
-	}
+	db := &DB{pool: dbPool}
 
 	return db, nil
 }
@@ -56,7 +54,7 @@ func (db *DB) GetRandomText(ctx context.Context) (string, error) {
 
 	err := db.pool.QueryRow(ctx, `SELECT text FROM typing_text`).Scan(&text)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("pg.GetRandomText: failed to query row: %w", err)
 	}
 
 	return text, nil
