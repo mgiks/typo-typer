@@ -15,4 +15,10 @@ describe('TextContainer', async () => {
 
     expect(await screen.findByText(text)).toBeInTheDocument()
   })
+
+  it('should include cursor', async () => {
+    const { findByTestId } = render(<TextContainer text='' />)
+
+    expect(await findByTestId('cursor')).toBeInTheDocument()
+  })
 })

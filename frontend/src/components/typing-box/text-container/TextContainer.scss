@@ -1,0 +1,8 @@
+.text-container {
+  &__cursor {
+    position: absolute;
+    border: 1px solid black;
+    height: 2rem;
+    background-color: black;
+  }
+}
