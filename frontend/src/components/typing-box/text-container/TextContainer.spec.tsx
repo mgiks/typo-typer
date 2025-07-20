@@ -9,8 +9,10 @@ describe('TextContainer', async () => {
   })
 
   it('should display passed text', async () => {
-    render(<TextContainer text='Test text.' />)
+    const text = 'Test text.'
 
-    expect(await screen.findByText('Test text.')).toBeInTheDocument()
+    render(<TextContainer text={text} />)
+
+    expect(await screen.findByText(text)).toBeInTheDocument()
   })
 })
