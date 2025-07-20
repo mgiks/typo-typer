@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import Cursor from './Cursor.tsx'
 
-describe('InputCatcher', async () => {
+describe('Cursor', async () => {
   it('should be in the document', async () => {
     render(<Cursor />)
 
