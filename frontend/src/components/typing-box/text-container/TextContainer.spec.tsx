@@ -13,7 +13,7 @@ describe('TextContainer', async () => {
 
     render(<TextContainer text={text} />)
 
-    expect(await screen.findByText(text)).toBeInTheDocument()
+    expect(await screen.findByTestId('text-container')).toHaveTextContent(text)
   })
 
   it('should include cursor', async () => {
