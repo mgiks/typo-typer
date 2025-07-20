@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './TypingBox.scss'
 import InputCatcher from './input-catcher/InputCatcher'
 import Cursor from './cursor/Cursor'
+import TextContainer from './text-container/TextContainer'
 
 const TEXTS_URL = 'http://localhost:8000/texts'
 
@@ -24,7 +25,7 @@ function TypingBox() {
     <div className='typing-box' data-testid='typing-box'>
       <InputCatcher />
       <Cursor />
-      {text}
+      <TextContainer text={text} />
     </div>
   )
 }
