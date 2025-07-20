@@ -1,8 +1,10 @@
+$font-size: 2rem;
+
 .typing-box {
   border: 1px solid black;
   margin: 0px 30px;
   height: 153px;
-  font-size: 2rem;
+  font-size: $font-size;
   overflow-y: hidden;
   padding: 0px;
   line-height: 51px;
@@ -10,5 +12,12 @@
   &__input-catcher {
     position: fixed;
     left: -10000px;
+  }
+
+  &__cursor {
+    position: absolute;
+    border: 1px solid black;
+    height: $font-size;
+    background-color: black;
   }
 }
