@@ -2,10 +2,12 @@ import './TextContainer.scss'
 import Cursor from './cursor/Cursor'
 
 function TextContainer({ text }: { text: string }) {
+  const chars = text.split('')
+
   return (
-    <div data-testid='text-container'>
+    <div className='text-container' data-testid='text-container'>
       <Cursor />
-      {text}
+      {chars.map((char, i) => <span key={i}>{char}</span>)}
     </div>
   )
 }
