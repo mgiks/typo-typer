@@ -1,5 +1,6 @@
 .text-container {
   position: relative;
+  white-space: pre-wrap;
 
   &__cursor {
     position: absolute;
