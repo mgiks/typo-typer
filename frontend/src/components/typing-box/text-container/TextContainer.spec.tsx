@@ -21,4 +21,16 @@ describe('TextContainer', async () => {
 
     expect(await findByTestId('cursor')).toBeInTheDocument()
   })
+
+  it('should include correct text section', async () => {
+    const { findByTestId } = render(<TextContainer text='' />)
+
+    expect(await findByTestId('correct-text')).toBeInTheDocument()
+  })
+
+  it('should include incorrect text section', async () => {
+    const { findByTestId } = render(<TextContainer text='' />)
+
+    expect(await findByTestId('incorrect-text')).toBeInTheDocument()
+  })
 })
