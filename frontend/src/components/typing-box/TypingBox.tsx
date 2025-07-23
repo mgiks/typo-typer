@@ -22,7 +22,10 @@ function TypingBox() {
 
   return (
     <div className='typing-box' data-testid='typing-box'>
-      <InputCatcher />
+      <InputCatcher
+        text={''}
+        incorrectLetterIndexSetter={() => null}
+      />
       <TextContainer text={text} />
     </div>
   )
