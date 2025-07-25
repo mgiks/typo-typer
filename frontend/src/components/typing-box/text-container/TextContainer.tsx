@@ -1,15 +1,34 @@
 import './TextContainer.scss'
 import Cursor from './cursor/Cursor'
 
-function TextContainer({ text }: { text: string }) {
-  const chars = text.split('')
+type TextContainerProps = {
+  text: string
+  lastTypedLetterIndex: number
+  incorrectTextStartIndex: number
+}
+
+function TextContainer(
+  { text, lastTypedLetterIndex, incorrectTextStartIndex }: TextContainerProps,
+) {
+  let correctText = ''
+  let incorrectText = ''
+
+  if (incorrectTextStartIndex == -1) {
+    correctText = text.slice(0, lastTypedLetterIndex)
+  } else {
+    correctText = text.slice(0, incorrectTextStartIndex)
+    incorrectText = text.slice(
+      incorrectTextStartIndex,
+      lastTypedLetterIndex + 1,
+    )
+  }
 
   return (
     <div className='text-container' data-testid='text-container'>
       <Cursor />
-      <div data-testid='correct-text'></div>
-      <div data-testid='incorrect-text'></div>
-      {chars.map((char, i) => <span key={i}>{char}</span>)}
+      <span data-testid='correct-text'>{correctText}</span>
+      <span data-testid='incorrect-text'>{incorrectText}</span>
+      <span>{text.slice(lastTypedLetterIndex + 1)}</span>
     </div>
   )
 }

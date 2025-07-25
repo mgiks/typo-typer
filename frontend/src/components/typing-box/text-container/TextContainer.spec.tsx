@@ -33,4 +33,22 @@ describe('TextContainer', async () => {
 
     expect(await findByTestId('incorrect-text')).toBeInTheDocument()
   })
+
+  it('should put incorrect and correct text inside corresponding sections', async () => {
+    const text = 'Test text.'
+
+    const { findByTestId } = render(
+      <TextContainer
+        text={text}
+        lastTypedLetterIndex={text.length - 1}
+        incorrectTextStartIndex={4}
+      />,
+    )
+
+    expect(await findByTestId('correct-text')).toHaveTextContent(/^Test$/)
+    expect(await findByTestId('incorrect-text')).toHaveTextContent(
+      /^ text\.$/,
+      { normalizeWhitespace: false },
+    )
+  })
 })
