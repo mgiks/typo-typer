@@ -2,16 +2,23 @@ import { useEffect, useState } from 'react'
 
 type InputCatcherProps = {
   text: string
+  lastTypedLetterIndexSetter: (i: number) => void
   incorrectLetterIndexSetter: (i: number) => void
 }
 
 function InputCatcher(
-  { text, incorrectLetterIndexSetter }: InputCatcherProps,
+  { text, lastTypedLetterIndexSetter, incorrectLetterIndexSetter }:
+    InputCatcherProps,
 ) {
   const [input, setInput] = useState('')
 
   useEffect(() => {
+    if (input.length == 0) {
+      return
+    }
+
     const inputLastIndex = input.length - 1
+    lastTypedLetterIndexSetter(inputLastIndex)
 
     if (input.length > 0 && (text[inputLastIndex] !== input.at(-1))) {
       incorrectLetterIndexSetter(inputLastIndex)

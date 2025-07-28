@@ -7,6 +7,7 @@ describe('InputCatcher', async () => {
     render(
       <InputCatcher
         text={''}
+        lastTypedLetterIndexSetter={() => null}
         incorrectLetterIndexSetter={() => null}
       />,
     )
@@ -18,6 +19,7 @@ describe('InputCatcher', async () => {
     render(
       <InputCatcher
         text={''}
+        lastTypedLetterIndexSetter={() => null}
         incorrectLetterIndexSetter={() => null}
       />,
     )
@@ -32,6 +34,7 @@ describe('InputCatcher', async () => {
     render(
       <InputCatcher
         text={'test'}
+        lastTypedLetterIndexSetter={() => null}
         incorrectLetterIndexSetter={spyIncorrectLetterIndexSetter}
       />,
     )
@@ -39,5 +42,23 @@ describe('InputCatcher', async () => {
 
     expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledOnce()
     expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
+  })
+
+  it('should update last typed letter index', async () => {
+    const spyLastTypedLetterIndexSetter = vi.fn((i: number) => i)
+    const user = userEvent.setup()
+
+    render(
+      <InputCatcher
+        text={'test'}
+        lastTypedLetterIndexSetter={spyLastTypedLetterIndexSetter}
+        incorrectLetterIndexSetter={() => null}
+      />,
+    )
+
+    await user.keyboard('tes')
+
+    expect(spyLastTypedLetterIndexSetter).toHaveBeenCalledTimes(3)
+    expect(spyLastTypedLetterIndexSetter).toHaveReturnedWith(2)
   })
 })
