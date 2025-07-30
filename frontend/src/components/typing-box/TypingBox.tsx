@@ -11,6 +11,8 @@ export type GETTextResponse = {
 
 function TypingBox() {
   const [text, setText] = useState('')
+  const [lastTypedLetterIndex, setLastTypedLetterIndex] = useState(-1)
+  const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
 
   useEffect(() => {
     fetch(TEXTS_URL)
@@ -23,10 +25,15 @@ function TypingBox() {
   return (
     <div className='typing-box' data-testid='typing-box'>
       <InputCatcher
-        text={''}
-        incorrectLetterIndexSetter={() => null}
+        text={text}
+        lastTypedLetterIndexSetter={setLastTypedLetterIndex}
+        incorrectLetterIndexSetter={setIncorrectTextStartIndex}
       />
-      <TextContainer text={text} />
+      <TextContainer
+        text={text}
+        lastTypedLetterIndex={lastTypedLetterIndex}
+        incorrectTextStartIndex={incorrectTextStartIndex}
+      />
     </div>
   )
 }

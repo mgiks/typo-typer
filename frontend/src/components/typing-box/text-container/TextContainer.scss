@@ -8,4 +8,12 @@
     height: 2rem;
     background-color: black;
   }
+
+  &__text_correct {
+    background-color: green;
+  }
+
+  &__text_incorrect {
+    background-color: red;
+  }
 }
