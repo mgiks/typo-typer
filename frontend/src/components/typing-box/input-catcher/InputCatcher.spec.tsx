@@ -8,7 +8,7 @@ describe('InputCatcher', async () => {
       <InputCatcher
         text={''}
         lastTypedLetterIndexSetter={() => null}
-        incorrectLetterIndexSetter={() => null}
+        incorrectTextStartIndexSetter={() => null}
       />,
     )
 
@@ -20,7 +20,7 @@ describe('InputCatcher', async () => {
       <InputCatcher
         text={''}
         lastTypedLetterIndexSetter={() => null}
-        incorrectLetterIndexSetter={() => null}
+        incorrectTextStartIndexSetter={() => null}
       />,
     )
 
@@ -35,7 +35,7 @@ describe('InputCatcher', async () => {
       <InputCatcher
         text={'test'}
         lastTypedLetterIndexSetter={() => null}
-        incorrectLetterIndexSetter={spyIncorrectLetterIndexSetter}
+        incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
       />,
     )
     await user.keyboard('tezt')
@@ -52,7 +52,7 @@ describe('InputCatcher', async () => {
       <InputCatcher
         text={'test'}
         lastTypedLetterIndexSetter={() => null}
-        incorrectLetterIndexSetter={spyIncorrectLetterIndexSetter}
+        incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
       />,
     )
     await user.keyboard('tez')
@@ -74,7 +74,7 @@ describe('InputCatcher', async () => {
       <InputCatcher
         text={'test'}
         lastTypedLetterIndexSetter={spyLastTypedLetterIndexSetter}
-        incorrectLetterIndexSetter={() => null}
+        incorrectTextStartIndexSetter={() => null}
       />,
     )
 
