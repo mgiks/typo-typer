@@ -27,7 +27,7 @@ function TypingBox() {
       <InputCatcher
         text={text}
         lastTypedLetterIndexSetter={setLastTypedLetterIndex}
-        incorrectLetterIndexSetter={setIncorrectTextStartIndex}
+        incorrectTextStartIndexSetter={setIncorrectTextStartIndex}
       />
       <TextContainer
         text={text}

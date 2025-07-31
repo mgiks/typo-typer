@@ -3,14 +3,18 @@ import { useEffect, useState } from 'react'
 type InputCatcherProps = {
   text: string
   lastTypedLetterIndexSetter: (i: number) => void
-  incorrectLetterIndexSetter: (i: number) => void
+  incorrectTextStartIndexSetter: (i: number) => void
 }
 
 function InputCatcher(
-  { text, lastTypedLetterIndexSetter, incorrectLetterIndexSetter }:
-    InputCatcherProps,
+  {
+    text,
+    lastTypedLetterIndexSetter,
+    incorrectTextStartIndexSetter,
+  }: InputCatcherProps,
 ) {
   const [input, setInput] = useState('')
+  const [lastIncorrectLetterIndex, setLastIncorrectLetterIndex] = useState(-1)
 
   useEffect(() => {
     if (input.length == 0) {
@@ -20,8 +24,17 @@ function InputCatcher(
     const inputLastIndex = input.length - 1
     lastTypedLetterIndexSetter(inputLastIndex)
 
-    if (input.length > 0 && (text[inputLastIndex] !== input.at(-1))) {
-      incorrectLetterIndexSetter(inputLastIndex)
+    if (
+      text[inputLastIndex] !== input.at(-1) && lastIncorrectLetterIndex == -1
+    ) {
+      incorrectTextStartIndexSetter(inputLastIndex)
+      setLastIncorrectLetterIndex(inputLastIndex)
+    } else if (
+      text[inputLastIndex] !== input.at(-1) && lastIncorrectLetterIndex != -1
+    ) {
+      if (lastIncorrectLetterIndex > inputLastIndex) {
+        setLastIncorrectLetterIndex(inputLastIndex)
+      }
     }
   }, [input])
 
