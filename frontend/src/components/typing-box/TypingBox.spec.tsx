@@ -31,4 +31,16 @@ describe('TypingBox', async () => {
       'Some text',
     )
   })
+
+  it('should include text-container', async () => {
+    render(<TypingBox />)
+
+    expect(await screen.findByTestId('text-container')).toBeInTheDocument()
+  })
+
+  it('should include input-catcher', async () => {
+    render(<TypingBox />)
+
+    expect(await screen.findByTestId('input-catcher')).toBeInTheDocument()
+  })
 })

@@ -1,0 +1,19 @@
+.text-container {
+  position: relative;
+  white-space: pre-wrap;
+
+  &__cursor {
+    position: absolute;
+    border: 1px solid black;
+    height: 2rem;
+    background-color: black;
+  }
+
+  &__text_correct {
+    background-color: green;
+  }
+
+  &__text_incorrect {
+    background-color: red;
+  }
+}
