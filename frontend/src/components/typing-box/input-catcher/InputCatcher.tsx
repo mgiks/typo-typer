@@ -17,12 +17,14 @@ function InputCatcher(
   const [lastIncorrectLetterIndex, setLastIncorrectLetterIndex] = useState(-1)
 
   useEffect(() => {
-    if (input.length == 0) {
-      return
-    }
-
     const inputLastIndex = input.length - 1
     lastTypedLetterIndexSetter(inputLastIndex)
+
+    if (inputLastIndex == -1) {
+      setLastIncorrectLetterIndex(-1)
+      incorrectTextStartIndexSetter(-1)
+      return
+    }
 
     if (text[inputLastIndex] !== input.at(-1)) {
       if (
