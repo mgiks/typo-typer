@@ -43,4 +43,10 @@ describe('TypingBox', async () => {
 
     expect(await screen.findByTestId('input-catcher')).toBeInTheDocument()
   })
+
+  it('should include reminder-to-focus', async () => {
+    render(<TypingBox />)
+
+    expect(await screen.findByTestId('reminder-to-focus')).toBeInTheDocument()
+  })
 })

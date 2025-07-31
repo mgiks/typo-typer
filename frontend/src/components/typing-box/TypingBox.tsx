@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './TypingBox.scss'
 import InputCatcher from './input-catcher/InputCatcher'
 import TextContainer from './text-container/TextContainer'
+import ReminderToFocus from './reminder-to-focus/ReminderToFocus'
 
 const TEXTS_URL = 'http://localhost:8000/texts'
 
@@ -29,6 +30,7 @@ function TypingBox() {
         lastTypedLetterIndexSetter={setLastTypedLetterIndex}
         incorrectTextStartIndexSetter={setIncorrectTextStartIndex}
       />
+      <ReminderToFocus focused={false} />
       <TextContainer
         text={text}
         lastTypedLetterIndex={lastTypedLetterIndex}
