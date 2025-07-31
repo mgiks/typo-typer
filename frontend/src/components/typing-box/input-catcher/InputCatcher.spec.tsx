@@ -66,6 +66,28 @@ describe('InputCatcher', async () => {
     expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
   })
 
+  it('should unset incorrect letter index when last typed letter index is behind it', async () => {
+    const spyIncorrectLetterIndexSetter = vi.fn((i: number) => i)
+    const user = userEvent.setup()
+
+    render(
+      <InputCatcher
+        text={'test'}
+        lastTypedLetterIndexSetter={() => null}
+        incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
+      />,
+    )
+    await user.keyboard('tezt')
+
+    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledOnce()
+    expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
+
+    await user.keyboard('{Backspace>2/}')
+
+    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledTimes(2)
+    expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(-1)
+  })
+
   it('should update last typed letter index', async () => {
     const spyLastTypedLetterIndexSetter = vi.fn((i: number) => i)
     const user = userEvent.setup()

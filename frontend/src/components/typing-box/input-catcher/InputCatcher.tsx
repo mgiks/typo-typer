@@ -24,17 +24,17 @@ function InputCatcher(
     const inputLastIndex = input.length - 1
     lastTypedLetterIndexSetter(inputLastIndex)
 
-    if (
-      text[inputLastIndex] !== input.at(-1) && lastIncorrectLetterIndex == -1
-    ) {
-      incorrectTextStartIndexSetter(inputLastIndex)
-      setLastIncorrectLetterIndex(inputLastIndex)
-    } else if (
-      text[inputLastIndex] !== input.at(-1) && lastIncorrectLetterIndex != -1
-    ) {
-      if (lastIncorrectLetterIndex > inputLastIndex) {
+    if (text[inputLastIndex] !== input.at(-1)) {
+      if (
+        lastIncorrectLetterIndex === -1 ||
+        inputLastIndex < lastIncorrectLetterIndex
+      ) {
+        incorrectTextStartIndexSetter(inputLastIndex)
         setLastIncorrectLetterIndex(inputLastIndex)
       }
+    } else if (inputLastIndex < lastIncorrectLetterIndex) {
+      incorrectTextStartIndexSetter(-1)
+      setLastIncorrectLetterIndex(-1)
     }
   }, [input])
 
