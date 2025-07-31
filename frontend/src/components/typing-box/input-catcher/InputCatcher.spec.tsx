@@ -40,7 +40,8 @@ describe('InputCatcher', async () => {
     )
     await user.keyboard('tezt')
 
-    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledOnce()
+    // Expected to be called more than once because useEffect is triggered on initial render
+    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledTimes(2)
     expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
   })
 
@@ -57,13 +58,37 @@ describe('InputCatcher', async () => {
     )
     await user.keyboard('tez')
 
-    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledOnce()
+    // Expected to be called more than once because useEffect is triggered on initial render
+    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledTimes(2)
     expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
 
     await user.keyboard('d')
 
-    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledOnce()
+    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledTimes(2)
     expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
+  })
+
+  it('should unset incorrect letter index when last typed letter index is behind it', async () => {
+    const spyIncorrectLetterIndexSetter = vi.fn((i: number) => i)
+    const user = userEvent.setup()
+
+    render(
+      <InputCatcher
+        text={'test'}
+        lastTypedLetterIndexSetter={() => null}
+        incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
+      />,
+    )
+    await user.keyboard('tezt')
+
+    // Expected to be called more than once because useEffect is triggered on initial render
+    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledTimes(2)
+    expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
+
+    await user.keyboard('{Backspace>2/}')
+
+    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledTimes(3)
+    expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(-1)
   })
 
   it('should update last typed letter index', async () => {
@@ -80,7 +105,7 @@ describe('InputCatcher', async () => {
 
     await user.keyboard('tes')
 
-    expect(spyLastTypedLetterIndexSetter).toHaveBeenCalledTimes(3)
+    expect(spyLastTypedLetterIndexSetter).toHaveBeenCalledTimes(4)
     expect(spyLastTypedLetterIndexSetter).toHaveReturnedWith(2)
   })
 })
