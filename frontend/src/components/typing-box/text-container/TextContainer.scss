@@ -1,11 +1,15 @@
+$line-height: 51px;
+
 .text-container {
   position: relative;
   white-space: pre-wrap;
+  line-height: $line-height;
+  font-size: 2rem;
 
   &__cursor {
     position: absolute;
     border: 1px solid black;
-    height: 2rem;
+    height: $line-height;
     background-color: black;
   }
 
