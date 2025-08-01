@@ -40,6 +40,8 @@ function TypingBox() {
         focusSetter={setFocused}
       />
       <TextContainer
+        refToFocus={inputCatcherRef}
+        focusSetter={setFocused}
         text={text}
         lastTypedLetterIndex={lastTypedLetterIndex}
         incorrectTextStartIndex={incorrectTextStartIndex}
