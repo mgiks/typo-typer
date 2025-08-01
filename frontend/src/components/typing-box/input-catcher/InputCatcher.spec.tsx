@@ -10,7 +10,7 @@ describe('InputCatcher', async () => {
         text={''}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={() => null}
-        focusedSetter={() => null}
+        focusSetter={() => null}
       />,
     )
 
@@ -24,7 +24,7 @@ describe('InputCatcher', async () => {
         text={''}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={() => null}
-        focusedSetter={() => null}
+        focusSetter={() => null}
       />,
     )
 
@@ -41,7 +41,7 @@ describe('InputCatcher', async () => {
         text={'test'}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
-        focusedSetter={() => null}
+        focusSetter={() => null}
       />,
     )
     await user.keyboard('tezt')
@@ -61,7 +61,7 @@ describe('InputCatcher', async () => {
         text={'test'}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
-        focusedSetter={() => null}
+        focusSetter={() => null}
       />,
     )
     await user.keyboard('tez')
@@ -86,7 +86,7 @@ describe('InputCatcher', async () => {
         text={'test'}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
-        focusedSetter={() => null}
+        focusSetter={() => null}
       />,
     )
     await user.keyboard('tezt')
@@ -111,7 +111,7 @@ describe('InputCatcher', async () => {
         text={'test'}
         lastTypedLetterIndexSetter={spyLastTypedLetterIndexSetter}
         incorrectTextStartIndexSetter={() => null}
-        focusedSetter={() => null}
+        focusSetter={() => null}
       />,
     )
 
@@ -130,7 +130,7 @@ describe('InputCatcher', async () => {
         text=''
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={() => null}
-        focusedSetter={spyFocusedSetter}
+        focusSetter={spyFocusedSetter}
       />,
     )
 

@@ -4,7 +4,7 @@ type InputCatcherProps = {
   text: string
   lastTypedLetterIndexSetter: (i: number) => void
   incorrectTextStartIndexSetter: (i: number) => void
-  focusedSetter: (i: boolean) => void
+  focusSetter: (i: boolean) => void
   ref: React.Ref<HTMLTextAreaElement | null>
 }
 
@@ -13,7 +13,7 @@ function InputCatcher(
     text,
     lastTypedLetterIndexSetter,
     incorrectTextStartIndexSetter,
-    focusedSetter,
+    focusSetter,
     ref,
   }: InputCatcherProps,
 ) {
@@ -50,7 +50,7 @@ function InputCatcher(
       className='typing-box__input-catcher'
       data-testid='input-catcher'
       onInput={(event) => setInput(event.currentTarget.value)}
-      onBlur={() => focusedSetter(false)}
+      onBlur={() => focusSetter(false)}
       autoFocus
     >
     </textarea>
