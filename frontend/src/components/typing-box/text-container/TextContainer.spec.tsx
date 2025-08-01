@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import TextContainer from './TextContainer.tsx'
+import { useState } from 'react'
 
 describe('TextContainer', async () => {
   it('should be in the document', async () => {
@@ -87,14 +88,21 @@ describe('TextContainer', async () => {
     const mockedRefToFocus = { current: { focus: () => null } }
     const spyMockedRefToFocus = vi.spyOn(mockedRefToFocus.current, 'focus')
 
-    render(
-      <TextContainer
-        text=''
-        lastTypedLetterIndex={-1}
-        incorrectTextStartIndex={-1}
-        refToFocus={mockedRefToFocus}
-      />,
-    )
+    function Wrapper() {
+      const [_, setFocused] = useState(false)
+      return (
+        <TextContainer
+          text=''
+          lastTypedLetterIndex={-1}
+          incorrectTextStartIndex={-1}
+          focusSetter={setFocused}
+          refToFocus={mockedRefToFocus}
+        />
+      )
+    }
+
+    render(<Wrapper />)
+
     const textContainer = await screen.findByTestId('text-container')
 
     expect(textContainer).toBeInTheDocument()
