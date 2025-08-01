@@ -9,11 +9,7 @@ describe('ReminderToFocus', () => {
       <ReminderToFocus
         focused={false}
         focusSetter={() => null}
-        refToFocus={{
-          current: {
-            focus: () => null,
-          },
-        }}
+        refToFocus={{ current: null }}
       />,
     )
 
@@ -25,11 +21,7 @@ describe('ReminderToFocus', () => {
       <ReminderToFocus
         focused={true}
         focusSetter={() => null}
-        refToFocus={{
-          current: {
-            focus: () => null,
-          },
-        }}
+        refToFocus={{ current: null }}
       />,
     )
 
@@ -43,11 +35,7 @@ describe('ReminderToFocus', () => {
         <ReminderToFocus
           focused={focused}
           focusSetter={setFocused}
-          refToFocus={{
-            current: {
-              focus: () => null,
-            },
-          }}
+          refToFocus={{ current: null }}
         />
       )
     }
