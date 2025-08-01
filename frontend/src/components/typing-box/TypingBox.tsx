@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './TypingBox.scss'
 import InputCatcher from './input-catcher/InputCatcher'
 import TextContainer from './text-container/TextContainer'
@@ -15,6 +15,7 @@ function TypingBox() {
   const [lastTypedLetterIndex, setLastTypedLetterIndex] = useState(-1)
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
   const [focused, setFocused] = useState(true)
+  const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     fetch(TEXTS_URL)
@@ -27,12 +28,17 @@ function TypingBox() {
   return (
     <div className='typing-box' data-testid='typing-box'>
       <InputCatcher
+        ref={inputCatcherRef}
         text={text}
         lastTypedLetterIndexSetter={setLastTypedLetterIndex}
         incorrectTextStartIndexSetter={setIncorrectTextStartIndex}
         focusedSetter={setFocused}
       />
-      <ReminderToFocus focused={focused} focusSetter={setFocused} />
+      <ReminderToFocus
+        refToFocus={inputCatcherRef}
+        focused={focused}
+        focusSetter={setFocused}
+      />
       <TextContainer
         text={text}
         lastTypedLetterIndex={lastTypedLetterIndex}

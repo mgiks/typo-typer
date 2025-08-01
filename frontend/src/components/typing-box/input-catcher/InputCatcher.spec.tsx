@@ -6,6 +6,7 @@ describe('InputCatcher', async () => {
   it('should be in the document', async () => {
     render(
       <InputCatcher
+        ref={null}
         text={''}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={() => null}
@@ -19,6 +20,7 @@ describe('InputCatcher', async () => {
   it('should be initially focused', async () => {
     render(
       <InputCatcher
+        ref={null}
         text={''}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={() => null}
@@ -35,6 +37,7 @@ describe('InputCatcher', async () => {
 
     render(
       <InputCatcher
+        ref={null}
         text={'test'}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
@@ -54,6 +57,7 @@ describe('InputCatcher', async () => {
 
     render(
       <InputCatcher
+        ref={null}
         text={'test'}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
@@ -78,6 +82,7 @@ describe('InputCatcher', async () => {
 
     render(
       <InputCatcher
+        ref={null}
         text={'test'}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
@@ -102,6 +107,7 @@ describe('InputCatcher', async () => {
 
     render(
       <InputCatcher
+        ref={null}
         text={'test'}
         lastTypedLetterIndexSetter={spyLastTypedLetterIndexSetter}
         incorrectTextStartIndexSetter={() => null}
@@ -120,6 +126,7 @@ describe('InputCatcher', async () => {
 
     render(
       <InputCatcher
+        ref={null}
         text=''
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={() => null}
