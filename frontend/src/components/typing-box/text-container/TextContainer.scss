@@ -5,6 +5,7 @@ $line-height: 51px;
   white-space: pre-wrap;
   line-height: $line-height;
   font-size: 2rem;
+  user-select: none;
 
   &__cursor {
     position: absolute;
