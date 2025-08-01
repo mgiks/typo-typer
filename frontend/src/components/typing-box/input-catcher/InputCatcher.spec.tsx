@@ -108,4 +108,23 @@ describe('InputCatcher', async () => {
     expect(spyLastTypedLetterIndexSetter).toHaveBeenCalledTimes(4)
     expect(spyLastTypedLetterIndexSetter).toHaveReturnedWith(2)
   })
+
+  it('should set set focuses to false when blurred', async () => {
+    const spyFocusedSetter = vi.fn((i: boolean) => i)
+
+    render(
+      <InputCatcher
+        text=''
+        lastTypedLetterIndexSetter={() => null}
+        incorrectTextStartIndexSetter={() => null}
+        focusedSetter={spyFocusedSetter}
+      />,
+    )
+
+    const inputCatcher = await screen.findByTestId('input-catcher')
+    inputCatcher.blur()
+
+    expect(spyFocusedSetter).toHaveBeenCalledOnce()
+    expect(spyFocusedSetter).toHaveReturnedWith(false)
+  })
 })
