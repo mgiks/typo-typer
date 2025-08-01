@@ -14,6 +14,7 @@ function TypingBox() {
   const [text, setText] = useState('')
   const [lastTypedLetterIndex, setLastTypedLetterIndex] = useState(-1)
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
+  const [focused, setFocused] = useState(true)
 
   useEffect(() => {
     fetch(TEXTS_URL)
@@ -29,8 +30,9 @@ function TypingBox() {
         text={text}
         lastTypedLetterIndexSetter={setLastTypedLetterIndex}
         incorrectTextStartIndexSetter={setIncorrectTextStartIndex}
+        focusedSetter={setFocused}
       />
-      <ReminderToFocus focused={false} />
+      <ReminderToFocus focused={focused} focusSetter={setFocused} />
       <TextContainer
         text={text}
         lastTypedLetterIndex={lastTypedLetterIndex}
