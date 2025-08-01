@@ -5,10 +5,16 @@ type TextContainerProps = {
   text: string
   lastTypedLetterIndex: number
   incorrectTextStartIndex: number
+  refToFocus: {
+    current: {
+      focus: () => void
+    } | null
+  }
 }
 
 function TextContainer(
-  { text, lastTypedLetterIndex, incorrectTextStartIndex }: TextContainerProps,
+  { text, lastTypedLetterIndex, incorrectTextStartIndex, refToFocus }:
+    TextContainerProps,
 ) {
   let correctText = ''
   let incorrectText = ''
@@ -24,7 +30,11 @@ function TextContainer(
   }
 
   return (
-    <div className='text-container' data-testid='text-container'>
+    <div
+      className='text-container'
+      data-testid='text-container'
+      onClick={() => refToFocus.current?.focus()}
+    >
       <span className='text-container__text_correct' data-testid='correct-text'>
         {correctText}
       </span>
