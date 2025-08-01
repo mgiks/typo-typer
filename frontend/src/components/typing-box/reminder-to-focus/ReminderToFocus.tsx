@@ -6,7 +6,7 @@ type ReminderToFocusProps = {
   refToFocus: {
     current: {
       focus: () => void
-    }
+    } | null
   }
 }
 
@@ -17,7 +17,7 @@ function ReminderToFocus(
     <div
       className='reminder-to-focus'
       data-testid='reminder-to-focus'
-      onClick={() => (focusSetter(true), refToFocus.current.focus())}
+      onClick={() => (focusSetter(true), refToFocus.current?.focus())}
     >
       Click here or press any key to focus
     </div>
