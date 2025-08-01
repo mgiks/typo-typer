@@ -25,7 +25,6 @@ function TextContainer(
 
   return (
     <div className='text-container' data-testid='text-container'>
-      <Cursor />
       <span className='text-container__text_correct' data-testid='correct-text'>
         {correctText}
       </span>
@@ -35,6 +34,7 @@ function TextContainer(
       >
         {incorrectText}
       </span>
+      <Cursor />
       <span>{text.slice(lastTypedLetterIndex + 1)}</span>
     </div>
   )

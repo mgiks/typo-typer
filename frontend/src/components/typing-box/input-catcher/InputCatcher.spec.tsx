@@ -9,6 +9,7 @@ describe('InputCatcher', async () => {
         text={''}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={() => null}
+        focusedSetter={() => null}
       />,
     )
 
@@ -21,6 +22,7 @@ describe('InputCatcher', async () => {
         text={''}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={() => null}
+        focusedSetter={() => null}
       />,
     )
 
@@ -36,6 +38,7 @@ describe('InputCatcher', async () => {
         text={'test'}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
+        focusedSetter={() => null}
       />,
     )
     await user.keyboard('tezt')
@@ -54,6 +57,7 @@ describe('InputCatcher', async () => {
         text={'test'}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
+        focusedSetter={() => null}
       />,
     )
     await user.keyboard('tez')
@@ -77,6 +81,7 @@ describe('InputCatcher', async () => {
         text={'test'}
         lastTypedLetterIndexSetter={() => null}
         incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
+        focusedSetter={() => null}
       />,
     )
     await user.keyboard('tezt')
@@ -100,6 +105,7 @@ describe('InputCatcher', async () => {
         text={'test'}
         lastTypedLetterIndexSetter={spyLastTypedLetterIndexSetter}
         incorrectTextStartIndexSetter={() => null}
+        focusedSetter={() => null}
       />,
     )
 
@@ -107,5 +113,24 @@ describe('InputCatcher', async () => {
 
     expect(spyLastTypedLetterIndexSetter).toHaveBeenCalledTimes(4)
     expect(spyLastTypedLetterIndexSetter).toHaveReturnedWith(2)
+  })
+
+  it('should set set focuses to false when blurred', async () => {
+    const spyFocusedSetter = vi.fn((i: boolean) => i)
+
+    render(
+      <InputCatcher
+        text=''
+        lastTypedLetterIndexSetter={() => null}
+        incorrectTextStartIndexSetter={() => null}
+        focusedSetter={spyFocusedSetter}
+      />,
+    )
+
+    const inputCatcher = await screen.findByTestId('input-catcher')
+    inputCatcher.blur()
+
+    expect(spyFocusedSetter).toHaveBeenCalledOnce()
+    expect(spyFocusedSetter).toHaveReturnedWith(false)
   })
 })

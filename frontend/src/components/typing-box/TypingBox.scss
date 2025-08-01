@@ -2,10 +2,9 @@
   border: 1px solid black;
   margin: 0px 30px;
   height: 153px;
-  font-size: 2rem;
   overflow-y: hidden;
   padding: 0px;
-  line-height: 51px;
+  position: relative;
 
   &__input-catcher {
     position: fixed;
