@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
+import userEvent from '@testing-library/user-event'
 import TypingBox from './TypingBox.tsx'
 
 const handlers = [
@@ -46,6 +47,12 @@ describe('TypingBox', async () => {
 
   it('should include reminder-to-focus', async () => {
     render(<TypingBox />)
+    render(<div data-testid='focus-stealer' />)
+
+    const focusStealer = await screen.findByTestId('focus-stealer')
+
+    const user = userEvent.setup()
+    await user.click(focusStealer)
 
     expect(await screen.findByTestId('reminder-to-focus')).toBeInTheDocument()
   })

@@ -32,7 +32,7 @@ function TypingBox() {
         text={text}
         lastTypedLetterIndexSetter={setLastTypedLetterIndex}
         incorrectTextStartIndexSetter={setIncorrectTextStartIndex}
-        focusedSetter={setFocused}
+        focusSetter={setFocused}
       />
       <ReminderToFocus
         refToFocus={inputCatcherRef}
@@ -40,6 +40,8 @@ function TypingBox() {
         focusSetter={setFocused}
       />
       <TextContainer
+        refToFocus={inputCatcherRef}
+        focusSetter={setFocused}
         text={text}
         lastTypedLetterIndex={lastTypedLetterIndex}
         incorrectTextStartIndex={incorrectTextStartIndex}

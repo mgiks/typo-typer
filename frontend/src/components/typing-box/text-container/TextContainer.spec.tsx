@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import TextContainer from './TextContainer.tsx'
+import { useState } from 'react'
 
 describe('TextContainer', async () => {
   it('should be in the document', async () => {
@@ -80,5 +82,34 @@ describe('TextContainer', async () => {
       /^ text\.$/,
       { normalizeWhitespace: false },
     )
+  })
+
+  it('should focus ref passed as a prop when clicking on the component', async () => {
+    const mockedRefToFocus = { current: { focus: () => null } }
+    const spyMockedRefToFocus = vi.spyOn(mockedRefToFocus.current, 'focus')
+
+    function Wrapper() {
+      const [_, setFocused] = useState(false)
+      return (
+        <TextContainer
+          text=''
+          lastTypedLetterIndex={-1}
+          incorrectTextStartIndex={-1}
+          focusSetter={setFocused}
+          refToFocus={mockedRefToFocus}
+        />
+      )
+    }
+
+    render(<Wrapper />)
+
+    const textContainer = await screen.findByTestId('text-container')
+
+    expect(textContainer).toBeInTheDocument()
+
+    const user = userEvent.setup()
+    await user.click(textContainer)
+
+    expect(spyMockedRefToFocus).toHaveBeenCalledOnce()
   })
 })
