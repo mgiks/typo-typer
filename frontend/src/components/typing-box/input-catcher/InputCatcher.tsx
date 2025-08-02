@@ -51,6 +51,7 @@ function InputCatcher(
       data-testid='input-catcher'
       onInput={(event) => setInput(event.currentTarget.value)}
       onBlur={() => focusSetter(false)}
+      onFocus={() => focusSetter(true)}
       autoFocus
     >
     </textarea>

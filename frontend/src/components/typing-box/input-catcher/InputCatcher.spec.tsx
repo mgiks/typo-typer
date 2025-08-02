@@ -137,7 +137,29 @@ describe('InputCatcher', async () => {
     const inputCatcher = await screen.findByTestId('input-catcher')
     inputCatcher.blur()
 
-    expect(spyFocusedSetter).toHaveBeenCalledOnce()
+    expect(spyFocusedSetter).toHaveBeenCalledTimes(2)
     expect(spyFocusedSetter).toHaveReturnedWith(false)
+  })
+
+  it('should set focused to true when focused', async () => {
+    const spyFocusedSetter = vi.fn((i: boolean) => i)
+
+    render(
+      <InputCatcher
+        ref={null}
+        text=''
+        lastTypedLetterIndexSetter={() => null}
+        incorrectTextStartIndexSetter={() => null}
+        focusSetter={spyFocusedSetter}
+      />,
+    )
+
+    const inputCatcher = await screen.findByTestId('input-catcher')
+
+    inputCatcher.blur()
+    inputCatcher.focus()
+
+    expect(spyFocusedSetter).toHaveBeenCalledTimes(3)
+    expect(spyFocusedSetter).toHaveReturnedWith(true)
   })
 })
