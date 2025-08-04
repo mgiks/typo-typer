@@ -56,4 +56,15 @@ describe('TypingBox', async () => {
 
     expect(await screen.findByTestId('reminder-to-focus')).toBeInTheDocument()
   })
+
+  it('should focus input-catcher on click', async () => {
+    const { findByTestId } = render(<TypingBox />)
+    const user = userEvent.setup()
+    const typingBox = await screen.findByTestId('typing-box')
+    const inputCatcher = await findByTestId('input-catcher')
+
+    await user.click(typingBox)
+
+    expect(inputCatcher).toHaveFocus()
+  })
 })
