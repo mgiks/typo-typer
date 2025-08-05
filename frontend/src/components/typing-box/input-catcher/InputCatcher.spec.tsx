@@ -121,9 +121,8 @@ describe('InputCatcher', async () => {
     expect(spyLastTypedLetterIndexSetter).toHaveReturnedWith(2)
   })
 
-  it('should set set focuses to false when blurred', async () => {
+  it('should set focused to false after 0.75 seconds when blurred', async () => {
     const spyFocusedSetter = vi.fn((i: boolean) => i)
-
     render(
       <InputCatcher
         ref={null}
@@ -133,12 +132,15 @@ describe('InputCatcher', async () => {
         focusSetter={spyFocusedSetter}
       />,
     )
-
     const inputCatcher = await screen.findByTestId('input-catcher')
-    inputCatcher.blur()
 
-    expect(spyFocusedSetter).toHaveBeenCalledTimes(2)
+    vi.useFakeTimers()
+    inputCatcher.blur()
+    vi.advanceTimersByTime(750)
+
     expect(spyFocusedSetter).toHaveReturnedWith(false)
+
+    vi.useRealTimers()
   })
 
   it('should set focused to true when focused', async () => {
@@ -159,7 +161,6 @@ describe('InputCatcher', async () => {
     inputCatcher.blur()
     inputCatcher.focus()
 
-    expect(spyFocusedSetter).toHaveBeenCalledTimes(3)
     expect(spyFocusedSetter).toHaveReturnedWith(true)
   })
 })
