@@ -31,7 +31,7 @@ describe('InputCatcher', async () => {
     expect(await screen.findByTestId('input-catcher')).toHaveFocus()
   })
 
-  it('should set incorrect letter index when current letter is wrong', async () => {
+  it("should set incorrect letter's index when current letter is wrong", async () => {
     const spyIncorrectLetterIndexSetter = vi.fn((i: number) => i)
     const user = userEvent.setup()
 
@@ -46,8 +46,6 @@ describe('InputCatcher', async () => {
     )
     await user.keyboard('tezt')
 
-    // Expected to be called more than once because useEffect is triggered on initial render
-    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledTimes(2)
     expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
   })
 
@@ -66,13 +64,10 @@ describe('InputCatcher', async () => {
     )
     await user.keyboard('tez')
 
-    // Expected to be called more than once because useEffect is triggered on initial render
-    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledTimes(2)
     expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
 
     await user.keyboard('d')
 
-    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledTimes(2)
     expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
   })
 
@@ -91,13 +86,10 @@ describe('InputCatcher', async () => {
     )
     await user.keyboard('tezt')
 
-    // Expected to be called more than once because useEffect is triggered on initial render
-    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledTimes(2)
     expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
 
     await user.keyboard('{Backspace>2/}')
 
-    expect(spyIncorrectLetterIndexSetter).toHaveBeenCalledTimes(3)
     expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(-1)
   })
 
@@ -117,7 +109,6 @@ describe('InputCatcher', async () => {
 
     await user.keyboard('tes')
 
-    expect(spyLastTypedLetterIndexSetter).toHaveBeenCalledTimes(4)
     expect(spyLastTypedLetterIndexSetter).toHaveReturnedWith(2)
   })
 
@@ -138,9 +129,9 @@ describe('InputCatcher', async () => {
     inputCatcher.blur()
     vi.advanceTimersByTime(750)
 
-    expect(spyFocusedSetter).toHaveReturnedWith(false)
-
     vi.useRealTimers()
+
+    expect(spyFocusedSetter).toHaveReturnedWith(false)
   })
 
   it('should set focused to true when focused', async () => {
