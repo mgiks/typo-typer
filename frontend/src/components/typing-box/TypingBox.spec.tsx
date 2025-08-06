@@ -59,10 +59,10 @@ describe('TypingBox', async () => {
 
   it('should focus input-catcher on click', async () => {
     const { findByTestId } = render(<TypingBox />)
-    const user = userEvent.setup()
     const typingBox = await screen.findByTestId('typing-box')
     const inputCatcher = await findByTestId('input-catcher')
 
+    const user = userEvent.setup()
     await user.click(typingBox)
 
     expect(inputCatcher).toHaveFocus()
@@ -77,6 +77,7 @@ describe('TypingBox', async () => {
     expect(reminderToFocusBeforeClick).not.toBeInTheDocument()
 
     const inputCatcher = await findByTestId('input-catcher')
+
     vi.useFakeTimers()
     inputCatcher.blur()
     vi.advanceTimersToNextTimer()
