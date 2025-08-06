@@ -67,4 +67,25 @@ describe('TypingBox', async () => {
 
     expect(inputCatcher).toHaveFocus()
   })
+
+  it('should hide reminder-to-focus on click', async () => {
+    const { findByTestId, queryByTestId } = render(<TypingBox />)
+    const typingBox = await screen.findByTestId('typing-box')
+    const user = userEvent.setup()
+
+    const reminderToFocusBeforeClick = queryByTestId('reminder-to-focus')
+    expect(reminderToFocusBeforeClick).not.toBeInTheDocument()
+
+    const inputCatcher = await findByTestId('input-catcher')
+    vi.useFakeTimers()
+    inputCatcher.blur()
+    vi.advanceTimersToNextTimer()
+
+    vi.useRealTimers()
+
+    user.click(typingBox)
+
+    const reminderToFocusAfterClick = queryByTestId('reminder-to-focus')
+    expect(reminderToFocusAfterClick).not.toBeInTheDocument()
+  })
 })
