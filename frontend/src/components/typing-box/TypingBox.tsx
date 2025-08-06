@@ -26,7 +26,11 @@ function TypingBox() {
   }, [])
 
   return (
-    <div className='typing-box' data-testid='typing-box'>
+    <div
+      className='typing-box'
+      data-testid='typing-box'
+      onClick={() => inputCatcherRef.current?.focus()}
+    >
       <InputCatcher
         ref={inputCatcherRef}
         text={text}
@@ -40,8 +44,6 @@ function TypingBox() {
         focusSetter={setFocused}
       />
       <TextContainer
-        refToFocus={inputCatcherRef}
-        focusSetter={setFocused}
         text={text}
         lastTypedLetterIndex={lastTypedLetterIndex}
         incorrectTextStartIndex={incorrectTextStartIndex}

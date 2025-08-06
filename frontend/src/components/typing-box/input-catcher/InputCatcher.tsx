@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 type InputCatcherProps = {
   text: string
@@ -19,6 +19,7 @@ function InputCatcher(
 ) {
   const [input, setInput] = useState('')
   const [lastIncorrectLetterIndex, setLastIncorrectLetterIndex] = useState(-1)
+  const timeOutRef = useRef(-1)
 
   useEffect(() => {
     const inputLastIndex = input.length - 1
@@ -50,7 +51,13 @@ function InputCatcher(
       className='typing-box__input-catcher'
       data-testid='input-catcher'
       onInput={(event) => setInput(event.currentTarget.value)}
-      onBlur={() => focusSetter(false)}
+      onBlur={() => {
+        timeOutRef.current = setTimeout(focusSetter, 750, false)
+      }}
+      onFocus={() => {
+        clearTimeout(timeOutRef.current)
+        focusSetter(true)
+      }}
       autoFocus
     >
     </textarea>
