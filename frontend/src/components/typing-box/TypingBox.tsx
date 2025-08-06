@@ -39,9 +39,7 @@ function TypingBox() {
         focusSetter={setFocused}
       />
       <ReminderToFocus
-        refToFocus={inputCatcherRef}
         focused={focused}
-        focusSetter={setFocused}
       />
       <TextContainer
         text={text}
