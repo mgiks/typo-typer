@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 
+export const BLUR_TIMEOUT = 750
+
 type InputCatcherProps = {
   text: string
   lastTypedLetterIndexSetter: (i: number) => void
@@ -52,7 +54,7 @@ function InputCatcher(
       data-testid='input-catcher'
       onInput={(event) => setInput(event.currentTarget.value)}
       onBlur={() => {
-        timeOutRef.current = setTimeout(focusSetter, 750, false)
+        timeOutRef.current = setTimeout(focusSetter, BLUR_TIMEOUT, false)
       }}
       onFocus={() => {
         clearTimeout(timeOutRef.current)

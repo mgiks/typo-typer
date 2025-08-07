@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import InputCatcher from './InputCatcher.tsx'
+import InputCatcher, { BLUR_TIMEOUT } from './InputCatcher.tsx'
 
 describe('InputCatcher', async () => {
   it('should be in the document', async () => {
@@ -112,7 +112,7 @@ describe('InputCatcher', async () => {
     expect(spyLastTypedLetterIndexSetter).toHaveReturnedWith(2)
   })
 
-  it('should set focused to false after 0.75 seconds when blurred', async () => {
+  it("should set focused to false after 'BLUR_TIMEOUT' when blurred", async () => {
     const spyFocusedSetter = vi.fn((i: boolean) => i)
     render(
       <InputCatcher
@@ -127,7 +127,7 @@ describe('InputCatcher', async () => {
 
     vi.useFakeTimers()
     inputCatcher.blur()
-    vi.advanceTimersByTime(750)
+    vi.advanceTimersByTime(BLUR_TIMEOUT)
 
     vi.useRealTimers()
 
