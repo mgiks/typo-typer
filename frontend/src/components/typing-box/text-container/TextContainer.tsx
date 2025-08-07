@@ -2,28 +2,26 @@ import './TextContainer.scss'
 import Cursor from './cursor/Cursor'
 
 type TextContainerProps = {
+  showCursor: boolean
   text: string
-  lastTypedLetterIndex: number
+  lastTypedIndex: number
   incorrectTextStartIndex: number
 }
 
 function TextContainer(
-  {
-    text,
-    lastTypedLetterIndex,
-    incorrectTextStartIndex,
-  }: TextContainerProps,
+  { text, showCursor, lastTypedIndex, incorrectTextStartIndex }:
+    TextContainerProps,
 ) {
   let correctText = ''
   let incorrectText = ''
 
   if (incorrectTextStartIndex == -1) {
-    correctText = text.slice(0, lastTypedLetterIndex + 1)
+    correctText = text.slice(0, lastTypedIndex + 1)
   } else {
     correctText = text.slice(0, incorrectTextStartIndex)
     incorrectText = text.slice(
       incorrectTextStartIndex,
-      lastTypedLetterIndex + 1,
+      lastTypedIndex + 1,
     )
   }
 
@@ -41,8 +39,8 @@ function TextContainer(
       >
         {incorrectText}
       </span>
-      <Cursor />
-      <span>{text.slice(lastTypedLetterIndex + 1)}</span>
+      <Cursor visible={showCursor} />
+      <span>{text.slice(lastTypedIndex + 1)}</span>
     </div>
   )
 }

@@ -2,22 +2,14 @@ import { render, screen } from '@testing-library/react'
 import ReminderToFocus from './ReminderToFocus'
 
 describe('ReminderToFocus', () => {
-  it("should appear when 'focused' prop is false", async () => {
-    render(
-      <ReminderToFocus
-        focused={false}
-      />,
-    )
+  it("should be in the document when 'visible' prop is true", async () => {
+    render(<ReminderToFocus visible={true} />)
 
     expect(await screen.findByTestId('reminder-to-focus')).toBeInTheDocument()
   })
 
-  it("should be hidden when 'focused' prop is true", async () => {
-    render(
-      <ReminderToFocus
-        focused={true}
-      />,
-    )
+  it("should not be in the document when 'visible' prop is false", async () => {
+    render(<ReminderToFocus visible={false} />)
 
     expect(screen.queryByTestId('reminder-to-focus')).not.toBeInTheDocument()
   })

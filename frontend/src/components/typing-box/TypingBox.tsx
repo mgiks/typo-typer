@@ -12,9 +12,10 @@ export type GETTextResponse = {
 
 function TypingBox() {
   const [text, setText] = useState('')
-  const [lastTypedLetterIndex, setLastTypedLetterIndex] = useState(-1)
+  const [lastTypedIndex, setLastTypedIndex] = useState(-1)
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
-  const [focused, setFocused] = useState(true)
+  const [isFocused, setIsFocused] = useState(true)
+  const [showReminderToFocus, setShowReminderToFocus] = useState(false)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -34,19 +35,19 @@ function TypingBox() {
       <InputCatcher
         ref={inputCatcherRef}
         text={text}
-        lastTypedLetterIndexSetter={setLastTypedLetterIndex}
-        incorrectTextStartIndexSetter={setIncorrectTextStartIndex}
-        focusSetter={setFocused}
+        setIncorrectTextStartIndex={setIncorrectTextStartIndex}
+        setIsFocused={setIsFocused}
+        setLastTypedIndex={setLastTypedIndex}
+        setShowReminderToFocus={setShowReminderToFocus}
       />
       <ReminderToFocus
-        refToFocus={inputCatcherRef}
-        focused={focused}
-        focusSetter={setFocused}
+        visible={showReminderToFocus}
       />
       <TextContainer
         text={text}
-        lastTypedLetterIndex={lastTypedLetterIndex}
+        lastTypedIndex={lastTypedIndex}
         incorrectTextStartIndex={incorrectTextStartIndex}
+        showCursor={isFocused}
       />
     </div>
   )
