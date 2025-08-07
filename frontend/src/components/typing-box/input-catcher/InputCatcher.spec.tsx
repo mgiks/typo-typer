@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import InputCatcher, { BLUR_TIMEOUT } from './InputCatcher.tsx'
+import InputCatcher, { SHOW_REMINDER_TO_FOCUS_DELAY } from './InputCatcher.tsx'
+
+const setterStub = () => {}
 
 describe('InputCatcher', async () => {
   it('should be in the document', async () => {
@@ -8,9 +10,10 @@ describe('InputCatcher', async () => {
       <InputCatcher
         ref={null}
         text={''}
-        lastTypedLetterIndexSetter={() => null}
-        incorrectTextStartIndexSetter={() => null}
-        focusSetter={() => null}
+        setIncorrectTextStartIndex={setterStub}
+        setIsFocused={setterStub}
+        setLastTypedIndex={setterStub}
+        setShowReminderToFocus={setterStub}
       />,
     )
 
@@ -22,128 +25,145 @@ describe('InputCatcher', async () => {
       <InputCatcher
         ref={null}
         text={''}
-        lastTypedLetterIndexSetter={() => null}
-        incorrectTextStartIndexSetter={() => null}
-        focusSetter={() => null}
+        setIncorrectTextStartIndex={setterStub}
+        setIsFocused={setterStub}
+        setLastTypedIndex={setterStub}
+        setShowReminderToFocus={setterStub}
       />,
     )
 
     expect(await screen.findByTestId('input-catcher')).toHaveFocus()
   })
 
-  it("should set incorrect letter's index when current letter is wrong", async () => {
-    const spyIncorrectLetterIndexSetter = vi.fn((i: number) => i)
-    const user = userEvent.setup()
+  it(
+    "should set start index of incorrect text as the current letter's index when current letter is wrong",
+    async () => {
+      const setIncorrectTextStartIndex = vi.fn((i: number) => i)
+      render(
+        <InputCatcher
+          ref={null}
+          text={'test'}
+          setIncorrectTextStartIndex={setIncorrectTextStartIndex}
+          setIsFocused={setterStub}
+          setLastTypedIndex={setterStub}
+          setShowReminderToFocus={setterStub}
+        />,
+      )
 
-    render(
-      <InputCatcher
-        ref={null}
-        text={'test'}
-        lastTypedLetterIndexSetter={() => null}
-        incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
-        focusSetter={() => null}
-      />,
-    )
-    await user.keyboard('tezt')
+      const user = userEvent.setup()
+      await user.keyboard('tezt')
 
-    expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
-  })
+      expect(setIncorrectTextStartIndex).toHaveReturnedWith(2)
+    },
+  )
 
-  it('should not reset incorrect letter index if set incorrect letter index is smaller', async () => {
-    const spyIncorrectLetterIndexSetter = vi.fn((i: number) => i)
-    const user = userEvent.setup()
+  it(
+    "should not reset start index of incorrect text when current incorrect letter's index is bigger",
+    async () => {
+      const setIncorrectTextStartIndex = vi.fn((i: number) => i)
 
-    render(
-      <InputCatcher
-        ref={null}
-        text={'test'}
-        lastTypedLetterIndexSetter={() => null}
-        incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
-        focusSetter={() => null}
-      />,
-    )
-    await user.keyboard('tez')
+      render(
+        <InputCatcher
+          ref={null}
+          text={'test'}
+          setIncorrectTextStartIndex={setIncorrectTextStartIndex}
+          setIsFocused={setterStub}
+          setLastTypedIndex={setterStub}
+          setShowReminderToFocus={setterStub}
+        />,
+      )
 
-    expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
+      const user = userEvent.setup()
+      await user.keyboard('tez')
 
-    await user.keyboard('d')
+      expect(setIncorrectTextStartIndex).toHaveReturnedWith(2)
 
-    expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
-  })
+      await user.keyboard('d')
 
-  it('should unset incorrect letter index when last typed letter index is behind it', async () => {
-    const spyIncorrectLetterIndexSetter = vi.fn((i: number) => i)
-    const user = userEvent.setup()
+      expect(setIncorrectTextStartIndex).toHaveReturnedWith(2)
+    },
+  )
 
-    render(
-      <InputCatcher
-        ref={null}
-        text={'test'}
-        lastTypedLetterIndexSetter={() => null}
-        incorrectTextStartIndexSetter={spyIncorrectLetterIndexSetter}
-        focusSetter={() => null}
-      />,
-    )
-    await user.keyboard('tezt')
+  it(
+    "should unset start index of incorrect text when last-typed letter's index is smaller",
+    async () => {
+      const setIncorrectTextStartIndex = vi.fn((i: number) => i)
+      const user = userEvent.setup()
 
-    expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(2)
+      render(
+        <InputCatcher
+          ref={null}
+          text={'test'}
+          setIncorrectTextStartIndex={setIncorrectTextStartIndex}
+          setIsFocused={setterStub}
+          setLastTypedIndex={setterStub}
+          setShowReminderToFocus={setterStub}
+        />,
+      )
+      await user.keyboard('tezt')
 
-    await user.keyboard('{Backspace>2/}')
+      expect(setIncorrectTextStartIndex).toHaveReturnedWith(2)
 
-    expect(spyIncorrectLetterIndexSetter).toHaveReturnedWith(-1)
-  })
+      await user.keyboard('{Backspace>2/}')
+
+      expect(setIncorrectTextStartIndex).toHaveReturnedWith(-1)
+    },
+  )
 
   it('should update last typed letter index', async () => {
-    const spyLastTypedLetterIndexSetter = vi.fn((i: number) => i)
+    const setLastTypedIndex = vi.fn((i: number) => i)
     const user = userEvent.setup()
 
     render(
       <InputCatcher
         ref={null}
         text={'test'}
-        lastTypedLetterIndexSetter={spyLastTypedLetterIndexSetter}
-        incorrectTextStartIndexSetter={() => null}
-        focusSetter={() => null}
+        setIncorrectTextStartIndex={setterStub}
+        setIsFocused={setterStub}
+        setLastTypedIndex={setLastTypedIndex}
+        setShowReminderToFocus={setterStub}
       />,
     )
 
     await user.keyboard('tes')
 
-    expect(spyLastTypedLetterIndexSetter).toHaveReturnedWith(2)
+    expect(setLastTypedIndex).toHaveReturnedWith(2)
   })
 
-  it("should set focused to false after 'BLUR_TIMEOUT' when blurred", async () => {
-    const spyFocusedSetter = vi.fn((i: boolean) => i)
+  it("should set 'isFocused' to false after a timeout when blurred", async () => {
+    const setIsFocused = vi.fn((i: boolean) => i)
     render(
       <InputCatcher
         ref={null}
         text=''
-        lastTypedLetterIndexSetter={() => null}
-        incorrectTextStartIndexSetter={() => null}
-        focusSetter={spyFocusedSetter}
+        setIncorrectTextStartIndex={setterStub}
+        setIsFocused={setIsFocused}
+        setLastTypedIndex={setterStub}
+        setShowReminderToFocus={setterStub}
       />,
     )
     const inputCatcher = await screen.findByTestId('input-catcher')
 
     vi.useFakeTimers()
     inputCatcher.blur()
-    vi.advanceTimersByTime(BLUR_TIMEOUT)
+    vi.advanceTimersByTime(SHOW_REMINDER_TO_FOCUS_DELAY)
 
     vi.useRealTimers()
 
-    expect(spyFocusedSetter).toHaveReturnedWith(false)
+    expect(setIsFocused).toHaveReturnedWith(false)
   })
 
-  it('should set focused to true when focused', async () => {
-    const spyFocusedSetter = vi.fn((i: boolean) => i)
+  it("should set 'isFocused' to true when focused", async () => {
+    const setIsFocused = vi.fn((i: boolean) => i)
 
     render(
       <InputCatcher
         ref={null}
         text=''
-        lastTypedLetterIndexSetter={() => null}
-        incorrectTextStartIndexSetter={() => null}
-        focusSetter={spyFocusedSetter}
+        setIncorrectTextStartIndex={setterStub}
+        setIsFocused={setIsFocused}
+        setLastTypedIndex={setterStub}
+        setShowReminderToFocus={setterStub}
       />,
     )
 
@@ -152,6 +172,6 @@ describe('InputCatcher', async () => {
     inputCatcher.blur()
     inputCatcher.focus()
 
-    expect(spyFocusedSetter).toHaveReturnedWith(true)
+    expect(setIsFocused).toHaveReturnedWith(true)
   })
 })

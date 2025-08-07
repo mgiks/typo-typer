@@ -5,7 +5,8 @@ describe('TextContainer', async () => {
   it('should be in the document', async () => {
     render(
       <TextContainer
-        lastTypedLetterIndex={-1}
+        showCursor={false}
+        lastTypedIndex={-1}
         incorrectTextStartIndex={-1}
         text=''
       />,
@@ -14,12 +15,13 @@ describe('TextContainer', async () => {
     expect(await screen.findByTestId('text-container')).toBeInTheDocument()
   })
 
-  it('should display passed text', async () => {
+  it("should display text from 'text' prop", async () => {
     const text = 'Test text.'
 
     render(
       <TextContainer
-        lastTypedLetterIndex={-1}
+        showCursor={false}
+        lastTypedIndex={-1}
         incorrectTextStartIndex={-1}
         text={text}
       />,
@@ -28,22 +30,11 @@ describe('TextContainer', async () => {
     expect(await screen.findByTestId('text-container')).toHaveTextContent(text)
   })
 
-  it('should include cursor', async () => {
+  it('should include a section for correct text', async () => {
     const { findByTestId } = render(
       <TextContainer
-        lastTypedLetterIndex={-1}
-        incorrectTextStartIndex={-1}
-        text=''
-      />,
-    )
-
-    expect(await findByTestId('cursor')).toBeInTheDocument()
-  })
-
-  it('should include correct text section', async () => {
-    const { findByTestId } = render(
-      <TextContainer
-        lastTypedLetterIndex={-1}
+        showCursor={false}
+        lastTypedIndex={-1}
         incorrectTextStartIndex={-1}
         text=''
       />,
@@ -52,10 +43,11 @@ describe('TextContainer', async () => {
     expect(await findByTestId('correct-text')).toBeInTheDocument()
   })
 
-  it('should include incorrect text section', async () => {
+  it('should include a section for incorrect text', async () => {
     const { findByTestId } = render(
       <TextContainer
-        lastTypedLetterIndex={-1}
+        showCursor={false}
+        lastTypedIndex={-1}
         incorrectTextStartIndex={-1}
         text=''
       />,
@@ -64,13 +56,40 @@ describe('TextContainer', async () => {
     expect(await findByTestId('incorrect-text')).toBeInTheDocument()
   })
 
+  it("should include cursor when 'showCursor' prop is true", async () => {
+    const { findByTestId } = render(
+      <TextContainer
+        showCursor={true}
+        lastTypedIndex={-1}
+        incorrectTextStartIndex={-1}
+        text=''
+      />,
+    )
+
+    expect(await findByTestId('cursor')).toBeInTheDocument()
+  })
+
+  it("should not include cursor when 'showCursor' prop is false", async () => {
+    const { queryByTestId } = render(
+      <TextContainer
+        showCursor={false}
+        lastTypedIndex={-1}
+        incorrectTextStartIndex={-1}
+        text=''
+      />,
+    )
+
+    expect(queryByTestId('cursor')).not.toBeInTheDocument()
+  })
+
   it('should put incorrect and correct text inside corresponding sections', async () => {
     const text = 'Test text.'
 
     const { findByTestId } = render(
       <TextContainer
+        showCursor={false}
         text={text}
-        lastTypedLetterIndex={text.length - 1}
+        lastTypedIndex={text.length - 1}
         incorrectTextStartIndex={4}
       />,
     )

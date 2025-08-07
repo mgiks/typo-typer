@@ -1,22 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-export const BLUR_TIMEOUT = 750
+export const SHOW_REMINDER_TO_FOCUS_DELAY = 750
+
+type Setter<T> = (i: T) => void
 
 type InputCatcherProps = {
   text: string
-  lastTypedLetterIndexSetter: (i: number) => void
-  incorrectTextStartIndexSetter: (i: number) => void
-  focusSetter: (i: boolean) => void
+  setIsFocused: Setter<boolean>
+  setLastTypedIndex: Setter<number>
+  setShowReminderToFocus: Setter<boolean>
+  setIncorrectTextStartIndex: Setter<number>
   ref: React.Ref<HTMLTextAreaElement | null>
 }
 
 function InputCatcher(
   {
-    text,
-    lastTypedLetterIndexSetter,
-    incorrectTextStartIndexSetter,
-    focusSetter,
     ref,
+    text,
+    setIsFocused,
+    setLastTypedIndex,
+    setShowReminderToFocus,
+    setIncorrectTextStartIndex,
   }: InputCatcherProps,
 ) {
   const [input, setInput] = useState('')
@@ -25,11 +29,11 @@ function InputCatcher(
 
   useEffect(() => {
     const inputLastIndex = input.length - 1
-    lastTypedLetterIndexSetter(inputLastIndex)
+    setLastTypedIndex(inputLastIndex)
 
     if (inputLastIndex == -1) {
       setLastIncorrectLetterIndex(-1)
-      incorrectTextStartIndexSetter(-1)
+      setIncorrectTextStartIndex(-1)
       return
     }
 
@@ -38,11 +42,11 @@ function InputCatcher(
         lastIncorrectLetterIndex === -1 ||
         inputLastIndex < lastIncorrectLetterIndex
       ) {
-        incorrectTextStartIndexSetter(inputLastIndex)
+        setIncorrectTextStartIndex(inputLastIndex)
         setLastIncorrectLetterIndex(inputLastIndex)
       }
     } else if (inputLastIndex < lastIncorrectLetterIndex) {
-      incorrectTextStartIndexSetter(-1)
+      setIncorrectTextStartIndex(-1)
       setLastIncorrectLetterIndex(-1)
     }
   }, [input])
@@ -54,11 +58,17 @@ function InputCatcher(
       data-testid='input-catcher'
       onInput={(event) => setInput(event.currentTarget.value)}
       onBlur={() => {
-        timeOutRef.current = setTimeout(focusSetter, BLUR_TIMEOUT, false)
+        setIsFocused(false)
+        timeOutRef.current = setTimeout(
+          setShowReminderToFocus,
+          SHOW_REMINDER_TO_FOCUS_DELAY,
+          true,
+        )
       }}
       onFocus={() => {
+        setIsFocused(true)
         clearTimeout(timeOutRef.current)
-        focusSetter(true)
+        setShowReminderToFocus(false)
       }}
       autoFocus
     >
