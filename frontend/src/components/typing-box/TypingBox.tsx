@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './TypingBox.scss'
 import InputCatcher from './input-catcher/InputCatcher'
 import TextContainer from './text-container/TextContainer'
-import ReminderToFocus from './reminder-to-focus/ReminderToFocus'
+import FocusReminder from './focus-reminder/FocusReminder'
 
 const TEXTS_URL = 'http://localhost:8000/texts'
 
@@ -15,7 +15,7 @@ function TypingBox() {
   const [lastTypedIndex, setLastTypedIndex] = useState(-1)
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
   const [isFocused, setIsFocused] = useState(true)
-  const [showReminderToFocus, setShowReminderToFocus] = useState(false)
+  const [showFocusReminder, setShowFocusReminder] = useState(false)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -38,10 +38,10 @@ function TypingBox() {
         setIncorrectTextStartIndex={setIncorrectTextStartIndex}
         setIsFocused={setIsFocused}
         setLastTypedIndex={setLastTypedIndex}
-        setShowReminderToFocus={setShowReminderToFocus}
+        setShowFocusReminder={setShowFocusReminder}
       />
-      <ReminderToFocus
-        visible={showReminderToFocus}
+      <FocusReminder
+        visible={showFocusReminder}
       />
       <TextContainer
         text={text}

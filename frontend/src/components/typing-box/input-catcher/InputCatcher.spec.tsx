@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import InputCatcher, { SHOW_REMINDER_TO_FOCUS_DELAY } from './InputCatcher.tsx'
+import InputCatcher, { FOCUS_REMINDER_TIMEOUT_MS } from './InputCatcher.tsx'
 
 const setterStub = () => {}
 
@@ -13,7 +13,7 @@ describe('InputCatcher', async () => {
         setIncorrectTextStartIndex={setterStub}
         setIsFocused={setterStub}
         setLastTypedIndex={setterStub}
-        setShowReminderToFocus={setterStub}
+        setShowFocusReminder={setterStub}
       />,
     )
 
@@ -28,7 +28,7 @@ describe('InputCatcher', async () => {
         setIncorrectTextStartIndex={setterStub}
         setIsFocused={setterStub}
         setLastTypedIndex={setterStub}
-        setShowReminderToFocus={setterStub}
+        setShowFocusReminder={setterStub}
       />,
     )
 
@@ -46,7 +46,7 @@ describe('InputCatcher', async () => {
           setIncorrectTextStartIndex={setIncorrectTextStartIndex}
           setIsFocused={setterStub}
           setLastTypedIndex={setterStub}
-          setShowReminderToFocus={setterStub}
+          setShowFocusReminder={setterStub}
         />,
       )
 
@@ -69,7 +69,7 @@ describe('InputCatcher', async () => {
           setIncorrectTextStartIndex={setIncorrectTextStartIndex}
           setIsFocused={setterStub}
           setLastTypedIndex={setterStub}
-          setShowReminderToFocus={setterStub}
+          setShowFocusReminder={setterStub}
         />,
       )
 
@@ -97,7 +97,7 @@ describe('InputCatcher', async () => {
           setIncorrectTextStartIndex={setIncorrectTextStartIndex}
           setIsFocused={setterStub}
           setLastTypedIndex={setterStub}
-          setShowReminderToFocus={setterStub}
+          setShowFocusReminder={setterStub}
         />,
       )
       await user.keyboard('tezt')
@@ -121,7 +121,7 @@ describe('InputCatcher', async () => {
         setIncorrectTextStartIndex={setterStub}
         setIsFocused={setterStub}
         setLastTypedIndex={setLastTypedIndex}
-        setShowReminderToFocus={setterStub}
+        setShowFocusReminder={setterStub}
       />,
     )
 
@@ -139,14 +139,14 @@ describe('InputCatcher', async () => {
         setIncorrectTextStartIndex={setterStub}
         setIsFocused={setIsFocused}
         setLastTypedIndex={setterStub}
-        setShowReminderToFocus={setterStub}
+        setShowFocusReminder={setterStub}
       />,
     )
     const inputCatcher = await screen.findByTestId('input-catcher')
 
     vi.useFakeTimers()
     inputCatcher.blur()
-    vi.advanceTimersByTime(SHOW_REMINDER_TO_FOCUS_DELAY)
+    vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS)
 
     vi.useRealTimers()
 
@@ -163,7 +163,7 @@ describe('InputCatcher', async () => {
         setIncorrectTextStartIndex={setterStub}
         setIsFocused={setIsFocused}
         setLastTypedIndex={setterStub}
-        setShowReminderToFocus={setterStub}
+        setShowFocusReminder={setterStub}
       />,
     )
 
