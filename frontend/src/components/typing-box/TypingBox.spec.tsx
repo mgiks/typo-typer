@@ -46,26 +46,6 @@ describe('TypingBox', async () => {
     expect(await screen.findByTestId('input-catcher')).toBeInTheDocument()
   })
 
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-
   it('should show focus reminder when input catcher is blurred', async () => {
     const { findByTestId } = render(<TypingBox />)
     const inputCatcher = await findByTestId('input-catcher')
