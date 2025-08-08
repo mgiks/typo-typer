@@ -4,7 +4,7 @@ export const FOCUS_REMINDER_TIMEOUT_MS = 750
 
 type Setter<T> = (i: T) => void
 
-type InputCatcherProps = {
+export type InputCatcherProps = {
   text: string
   setIsFocused: Setter<boolean>
   setLastTypedIndex: Setter<number>
