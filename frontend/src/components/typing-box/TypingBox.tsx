@@ -16,6 +16,7 @@ function TypingBox() {
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
+  const [cursorYPosition, setCursorYPosition] = useState(-1)
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
 
@@ -55,6 +56,7 @@ function TypingBox() {
         visible={showFocusReminder}
       />
       <TextContainer
+        setCursorYPosition={setCursorYPosition}
         text={text}
         lastTypedIndex={lastTypedIndex}
         incorrectTextStartIndex={incorrectTextStartIndex}

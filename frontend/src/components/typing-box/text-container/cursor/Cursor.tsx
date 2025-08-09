@@ -1,10 +1,11 @@
-type CursorProps = {
+export type CursorProps = {
   visible: boolean
+  ref: React.Ref<HTMLSpanElement | null>
 }
 
-function Cursor({ visible }: CursorProps) {
+function Cursor({ visible, ref }: CursorProps) {
   const cursor = (
-    <span className='text-container__cursor' data-testid='cursor' />
+    <span ref={ref} className='text-container__cursor' data-testid='cursor' />
   )
 
   return visible ? cursor : null
