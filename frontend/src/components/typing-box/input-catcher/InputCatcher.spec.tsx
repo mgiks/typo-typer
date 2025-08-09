@@ -122,7 +122,7 @@ describe('InputCatcher', async () => {
 
 const setterStub = () => {}
 
-const defaultProps = {
+const defaultProps: InputCatcherProps = {
   ref: null,
   text: '',
   setIncorrectTextStartIndex: setterStub,
