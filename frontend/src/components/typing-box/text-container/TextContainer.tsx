@@ -1,7 +1,7 @@
 import './TextContainer.scss'
 import Cursor from './cursor/Cursor'
 
-type TextContainerProps = {
+export type TextContainerProps = {
   showCursor: boolean
   text: string
   lastTypedIndex: number

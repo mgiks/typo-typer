@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-export const SHOW_REMINDER_TO_FOCUS_DELAY = 750
+export const FOCUS_REMINDER_TIMEOUT_MS = 750
 
 type Setter<T> = (i: T) => void
 
-type InputCatcherProps = {
+export type InputCatcherProps = {
   text: string
   setIsFocused: Setter<boolean>
   setLastTypedIndex: Setter<number>
-  setShowReminderToFocus: Setter<boolean>
+  setShowFocusReminder: Setter<boolean>
   setIncorrectTextStartIndex: Setter<number>
   ref: React.Ref<HTMLTextAreaElement | null>
 }
@@ -19,7 +19,7 @@ function InputCatcher(
     text,
     setIsFocused,
     setLastTypedIndex,
-    setShowReminderToFocus,
+    setShowFocusReminder,
     setIncorrectTextStartIndex,
   }: InputCatcherProps,
 ) {
@@ -60,15 +60,15 @@ function InputCatcher(
       onBlur={() => {
         setIsFocused(false)
         timeOutRef.current = setTimeout(
-          setShowReminderToFocus,
-          SHOW_REMINDER_TO_FOCUS_DELAY,
+          setShowFocusReminder,
+          FOCUS_REMINDER_TIMEOUT_MS,
           true,
         )
       }}
       onFocus={() => {
         setIsFocused(true)
         clearTimeout(timeOutRef.current)
-        setShowReminderToFocus(false)
+        setShowFocusReminder(false)
       }}
       autoFocus
     >

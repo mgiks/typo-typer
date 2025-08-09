@@ -3,7 +3,7 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import userEvent from '@testing-library/user-event'
 import TypingBox from './TypingBox.tsx'
-import { SHOW_REMINDER_TO_FOCUS_DELAY } from './input-catcher/InputCatcher.tsx'
+import { FOCUS_REMINDER_TIMEOUT_MS } from './input-catcher/InputCatcher.tsx'
 
 const handlers = [
   http.get('http://localhost:8000/texts', () => {
@@ -46,39 +46,19 @@ describe('TypingBox', async () => {
     expect(await screen.findByTestId('input-catcher')).toBeInTheDocument()
   })
 
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-
   it('should show focus reminder when input catcher is blurred', async () => {
     const { findByTestId } = render(<TypingBox />)
     const inputCatcher = await findByTestId('input-catcher')
 
-    expect(screen.queryByTestId('reminder-to-focus')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('focus-reminder')).not.toBeInTheDocument()
 
     act(() => {
       vi.useFakeTimers()
       inputCatcher.blur()
-      vi.advanceTimersByTime(SHOW_REMINDER_TO_FOCUS_DELAY).useRealTimers()
+      vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS).useRealTimers()
     })
 
-    expect(await findByTestId('reminder-to-focus')).toBeInTheDocument()
+    expect(await findByTestId('focus-reminder')).toBeInTheDocument()
   })
 
   it('should focus input catcher on click', async () => {
@@ -89,11 +69,29 @@ describe('TypingBox', async () => {
     act(() => {
       vi.useFakeTimers()
       inputCatcher.blur()
-      vi.advanceTimersByTime(SHOW_REMINDER_TO_FOCUS_DELAY).useRealTimers()
+      vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS).useRealTimers()
     })
 
     const user = userEvent.setup()
     await user.click(typingBox)
+
+    expect(inputCatcher).toHaveFocus()
+  })
+
+  it('should focus input catcher on keypress', async () => {
+    render(<TypingBox />)
+    const inputCatcher = await screen.findByTestId('input-catcher')
+    const user = userEvent.setup()
+
+    act(() => {
+      vi.useFakeTimers()
+      inputCatcher.blur()
+      vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS).useRealTimers()
+    })
+
+    expect(inputCatcher).not.toHaveFocus()
+
+    await user.keyboard('o')
 
     expect(inputCatcher).toHaveFocus()
   })
@@ -103,19 +101,19 @@ describe('TypingBox', async () => {
     const typingBox = await screen.findByTestId('typing-box')
     const inputCatcher = await findByTestId('input-catcher')
 
-    expect(screen.queryByTestId('reminder-to-focus')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('focus-reminder')).not.toBeInTheDocument()
 
     act(() => {
       vi.useFakeTimers()
       inputCatcher.blur()
-      vi.advanceTimersByTime(SHOW_REMINDER_TO_FOCUS_DELAY).useRealTimers()
+      vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS).useRealTimers()
     })
 
-    expect(await findByTestId('reminder-to-focus')).toBeInTheDocument()
+    expect(await findByTestId('focus-reminder')).toBeInTheDocument()
 
     const user = userEvent.setup()
     await user.click(typingBox)
 
-    expect(screen.queryByTestId('reminder-to-focus')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('focus-reminder')).not.toBeInTheDocument()
   })
 })
