@@ -16,13 +16,16 @@ function TypingBox() {
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    document.addEventListener('keyup', () => ref.current?.click())
+    document.addEventListener('keyup', () => typingBoxRef.current?.click())
 
-    return document.removeEventListener('keyup', () => ref.current?.click())
+    return document.removeEventListener(
+      'keyup',
+      () => typingBoxRef.current?.click(),
+    )
   }, [])
 
   useEffect(() => {
@@ -35,7 +38,7 @@ function TypingBox() {
 
   return (
     <div
-      ref={ref}
+      ref={typingBoxRef}
       className='typing-box'
       data-testid='typing-box'
       onClick={() => inputCatcherRef.current?.focus()}
