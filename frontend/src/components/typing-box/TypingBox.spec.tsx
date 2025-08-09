@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import userEvent from '@testing-library/user-event'
@@ -74,6 +74,24 @@ describe('TypingBox', async () => {
 
     const user = userEvent.setup()
     await user.click(typingBox)
+
+    expect(inputCatcher).toHaveFocus()
+  })
+
+  it('should focus input catcher on keypress', async () => {
+    render(<TypingBox />)
+    const inputCatcher = await screen.findByTestId('input-catcher')
+    const user = userEvent.setup()
+
+    act(() => {
+      vi.useFakeTimers()
+      inputCatcher.blur()
+      vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS).useRealTimers()
+    })
+
+    expect(inputCatcher).not.toHaveFocus()
+
+    await user.keyboard('o')
 
     expect(inputCatcher).toHaveFocus()
   })
