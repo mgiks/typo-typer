@@ -34,10 +34,23 @@ function TypingBox() {
   }, [])
 
   useEffect(() => {
-    cursorRef.current?.scrollIntoView({
-      behavior: 'instant',
-      block: 'center',
-    })
+    const cursorRect = cursorRef.current?.getBoundingClientRect()
+    const typingBoxRect = typingBoxRef.current?.getBoundingClientRect()
+
+    if (!cursorRect || !typingBoxRect) return
+
+    const typingBoxCenter = typingBoxRect.top + typingBoxRect.height / 2
+    const cursorCenter = cursorRect.top + cursorRect.height / 2
+
+    // Needed to prevent tiny scroll adjustments when this is not necessary
+    const isCursorOffCentered = Math.abs(typingBoxCenter - cursorCenter) > 5
+
+    if (isCursorOffCentered) {
+      cursorRef.current?.scrollIntoView({
+        behavior: 'instant',
+        block: 'center',
+      })
+    }
   }, [lastTypedIndex])
 
   return (
