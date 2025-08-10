@@ -55,31 +55,14 @@ describe('TextContainer', async () => {
       { normalizeWhitespace: false },
     )
   })
-
-  it("should set cursor y position on 'lastTypedIndex' prop change", async () => {
-    const setCursorYPosition = vi.fn((_: number) => {})
-    const prereqProps: TextContainerProps = {
-      ...defaultProps,
-      showCursor: true,
-      setCursorYPosition: setCursorYPosition,
-    }
-
-    const { rerender } = render(
-      <TextContainer {...prereqProps} lastTypedIndex={0} />,
-    )
-
-    rerender(<TextContainer {...prereqProps} lastTypedIndex={1} />)
-
-    expect(setCursorYPosition).toHaveBeenCalled()
-  })
 })
 
 const defaultProps: TextContainerProps = {
   showCursor: false,
   lastTypedIndex: -1,
   incorrectTextStartIndex: -1,
-  setCursorYPosition: (_: number) => {},
   text: '',
+  cursorRef: null,
 }
 
 function renderTextContainer(overrides: Partial<TextContainerProps> = {}) {

@@ -6,7 +6,7 @@ export type TextContainerProps = {
   text: string
   lastTypedIndex: number
   incorrectTextStartIndex: number
-  cursorRef: React.RefObject<HTMLSpanElement | null>
+  cursorRef: React.Ref<HTMLSpanElement | null>
 }
 
 function TextContainer(

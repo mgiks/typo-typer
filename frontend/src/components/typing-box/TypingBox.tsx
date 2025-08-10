@@ -30,7 +30,7 @@ function TypingBox() {
 
     document.addEventListener('keyup', handleKeyPress)
 
-    return document.removeEventListener('keyup', handleKeyPress)
+    return () => document.removeEventListener('keyup', handleKeyPress)
   }, [])
 
   useEffect(() => {
