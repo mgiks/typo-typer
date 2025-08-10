@@ -26,12 +26,11 @@ function TypingBox() {
       .then((json) => setText(json.text))
       .catch((_) => console.error('Network error'))
 
-    document.addEventListener('keyup', () => typingBoxRef.current?.click())
+    const handleKeyPress = () => typingBoxRef.current?.click()
 
-    return document.removeEventListener(
-      'keyup',
-      () => typingBoxRef.current?.click(),
-    )
+    document.addEventListener('keyup', handleKeyPress)
+
+    return document.removeEventListener('keyup', handleKeyPress)
   }, [])
 
   useEffect(() => {
