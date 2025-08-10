@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react'
 import './TextContainer.scss'
 import Cursor from './cursor/Cursor'
 
@@ -7,7 +6,7 @@ export type TextContainerProps = {
   text: string
   lastTypedIndex: number
   incorrectTextStartIndex: number
-  setCursorYPosition: (position: number) => void
+  cursorRef: React.RefObject<HTMLSpanElement | null>
 }
 
 function TextContainer(
@@ -16,11 +15,9 @@ function TextContainer(
     showCursor,
     lastTypedIndex,
     incorrectTextStartIndex,
-    setCursorYPosition,
+    cursorRef,
   }: TextContainerProps,
 ) {
-  const cursorRef = useRef<HTMLSpanElement>(null)
-
   let correctText = ''
   let incorrectText = ''
 
@@ -33,12 +30,6 @@ function TextContainer(
       lastTypedIndex + 1,
     )
   }
-
-  useEffect(() => {
-    const cursorYPosition = cursorRef.current?.offsetTop
-
-    if (cursorYPosition != null) setCursorYPosition(cursorYPosition)
-  }, [lastTypedIndex])
 
   return (
     <div

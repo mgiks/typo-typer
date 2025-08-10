@@ -14,14 +14,18 @@ function TypingBox() {
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
-  const [cursorYPosition, setCursorYPosition] = useState(-1)
 
-  const scrollDistance = useRef(51)
-  const prevCursorYPosition = useRef(-1)
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
+  const cursorRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
+    fetch(TEXTS_URL)
+      .then((resp) => resp.json())
+      .then((resp) => resp as GETTextResponse)
+      .then((json) => setText(json.text))
+      .catch((_) => console.error('Network error'))
+
     document.addEventListener('keyup', () => typingBoxRef.current?.click())
 
     return document.removeEventListener(
@@ -31,28 +35,11 @@ function TypingBox() {
   }, [])
 
   useEffect(() => {
-    typingBoxRef.current?.scrollTo(0, 0)
-
-    fetch(TEXTS_URL)
-      .then((resp) => resp.json())
-      .then((resp) => resp as GETTextResponse)
-      .then((json) => setText(json.text))
-      .catch((_) => console.error('Network error'))
-  }, [])
-
-  useEffect(() => {
-    if (
-      prevCursorYPosition.current !== -1 &&
-      (cursorYPosition !== prevCursorYPosition.current)
-    ) {
-      // 'scrollBy' works weird for some reason, so 'scrollTo' instead
-      typingBoxRef.current?.scrollTo(0, scrollDistance.current)
-
-      scrollDistance.current += 51
-    }
-
-    prevCursorYPosition.current = cursorYPosition
-  }, [cursorYPosition])
+    cursorRef.current?.scrollIntoView({
+      behavior: 'instant',
+      block: 'center',
+    })
+  }, [lastTypedIndex])
 
   return (
     <div
@@ -73,7 +60,7 @@ function TypingBox() {
         visible={showFocusReminder}
       />
       <TextContainer
-        setCursorYPosition={setCursorYPosition}
+        cursorRef={cursorRef}
         text={text}
         lastTypedIndex={lastTypedIndex}
         incorrectTextStartIndex={incorrectTextStartIndex}
