@@ -1,7 +1,9 @@
+@use './../../styles/global.scss' as global;
+
 .typing-box {
   border: 1px solid black;
   margin: 0px 30px;
-  height: 153px;
+  height: global.$line-height * global.$line-number;
   overflow-y: hidden;
   padding: 0px;
   position: relative;
