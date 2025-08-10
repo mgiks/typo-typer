@@ -1,16 +1,18 @@
-$line-height: 51px;
+@use '../../../styles/global.scss' as global;
 
 .text-container {
   position: relative;
   white-space: pre-wrap;
-  line-height: $line-height;
+  padding: 0px;
+  padding-bottom: global.$line-height * 2;
+  line-height: global.$line-height;
   font-size: 2rem;
   user-select: none;
 
   &__cursor {
     position: absolute;
     border: 1px solid black;
-    height: $line-height;
+    height: global.$line-height;
     background-color: black;
   }
 

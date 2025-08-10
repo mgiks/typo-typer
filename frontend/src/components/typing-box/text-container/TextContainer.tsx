@@ -35,7 +35,7 @@ function TextContainer(
   }
 
   useEffect(() => {
-    const cursorYPosition = cursorRef.current?.getBoundingClientRect().y
+    const cursorYPosition = cursorRef.current?.offsetTop
 
     if (cursorYPosition != null) setCursorYPosition(cursorYPosition)
   }, [lastTypedIndex])

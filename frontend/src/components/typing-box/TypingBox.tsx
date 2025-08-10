@@ -6,9 +6,7 @@ import FocusReminder from './focus-reminder/FocusReminder'
 
 const TEXTS_URL = 'http://localhost:8000/texts'
 
-export type GETTextResponse = {
-  text: string
-}
+export type GETTextResponse = { text: string }
 
 function TypingBox() {
   const [text, setText] = useState('')
@@ -17,6 +15,9 @@ function TypingBox() {
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
   const [cursorYPosition, setCursorYPosition] = useState(-1)
+
+  const scrollDistance = useRef(51)
+  const prevCursorYPosition = useRef(-1)
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
 
@@ -30,12 +31,28 @@ function TypingBox() {
   }, [])
 
   useEffect(() => {
+    typingBoxRef.current?.scrollTo(0, 0)
+
     fetch(TEXTS_URL)
       .then((resp) => resp.json())
       .then((resp) => resp as GETTextResponse)
       .then((json) => setText(json.text))
       .catch((_) => console.error('Network error'))
   }, [])
+
+  useEffect(() => {
+    if (
+      prevCursorYPosition.current !== -1 &&
+      (cursorYPosition !== prevCursorYPosition.current)
+    ) {
+      // 'scrollBy' works weird for some reason, so 'scrollTo' instead
+      typingBoxRef.current?.scrollTo(0, scrollDistance.current)
+
+      scrollDistance.current += 51
+    }
+
+    prevCursorYPosition.current = cursorYPosition
+  }, [cursorYPosition])
 
   return (
     <div
