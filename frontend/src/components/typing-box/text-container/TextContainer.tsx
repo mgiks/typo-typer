@@ -6,11 +6,17 @@ export type TextContainerProps = {
   text: string
   lastTypedIndex: number
   incorrectTextStartIndex: number
+  cursorRef: React.Ref<HTMLSpanElement | null>
 }
 
 function TextContainer(
-  { text, showCursor, lastTypedIndex, incorrectTextStartIndex }:
-    TextContainerProps,
+  {
+    text,
+    showCursor,
+    lastTypedIndex,
+    incorrectTextStartIndex,
+    cursorRef,
+  }: TextContainerProps,
 ) {
   let correctText = ''
   let incorrectText = ''
@@ -39,7 +45,10 @@ function TextContainer(
       >
         {incorrectText}
       </span>
-      <Cursor visible={showCursor} />
+      <Cursor
+        ref={cursorRef}
+        visible={showCursor}
+      />
       <span>{text.slice(lastTypedIndex + 1)}</span>
     </div>
   )

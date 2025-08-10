@@ -57,11 +57,12 @@ describe('TextContainer', async () => {
   })
 })
 
-const defaultProps = {
+const defaultProps: TextContainerProps = {
   showCursor: false,
   lastTypedIndex: -1,
   incorrectTextStartIndex: -1,
   text: '',
+  cursorRef: null,
 }
 
 function renderTextContainer(overrides: Partial<TextContainerProps> = {}) {

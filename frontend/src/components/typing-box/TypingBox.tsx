@@ -6,9 +6,7 @@ import FocusReminder from './focus-reminder/FocusReminder'
 
 const TEXTS_URL = 'http://localhost:8000/texts'
 
-export type GETTextResponse = {
-  text: string
-}
+export type GETTextResponse = { text: string }
 
 function TypingBox() {
   const [text, setText] = useState('')
@@ -16,17 +14,10 @@ function TypingBox() {
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
+
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
-
-  useEffect(() => {
-    document.addEventListener('keyup', () => typingBoxRef.current?.click())
-
-    return document.removeEventListener(
-      'keyup',
-      () => typingBoxRef.current?.click(),
-    )
-  }, [])
+  const cursorRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
     fetch(TEXTS_URL)
@@ -34,7 +25,33 @@ function TypingBox() {
       .then((resp) => resp as GETTextResponse)
       .then((json) => setText(json.text))
       .catch((_) => console.error('Network error'))
+
+    const handleKeyPress = () => typingBoxRef.current?.click()
+
+    document.addEventListener('keyup', handleKeyPress)
+
+    return () => document.removeEventListener('keyup', handleKeyPress)
   }, [])
+
+  useEffect(() => {
+    const cursorRect = cursorRef.current?.getBoundingClientRect()
+    const typingBoxRect = typingBoxRef.current?.getBoundingClientRect()
+
+    if (!cursorRect || !typingBoxRect) return
+
+    const typingBoxCenter = typingBoxRect.top + typingBoxRect.height / 2
+    const cursorCenter = cursorRect.top + cursorRect.height / 2
+
+    // Needed to prevent tiny scroll adjustments when this is not necessary
+    const isCursorOffCentered = Math.abs(typingBoxCenter - cursorCenter) > 5
+
+    if (isCursorOffCentered) {
+      cursorRef.current?.scrollIntoView({
+        behavior: 'instant',
+        block: 'center',
+      })
+    }
+  }, [lastTypedIndex])
 
   return (
     <div
@@ -55,6 +72,7 @@ function TypingBox() {
         visible={showFocusReminder}
       />
       <TextContainer
+        cursorRef={cursorRef}
         text={text}
         lastTypedIndex={lastTypedIndex}
         incorrectTextStartIndex={incorrectTextStartIndex}
