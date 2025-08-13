@@ -21,7 +21,7 @@ function TextContainer(
   let correctText = ''
   let incorrectText = ''
 
-  if (incorrectTextStartIndex == -1) {
+  if (incorrectTextStartIndex === -1) {
     correctText = text.slice(0, lastTypedIndex + 1)
   } else {
     correctText = text.slice(0, incorrectTextStartIndex)
