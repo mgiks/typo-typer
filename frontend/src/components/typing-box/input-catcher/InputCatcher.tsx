@@ -31,7 +31,7 @@ function InputCatcher(
     const inputLastIndex = input.length - 1
     setLastTypedIndex(inputLastIndex)
 
-    if (inputLastIndex == -1) {
+    if (inputLastIndex === -1) {
       setLastIncorrectLetterIndex(-1)
       setIncorrectTextStartIndex(-1)
       return
