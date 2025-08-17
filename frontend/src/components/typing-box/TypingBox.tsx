@@ -4,7 +4,7 @@ import InputCatcher from './input-catcher/InputCatcher'
 import TextContainer from './text-container/TextContainer'
 import FocusReminder from './focus-reminder/FocusReminder'
 
-const TEXTS_URL = 'http://localhost:8000/texts'
+export const TEXTS_URL = 'http://localhost:8000/texts'
 
 export type GETTextResponse = { text: string }
 
@@ -57,7 +57,8 @@ function TypingBox() {
     <div
       ref={typingBoxRef}
       className='typing-box'
-      data-testid='typing-box'
+      role='region'
+      aria-label='Typing Box'
       onClick={() => inputCatcherRef.current?.focus()}
     >
       <InputCatcher

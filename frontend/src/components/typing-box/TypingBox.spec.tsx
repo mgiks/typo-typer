@@ -2,15 +2,14 @@ import { act, render, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import userEvent from '@testing-library/user-event'
-import TypingBox from './TypingBox.tsx'
+import TypingBox, { TEXTS_URL } from './TypingBox.tsx'
 import { FOCUS_REMINDER_TIMEOUT_MS } from './input-catcher/InputCatcher.tsx'
 
+const FOCUS_REMINDER_TEXT = /click here or press any key to focus/i
+const TEXT_FIXTURE = 'Test text.'
+
 const handlers = [
-  http.get('http://localhost:8000/texts', () => {
-    return HttpResponse.json({
-      text: 'Some text',
-    })
-  }),
+  http.get(TEXTS_URL, () => HttpResponse.json({ text: TEXT_FIXTURE })),
 ]
 
 const server = setupServer(...handlers)
@@ -20,37 +19,23 @@ afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
 describe('TypingBox', async () => {
-  it('should be in the document', async () => {
+  it('should be in the document', () => {
     render(<TypingBox />)
 
-    expect(await screen.findByTestId('typing-box')).toBeInTheDocument()
+    expect(screen.getByRole('region')).toBeInTheDocument()
   })
 
   it('should display fetched text on initial render', async () => {
     render(<TypingBox />)
 
-    expect(await screen.findByTestId('typing-box')).toHaveTextContent(
-      'Some text',
-    )
+    expect(await screen.findByText('Test text.')).toBeInTheDocument()
   })
 
-  it('should include container for text', async () => {
-    render(<TypingBox />)
+  it('should show focus reminder when input catcher is blurred', () => {
+    const { getByRole } = render(<TypingBox />)
+    const inputCatcher = getByRole('textbox')
 
-    expect(await screen.findByTestId('text-container')).toBeInTheDocument()
-  })
-
-  it('should include input catcher', async () => {
-    render(<TypingBox />)
-
-    expect(await screen.findByTestId('input-catcher')).toBeInTheDocument()
-  })
-
-  it('should show focus reminder when input catcher is blurred', async () => {
-    const { findByTestId } = render(<TypingBox />)
-    const inputCatcher = await findByTestId('input-catcher')
-
-    expect(screen.queryByTestId('focus-reminder')).not.toBeInTheDocument()
+    expect(screen.queryByText(FOCUS_REMINDER_TEXT)).not.toBeInTheDocument()
 
     act(() => {
       vi.useFakeTimers()
@@ -58,13 +43,14 @@ describe('TypingBox', async () => {
       vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS).useRealTimers()
     })
 
-    expect(await findByTestId('focus-reminder')).toBeInTheDocument()
+    expect(screen.getByText(FOCUS_REMINDER_TEXT)).toBeInTheDocument()
   })
 
   it('should focus input catcher on click', async () => {
-    const { findByTestId } = render(<TypingBox />)
-    const typingBox = await screen.findByTestId('typing-box')
-    const inputCatcher = await findByTestId('input-catcher')
+    const { getByRole } = render(<TypingBox />)
+    const typingBox = screen.getByRole('region')
+    const inputCatcher = getByRole('textbox')
+    const user = userEvent.setup()
 
     act(() => {
       vi.useFakeTimers()
@@ -72,15 +58,14 @@ describe('TypingBox', async () => {
       vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS).useRealTimers()
     })
 
-    const user = userEvent.setup()
     await user.click(typingBox)
 
     expect(inputCatcher).toHaveFocus()
   })
 
   it('should focus input catcher on keypress', async () => {
-    render(<TypingBox />)
-    const inputCatcher = await screen.findByTestId('input-catcher')
+    const { getByRole } = render(<TypingBox />)
+    const inputCatcher = getByRole('textbox')
     const user = userEvent.setup()
 
     act(() => {
@@ -91,17 +76,18 @@ describe('TypingBox', async () => {
 
     expect(inputCatcher).not.toHaveFocus()
 
-    await user.keyboard('o')
+    await user.keyboard('t')
 
     expect(inputCatcher).toHaveFocus()
   })
 
   it('should hide focus reminder on click', async () => {
-    const { findByTestId } = render(<TypingBox />)
-    const typingBox = await screen.findByTestId('typing-box')
-    const inputCatcher = await findByTestId('input-catcher')
+    const { getByRole } = render(<TypingBox />)
+    const typingBox = screen.getByRole('region')
+    const inputCatcher = getByRole('textbox')
+    const user = userEvent.setup()
 
-    expect(screen.queryByTestId('focus-reminder')).not.toBeInTheDocument()
+    expect(screen.queryByText(FOCUS_REMINDER_TEXT)).not.toBeInTheDocument()
 
     act(() => {
       vi.useFakeTimers()
@@ -109,11 +95,10 @@ describe('TypingBox', async () => {
       vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS).useRealTimers()
     })
 
-    expect(await findByTestId('focus-reminder')).toBeInTheDocument()
+    expect(screen.queryByText(FOCUS_REMINDER_TEXT)).toBeInTheDocument()
 
-    const user = userEvent.setup()
     await user.click(typingBox)
 
-    expect(screen.queryByTestId('focus-reminder')).not.toBeInTheDocument()
+    expect(screen.queryByText(FOCUS_REMINDER_TEXT)).not.toBeInTheDocument()
   })
 })
