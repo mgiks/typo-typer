@@ -34,14 +34,14 @@ function TextContainer(
   return (
     <div
       className='text-container'
-      data-testid='text-container'
+      role='status'
     >
-      <span className='text-container__text_correct' data-testid='correct-text'>
+      <span className='text-container__text_correct' aria-label='Correct text'>
         {correctText}
       </span>
       <span
         className='text-container__text_incorrect'
-        data-testid='incorrect-text'
+        aria-label='Incorrect text'
       >
         {incorrectText}
       </span>
