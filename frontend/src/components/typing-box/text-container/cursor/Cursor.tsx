@@ -8,7 +8,6 @@ function Cursor({ visible, ref }: CursorProps) {
     <span
       ref={ref}
       className='text-container__cursor'
-      role='marquee'
       aria-label='Cursor'
     />
   )

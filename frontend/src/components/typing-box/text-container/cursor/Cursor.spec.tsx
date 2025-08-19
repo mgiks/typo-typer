@@ -5,13 +5,13 @@ describe('Cursor', async () => {
   it("should be in the document when 'visible' prop is true", () => {
     renderCursor({ visible: true })
 
-    expect(screen.getByRole('marquee')).toBeInTheDocument()
+    expect(screen.getByLabelText(/cursor/i)).toBeInTheDocument()
   })
 
   it("should not be in the document when 'visible' prop is false", async () => {
     renderCursor({ visible: false })
 
-    expect(screen.queryByRole('marquee')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(/cursor/i)).not.toBeInTheDocument()
   })
 })
 
