@@ -5,7 +5,12 @@ export type CursorProps = {
 
 function Cursor({ visible, ref }: CursorProps) {
   const cursor = (
-    <span ref={ref} className='text-container__cursor' data-testid='cursor' />
+    <span
+      ref={ref}
+      className='text-container__cursor'
+      role='marquee'
+      aria-label='Cursor'
+    />
   )
 
   return visible ? cursor : null
