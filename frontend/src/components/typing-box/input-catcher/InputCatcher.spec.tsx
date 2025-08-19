@@ -78,7 +78,7 @@ describe('InputCatcher', async () => {
     },
   )
 
-  it('should update last typed letter index', async () => {
+  it('should update the index of the last typed letter', async () => {
     const user = userEvent.setup()
     const setLastTypedIndex = vi.fn((i: number) => i)
 
