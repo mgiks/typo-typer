@@ -1,11 +1,11 @@
-type StopWatchProps = {
-  visible: boolean
-}
+import { useAppSelector } from '../../hooks'
 
-function StopWatch({ visible }: StopWatchProps) {
-  const timer = <div data-testid='timer' />
+function StopWatch() {
+  const timer = <div role='timer' />
 
-  return visible ? timer : null
+  const isUserTyping = useAppSelector((state) => state.isUserTyping.value)
+
+  return isUserTyping ? timer : null
 }
 
 export default StopWatch

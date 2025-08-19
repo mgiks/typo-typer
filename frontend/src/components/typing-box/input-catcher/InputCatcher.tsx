@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '../../../hooks'
+import { userStartedTyping } from '../../../slices/isUserTyping.slice'
 
 export const FOCUS_REMINDER_TIMEOUT_MS = 750
 
@@ -27,7 +29,12 @@ function InputCatcher(
   const [lastIncorrectLetterIndex, setLastIncorrectLetterIndex] = useState(-1)
   const timeOutRef = useRef(-1)
 
+  const isUserTyping = useAppSelector((state) => state.isUserTyping.value)
+  const dispatch = useAppDispatch()
+
   useEffect(() => {
+    if (!isUserTyping && input) dispatch(userStartedTyping())
+
     const inputLastIndex = input.length - 1
     setLastTypedIndex(inputLastIndex)
 
