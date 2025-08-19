@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import TextContainer, { type TextContainerProps } from './TextContainer.tsx'
-
-const text = 'Test text.'
+import { TEXT_FIXTURE } from '../../../tests/fixtures.ts'
 
 describe('TextContainer', async () => {
   it('should be in the document', () => {
@@ -11,9 +10,9 @@ describe('TextContainer', async () => {
   })
 
   it("should display text from 'text' prop", () => {
-    renderTextContainer({ text: text })
+    renderTextContainer({ text: TEXT_FIXTURE })
 
-    expect(screen.getByRole('status')).toHaveTextContent(text)
+    expect(screen.getByRole('status')).toHaveTextContent(TEXT_FIXTURE)
   })
 
   it('should include a section for correct text', () => {
@@ -42,8 +41,8 @@ describe('TextContainer', async () => {
 
   it('should put incorrect and correct text inside corresponding sections', () => {
     const { getByLabelText } = renderTextContainer({
-      text: text,
-      lastTypedIndex: text.length - 1,
+      text: TEXT_FIXTURE,
+      lastTypedIndex: TEXT_FIXTURE.length - 1,
       incorrectTextStartIndex: 4,
     })
 

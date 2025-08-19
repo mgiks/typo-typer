@@ -4,9 +4,9 @@ import { setupServer } from 'msw/node'
 import userEvent from '@testing-library/user-event'
 import TypingBox, { TEXTS_URL } from './TypingBox.tsx'
 import { FOCUS_REMINDER_TIMEOUT_MS } from './input-catcher/InputCatcher.tsx'
+import { TEXT_FIXTURE } from '../../tests/fixtures.ts'
 
 const FOCUS_REMINDER_TEXT = /click here or press any key to focus/i
-const TEXT_FIXTURE = 'Test text.'
 
 const handlers = [
   http.get(TEXTS_URL, () => HttpResponse.json({ text: TEXT_FIXTURE })),
