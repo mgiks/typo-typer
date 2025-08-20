@@ -4,18 +4,19 @@ import InputCatcher, {
   FOCUS_REMINDER_TIMEOUT_MS,
   type InputCatcherProps,
 } from './InputCatcher.tsx'
+import { TEXT_FIXTURE } from '../../../tests/fixtures.ts'
 
 describe('InputCatcher', async () => {
-  it('should be in the document', async () => {
+  it('should be in the document', () => {
     renderInputCatcher()
 
-    expect(await screen.findByTestId('input-catcher')).toBeInTheDocument()
+    expect(screen.getByRole('textbox')).toBeInTheDocument()
   })
 
-  it('should be initially focused', async () => {
+  it('should be initially focused', () => {
     renderInputCatcher()
 
-    expect(await screen.findByTestId('input-catcher')).toHaveFocus()
+    expect(screen.getByRole('textbox')).toHaveFocus()
   })
 
   it(
@@ -25,11 +26,11 @@ describe('InputCatcher', async () => {
       const setIncorrectTextStartIndex = vi.fn((i: number) => i)
 
       renderInputCatcher({
-        text: 'test',
+        text: TEXT_FIXTURE,
         setIncorrectTextStartIndex: setIncorrectTextStartIndex,
       })
 
-      await user.keyboard('tezt')
+      await user.keyboard('Tezt')
 
       expect(setIncorrectTextStartIndex).toHaveReturnedWith(2)
     },
@@ -42,11 +43,11 @@ describe('InputCatcher', async () => {
       const setIncorrectTextStartIndex = vi.fn((i: number) => i)
 
       renderInputCatcher({
-        text: 'test',
+        text: TEXT_FIXTURE,
         setIncorrectTextStartIndex: setIncorrectTextStartIndex,
       })
 
-      await user.keyboard('tez')
+      await user.keyboard('Tez')
 
       expect(setIncorrectTextStartIndex).toHaveReturnedWith(2)
 
@@ -63,11 +64,11 @@ describe('InputCatcher', async () => {
       const setIncorrectTextStartIndex = vi.fn((i: number) => i)
 
       renderInputCatcher({
-        text: 'test',
+        text: TEXT_FIXTURE,
         setIncorrectTextStartIndex: setIncorrectTextStartIndex,
       })
 
-      await user.keyboard('tezt')
+      await user.keyboard('Tezt')
 
       expect(setIncorrectTextStartIndex).toHaveReturnedWith(2)
 
@@ -77,12 +78,12 @@ describe('InputCatcher', async () => {
     },
   )
 
-  it('should update last typed letter index', async () => {
+  it('should update the index of the last typed letter', async () => {
     const user = userEvent.setup()
     const setLastTypedIndex = vi.fn((i: number) => i)
 
     renderInputCatcher({
-      text: 'test',
+      text: TEXT_FIXTURE,
       setLastTypedIndex: setLastTypedIndex,
     })
 
@@ -93,9 +94,8 @@ describe('InputCatcher', async () => {
 
   it("should set 'isFocused' to false after a timeout when blurred", async () => {
     const setIsFocused = vi.fn((i: boolean) => i)
-
     renderInputCatcher({ setIsFocused: setIsFocused })
-    const inputCatcher = await screen.findByTestId('input-catcher')
+    const inputCatcher = screen.getByRole('textbox')
 
     vi.useFakeTimers()
     inputCatcher.blur()
@@ -108,7 +108,7 @@ describe('InputCatcher', async () => {
     const setIsFocused = vi.fn((i: boolean) => i)
 
     renderInputCatcher({ setIsFocused: setIsFocused })
-    const inputCatcher = await screen.findByTestId('input-catcher')
+    const inputCatcher = screen.getByRole('textbox')
 
     vi.useFakeTimers()
     inputCatcher.blur()

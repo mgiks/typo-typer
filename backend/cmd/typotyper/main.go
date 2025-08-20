@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/joho/godotenv"
+	"github.com/mgiks/typo-typer/internal/middleware"
 	"github.com/mgiks/typo-typer/internal/pg"
 	"github.com/mgiks/typo-typer/internal/server"
 )
@@ -26,7 +27,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("GET /texts", server.NewGETTextHandler(s.Pg))
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /texts", server.NewGETTextHandler(s.Pg))
 
-	log.Fatal(http.ListenAndServe(":8000", nil))
+	handler := middleware.CORS(mux)
+
+	log.Fatal(http.ListenAndServe(":8000", handler))
 }

@@ -55,7 +55,6 @@ function InputCatcher(
     <textarea
       ref={ref}
       className='typing-box__input-catcher'
-      data-testid='input-catcher'
       onInput={(event) => setInput(event.currentTarget.value)}
       onBlur={() => {
         setIsFocused(false)

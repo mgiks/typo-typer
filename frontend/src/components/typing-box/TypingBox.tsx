@@ -3,8 +3,10 @@ import './TypingBox.scss'
 import InputCatcher from './input-catcher/InputCatcher'
 import TextContainer from './text-container/TextContainer'
 import FocusReminder from './focus-reminder/FocusReminder'
+import { useAppDispatch, useAppSelector } from '../../hooks'
+import { userStartedTyping } from '../../slices/isUserTyping.slice'
 
-const TEXTS_URL = 'http://localhost:8000/texts'
+export const TEXTS_URL = 'http://localhost:8000/texts'
 
 export type GETTextResponse = { text: string }
 
@@ -18,6 +20,9 @@ function TypingBox() {
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
   const cursorRef = useRef<HTMLSpanElement>(null)
+
+  const isUserTyping = useAppSelector((state) => state.isUserTyping.value)
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     fetch(TEXTS_URL)
@@ -34,6 +39,8 @@ function TypingBox() {
   }, [])
 
   useEffect(() => {
+    if (!isUserTyping && lastTypedIndex > -1) dispatch(userStartedTyping())
+
     const cursorRect = cursorRef.current?.getBoundingClientRect()
     const typingBoxRect = typingBoxRef.current?.getBoundingClientRect()
 
@@ -57,7 +64,8 @@ function TypingBox() {
     <div
       ref={typingBoxRef}
       className='typing-box'
-      data-testid='typing-box'
+      role='region'
+      aria-label='Typing Box'
       onClick={() => inputCatcherRef.current?.focus()}
     >
       <InputCatcher

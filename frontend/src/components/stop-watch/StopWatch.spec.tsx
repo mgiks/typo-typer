@@ -1,16 +1,25 @@
-import { render, screen } from '@testing-library/react'
+import { renderWithProviders } from '../../tests/utils'
+import { act, screen } from '@testing-library/react'
 import StopWatch from './StopWatch'
 
 describe('StopWatch', async () => {
-  it("should be in the document when 'visible' prop is true", async () => {
-    render(<StopWatch visible={true} />)
+  it('should update every second', async () => {
+    vi.useFakeTimers()
 
-    expect(await screen.findByTestId('timer')).toBeInTheDocument()
-  })
+    renderWithProviders(<StopWatch />, {
+      preloadedState: { isUserTyping: { value: true } },
+    })
 
-  it("should not be in the document when 'visible' prop is true", async () => {
-    render(<StopWatch visible={false} />)
+    expect(screen.getByText('0')).toBeInTheDocument()
 
-    expect(screen.queryByTestId('timer')).not.toBeInTheDocument()
+    act(() => vi.advanceTimersByTime(1000))
+
+    expect(screen.getByText('1')).toBeInTheDocument()
+
+    act(() => vi.advanceTimersByTime(1000))
+
+    expect(screen.getByText('2')).toBeInTheDocument()
+
+    vi.useRealTimers()
   })
 })

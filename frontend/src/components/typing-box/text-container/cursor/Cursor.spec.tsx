@@ -2,16 +2,16 @@ import { render, screen } from '@testing-library/react'
 import Cursor, { type CursorProps } from './Cursor.tsx'
 
 describe('Cursor', async () => {
-  it("should be in the document when 'visible' prop is true", async () => {
+  it("should be in the document when 'visible' prop is true", () => {
     renderCursor({ visible: true })
 
-    expect(await screen.findByTestId('cursor')).toBeInTheDocument()
+    expect(screen.getByLabelText(/cursor/i)).toBeInTheDocument()
   })
 
   it("should not be in the document when 'visible' prop is false", async () => {
     renderCursor({ visible: false })
 
-    expect(screen.queryByTestId('cursor')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(/cursor/i)).not.toBeInTheDocument()
   })
 })
 

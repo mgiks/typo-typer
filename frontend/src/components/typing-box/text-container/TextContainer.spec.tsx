@@ -1,56 +1,53 @@
 import { render, screen } from '@testing-library/react'
 import TextContainer, { type TextContainerProps } from './TextContainer.tsx'
+import { TEXT_FIXTURE } from '../../../tests/fixtures.ts'
 
 describe('TextContainer', async () => {
-  it('should be in the document', async () => {
+  it('should be in the document', () => {
     renderTextContainer()
 
-    expect(await screen.findByTestId('text-container')).toBeInTheDocument()
+    expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
-  it("should display text from 'text' prop", async () => {
-    const text = 'Test text.'
+  it("should display text from 'text' prop", () => {
+    renderTextContainer({ text: TEXT_FIXTURE })
 
-    renderTextContainer({ text: text })
-
-    expect(await screen.findByTestId('text-container')).toHaveTextContent(text)
+    expect(screen.getByRole('status')).toHaveTextContent(TEXT_FIXTURE)
   })
 
-  it('should include a section for correct text', async () => {
-    const { findByTestId } = renderTextContainer()
+  it('should include a section for correct text', () => {
+    const { getByLabelText } = renderTextContainer()
 
-    expect(await findByTestId('correct-text')).toBeInTheDocument()
+    expect(getByLabelText(/^correct text$/i)).toBeInTheDocument()
   })
 
-  it('should include a section for incorrect text', async () => {
-    const { findByTestId } = renderTextContainer()
+  it('should include a section for incorrect text', () => {
+    const { getByLabelText } = renderTextContainer()
 
-    expect(await findByTestId('incorrect-text')).toBeInTheDocument()
+    expect(getByLabelText(/^incorrect text$/i)).toBeInTheDocument()
   })
 
-  it("should include cursor when 'showCursor' prop is true", async () => {
-    const { findByTestId } = renderTextContainer({ showCursor: true })
+  it("should include cursor when 'showCursor' prop is true", () => {
+    const { getByLabelText } = renderTextContainer({ showCursor: true })
 
-    expect(await findByTestId('cursor')).toBeInTheDocument()
+    expect(getByLabelText(/cursor/i)).toBeInTheDocument()
   })
 
-  it("should not include cursor when 'showCursor' prop is false", async () => {
-    const { queryByTestId } = renderTextContainer()
+  it("should not include cursor when 'showCursor' prop is false", () => {
+    const { queryByLabelText } = renderTextContainer()
 
-    expect(queryByTestId('cursor')).not.toBeInTheDocument()
+    expect(queryByLabelText(/cursor/i)).not.toBeInTheDocument()
   })
 
-  it('should put incorrect and correct text inside corresponding sections', async () => {
-    const text = 'Test text.'
-
-    const { findByTestId } = renderTextContainer({
-      text: text,
-      lastTypedIndex: text.length - 1,
+  it('should put incorrect and correct text inside corresponding sections', () => {
+    const { getByLabelText } = renderTextContainer({
+      text: TEXT_FIXTURE,
+      lastTypedIndex: TEXT_FIXTURE.length - 1,
       incorrectTextStartIndex: 4,
     })
 
-    expect(await findByTestId('correct-text')).toHaveTextContent(/^Test$/)
-    expect(await findByTestId('incorrect-text')).toHaveTextContent(
+    expect(getByLabelText(/^correct text$/i)).toHaveTextContent(/^Test$/)
+    expect(getByLabelText(/^incorrect text$/i)).toHaveTextContent(
       /^ text\.$/,
       { normalizeWhitespace: false },
     )
