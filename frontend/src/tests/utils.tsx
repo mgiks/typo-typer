@@ -1,0 +1,22 @@
+import React, { type PropsWithChildren } from 'react'
+import { render } from '@testing-library/react'
+import type { RenderOptions } from '@testing-library/react'
+import { Provider } from 'react-redux'
+import { type AppStore, type RootState, setupStore } from '../store'
+
+interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
+  preloadedState?: Partial<RootState>
+  store?: AppStore
+}
+
+export function renderWithProviders(
+  ui: React.ReactElement,
+  { preloadedState = {}, store = setupStore(preloadedState), ...renderOptions }:
+    ExtendedRenderOptions = {},
+) {
+  function Wrapper({ children }: PropsWithChildren) {
+    return <Provider store={store} children={children} />
+  }
+
+  return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) }
+}

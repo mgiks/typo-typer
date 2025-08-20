@@ -1,12 +1,11 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import userEvent from '@testing-library/user-event'
 import TypingBox, { TEXTS_URL } from './TypingBox.tsx'
 import { FOCUS_REMINDER_TIMEOUT_MS } from './input-catcher/InputCatcher.tsx'
 import { TEXT_FIXTURE } from '../../tests/fixtures.ts'
-import { Provider } from 'react-redux'
-import { store } from '../../store.ts'
+import { renderWithProviders } from '../../tests/utils.tsx'
 
 const FOCUS_REMINDER_TEXT = /click here or press any key to focus/i
 
@@ -22,19 +21,19 @@ afterAll(() => server.close())
 
 describe('TypingBox', async () => {
   it('should be in the document', () => {
-    renderTypingBox()
+    renderWithProviders(<TypingBox />)
 
     expect(screen.getByRole('region')).toBeInTheDocument()
   })
 
   it('should display fetched text on initial render', async () => {
-    renderTypingBox()
+    renderWithProviders(<TypingBox />)
 
     expect(await screen.findByText('Test text.')).toBeInTheDocument()
   })
 
   it('should show focus reminder when input catcher is blurred', () => {
-    const { getByRole } = renderTypingBox()
+    const { getByRole } = renderWithProviders(<TypingBox />)
     const inputCatcher = getByRole('textbox')
 
     expect(screen.queryByText(FOCUS_REMINDER_TEXT)).not.toBeInTheDocument()
@@ -49,7 +48,7 @@ describe('TypingBox', async () => {
   })
 
   it('should focus input catcher on click', async () => {
-    const { getByRole } = renderTypingBox()
+    const { getByRole } = renderWithProviders(<TypingBox />)
     const typingBox = screen.getByRole('region')
     const inputCatcher = getByRole('textbox')
     const user = userEvent.setup()
@@ -66,7 +65,7 @@ describe('TypingBox', async () => {
   })
 
   it('should focus input catcher on keypress', async () => {
-    const { getByRole } = renderTypingBox()
+    const { getByRole } = renderWithProviders(<TypingBox />)
     const inputCatcher = getByRole('textbox')
     const user = userEvent.setup()
 
@@ -84,7 +83,7 @@ describe('TypingBox', async () => {
   })
 
   it('should hide focus reminder on click', async () => {
-    const { getByRole } = renderTypingBox()
+    const { getByRole } = renderWithProviders(<TypingBox />)
     const typingBox = screen.getByRole('region')
     const inputCatcher = getByRole('textbox')
     const user = userEvent.setup()
@@ -104,11 +103,3 @@ describe('TypingBox', async () => {
     expect(screen.queryByText(FOCUS_REMINDER_TEXT)).not.toBeInTheDocument()
   })
 })
-
-function renderTypingBox() {
-  return render(
-    <Provider store={store}>
-      <TypingBox />
-    </Provider>,
-  )
-}
