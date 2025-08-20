@@ -19,7 +19,7 @@ func TestCORS(t *testing.T) {
 	handler.ServeHTTP(response, request)
 
 	got := response.Header().Get("Access-Control-Allow-Origin")
-	want := "http://localhost:5173"
+	want := AllowedOrigin
 
 	if got != want {
 		t.Errorf("should set Access-Control-Allow-Origini to %q, got %q", want, got)
