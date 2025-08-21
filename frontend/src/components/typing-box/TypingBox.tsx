@@ -18,10 +18,13 @@ export const TEXTS_URL = 'http://localhost:8000/texts'
 
 export type GETTextResponse = { text: string }
 
-type TypingBoxProps = { detachStateStore?: boolean }
+export type TypingBoxProps = {
+  detachStateStore?: boolean
+  initialText?: string
+}
 
-function TypingBox({ detachStateStore }: TypingBoxProps) {
-  const [text, setText] = useState('')
+function TypingBox({ detachStateStore, initialText }: TypingBoxProps) {
+  const [text, setText] = useState(initialText ?? '')
   const [lastTypedIndex, setLastTypedIndex] = useState(-1)
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
   const [isFocused, setIsFocused] = useState(true)
@@ -40,11 +43,13 @@ function TypingBox({ detachStateStore }: TypingBoxProps) {
   const dispatch = detachStateStore ? () => {} : useAppDispatch()
 
   useEffect(() => {
-    fetch(TEXTS_URL)
-      .then((resp) => resp.json())
-      .then((resp) => resp as GETTextResponse)
-      .then((json) => setText(json.text))
-      .catch((_) => console.error('Network error'))
+    if (typeof initialText === 'undefined') {
+      fetch(TEXTS_URL)
+        .then((resp) => resp.json())
+        .then((resp) => resp as GETTextResponse)
+        .then((json) => setText(json.text))
+        .catch((_) => console.error('Network error'))
+    }
 
     const handleKeyPress = () => typingBoxRef.current?.click()
 

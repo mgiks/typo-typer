@@ -2,21 +2,11 @@ import { act, render, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import userEvent from '@testing-library/user-event'
-import TypingBox, { TEXTS_URL } from './TypingBox.tsx'
+import TypingBox, { TEXTS_URL, type TypingBoxProps } from './TypingBox.tsx'
 import { FOCUS_REMINDER_TIMEOUT_MS } from './input-catcher/InputCatcher.tsx'
 import { TEXT_FIXTURE } from '../../tests/fixtures.ts'
 
 const FOCUS_REMINDER_TEXT = /click here or press any key to focus/i
-
-const handlers = [
-  http.get(TEXTS_URL, () => HttpResponse.json({ text: TEXT_FIXTURE })),
-]
-
-const server = setupServer(...handlers)
-
-beforeAll(() => server.listen())
-afterEach(() => server.resetHandlers())
-afterAll(() => server.close())
 
 describe('TypingBox', async () => {
   it('should be in the document', () => {
@@ -26,9 +16,15 @@ describe('TypingBox', async () => {
   })
 
   it('should display fetched text on initial render', async () => {
+    const server = setupServer(
+      http.get(TEXTS_URL, () => HttpResponse.json({ text: TEXT_FIXTURE })),
+    )
+    server.listen()
     renderTypingBox()
 
     expect(await screen.findByText('Test text.')).toBeInTheDocument()
+
+    server.close()
   })
 
   it('should show focus reminder when input catcher is blurred', () => {
@@ -103,6 +99,10 @@ describe('TypingBox', async () => {
   })
 })
 
-function renderTypingBox() {
-  return render(<TypingBox detachStateStore={true} />)
+const defaultProps: TypingBoxProps = {
+  detachStateStore: true,
+}
+
+function renderTypingBox(overrides?: Partial<TypingBoxProps>) {
+  return render(<TypingBox {...defaultProps} {...overrides} />)
 }
