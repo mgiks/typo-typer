@@ -8,6 +8,8 @@
   line-height: global.$line-height;
   font-size: 2rem;
   user-select: none;
+  height: global.$line-height * global.$line-number;
+  overflow: hidden;
 
   &__cursor {
     position: absolute;

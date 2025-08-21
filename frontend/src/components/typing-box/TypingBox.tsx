@@ -19,7 +19,6 @@ function TypingBox() {
 
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
-  const cursorRef = useRef<HTMLSpanElement>(null)
 
   const isUserTyping = useAppSelector((state) => state.isUserTyping.value)
   const dispatch = useAppDispatch()
@@ -40,24 +39,6 @@ function TypingBox() {
 
   useEffect(() => {
     if (!isUserTyping && lastTypedIndex > -1) dispatch(userStartedTyping())
-
-    const cursorRect = cursorRef.current?.getBoundingClientRect()
-    const typingBoxRect = typingBoxRef.current?.getBoundingClientRect()
-
-    if (!cursorRect || !typingBoxRect) return
-
-    const typingBoxCenter = typingBoxRect.top + typingBoxRect.height / 2
-    const cursorCenter = cursorRect.top + cursorRect.height / 2
-
-    // Needed to prevent tiny scroll adjustments when this is not necessary
-    const isCursorOffCentered = Math.abs(typingBoxCenter - cursorCenter) > 5
-
-    if (isCursorOffCentered) {
-      cursorRef.current?.scrollIntoView({
-        behavior: 'instant',
-        block: 'center',
-      })
-    }
   }, [lastTypedIndex])
 
   return (
@@ -80,7 +61,6 @@ function TypingBox() {
         visible={showFocusReminder}
       />
       <TextContainer
-        cursorRef={cursorRef}
         text={text}
         lastTypedIndex={lastTypedIndex}
         incorrectTextStartIndex={incorrectTextStartIndex}
