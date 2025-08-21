@@ -1,9 +1,9 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import isUserTypingReducer from './slices/isUserTyping.slice'
+import playerStatusReducer from './slices/playerStatus.slice'
 import typingStatsReducer from './slices/typingStats.slice'
 
 const rootReducer = combineReducers({
-  isUserTyping: isUserTypingReducer,
+  playerStatus: playerStatusReducer,
   typingStats: typingStatsReducer,
 })
 

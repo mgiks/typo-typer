@@ -5,10 +5,12 @@ function StopWatch() {
   const [milliSecondsElapsed, setMilliSecondsElapsed] = useState(0)
   const startTime = useRef(0)
 
-  const isUserTyping = useAppSelector((state) => state.isUserTyping.value)
+  const hasUserStartedTyping = useAppSelector((state) =>
+    state.playerStatus.startedTyping
+  )
 
   useEffect(() => {
-    if (!isUserTyping) return
+    if (!hasUserStartedTyping) return
 
     startTime.current = Date.now()
 
@@ -17,11 +19,11 @@ function StopWatch() {
     }, 1)
 
     return () => clearInterval(intervalId)
-  }, [isUserTyping])
+  }, [hasUserStartedTyping])
 
   const timer = <div role='timer'>{Math.floor(milliSecondsElapsed / 1000)}</div>
 
-  return isUserTyping ? timer : null
+  return hasUserStartedTyping ? timer : null
 }
 
 export default StopWatch

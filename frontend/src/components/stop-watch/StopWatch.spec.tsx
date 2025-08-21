@@ -7,7 +7,12 @@ describe('StopWatch', async () => {
     vi.useFakeTimers()
 
     renderWithProviders(<StopWatch />, {
-      preloadedState: { isUserTyping: { value: true } },
+      preloadedState: {
+        playerStatus: {
+          startedTyping: true,
+          finishedTyping: false,
+        },
+      },
     })
 
     expect(screen.getByText('0')).toBeInTheDocument()

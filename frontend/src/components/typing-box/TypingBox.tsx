@@ -4,11 +4,14 @@ import InputCatcher from './input-catcher/InputCatcher'
 import TextContainer from './text-container/TextContainer'
 import FocusReminder from './focus-reminder/FocusReminder'
 import { useAppDispatch, useAppSelector } from '../../hooks'
-import { userStartedTyping } from '../../slices/isUserTyping.slice'
 import {
   increaseCorrectKeysPressed,
   increaseTotalKeysPressed,
 } from '../../slices/typingStats.slice'
+import {
+  playerFinishedTyping,
+  playerStartedTyping,
+} from '../../slices/playerStatus.slice'
 
 export const TEXTS_URL = 'http://localhost:8000/texts'
 
@@ -20,13 +23,17 @@ function TypingBox() {
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
-  const [userFinishedTyping, setUserFinishedTyping] = useState(false)
 
   const prevLastTypedIndex = useRef(-1)
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
 
-  const isUserTyping = useAppSelector((state) => state.isUserTyping.value)
+  const hasPlayerStartedTyping = useAppSelector((state) =>
+    state.playerStatus.startedTyping
+  )
+  const hasPlayerFinishedTyping = useAppSelector((state) =>
+    state.playerStatus.finishedTyping
+  )
   const dispatch = useAppDispatch()
 
   useEffect(() => {
@@ -44,9 +51,13 @@ function TypingBox() {
   }, [])
 
   useEffect(() => {
-    if (text && lastTypedIndex === text.length - 1) setUserFinishedTyping(true)
+    if (text && lastTypedIndex === text.length - 1) {
+      dispatch(playerFinishedTyping())
+    }
 
-    if (!isUserTyping && lastTypedIndex > -1) dispatch(userStartedTyping())
+    if (!hasPlayerStartedTyping && lastTypedIndex > -1) {
+      dispatch(playerStartedTyping())
+    }
 
     if (lastTypedIndex > prevLastTypedIndex.current) {
       if (incorrectTextStartIndex === -1) dispatch(increaseCorrectKeysPressed())
@@ -58,7 +69,7 @@ function TypingBox() {
     }
   }, [lastTypedIndex, incorrectTextStartIndex])
 
-  return (!userFinishedTyping && (
+  return (!hasPlayerFinishedTyping && (
     <div
       ref={typingBoxRef}
       className='typing-box'
