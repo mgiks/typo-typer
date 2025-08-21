@@ -1,19 +1,26 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAppSelector } from '../../hooks'
+import { playerStatusInitialState } from '../../slices/playerStatus.slice'
 
 type StopWatchProps = {
   forceVisible?: boolean
+  detachStateStore?: boolean
 }
 
-function StopWatch({ forceVisible }: StopWatchProps) {
+function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
   const [milliSecondsElapsed, setMilliSecondsElapsed] = useState(0)
   const startTime = useRef(0)
 
-  const hasUserStartedTyping = forceVisible ??
-    useAppSelector((state) => state.playerStatus.startedTyping)
+  const playerStartedTyping = detachStateStore
+    ? playerStatusInitialState.startedTyping
+    : useAppSelector((state) => state.playerStatus.startedTyping)
+
+  const playerFinishedTyping = detachStateStore
+    ? playerStatusInitialState.finishedTyping
+    : useAppSelector((state) => state.playerStatus.finishedTyping)
 
   useEffect(() => {
-    if (!hasUserStartedTyping) return
+    if (!playerStartedTyping && !forceVisible) return
 
     startTime.current = Date.now()
 
@@ -22,11 +29,13 @@ function StopWatch({ forceVisible }: StopWatchProps) {
     }, 1)
 
     return () => clearInterval(intervalId)
-  }, [hasUserStartedTyping])
+  }, [playerStartedTyping])
+
+  if (playerFinishedTyping) return null
 
   const timer = <div role='timer'>{Math.floor(milliSecondsElapsed / 1000)}</div>
 
-  return hasUserStartedTyping ? timer : null
+  return (forceVisible || playerStartedTyping) ? timer : null
 }
 
 export default StopWatch

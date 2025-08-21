@@ -5,7 +5,7 @@ describe('StopWatch', async () => {
   it('should update every second', async () => {
     vi.useFakeTimers()
 
-    render(<StopWatch forceVisible={true} />)
+    render(<StopWatch forceVisible={true} detachStateStore={true} />)
 
     expect(screen.getByText('0')).toBeInTheDocument()
 
