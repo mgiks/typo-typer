@@ -102,4 +102,15 @@ describe('TypingBox', async () => {
 
     expect(screen.queryByText(FOCUS_REMINDER_TEXT)).not.toBeInTheDocument()
   })
+
+  it('should hide when typing the whole text', async () => {
+    const user = userEvent.setup()
+    renderWithProviders(<TypingBox />)
+
+    expect(screen.getByRole('region')).toBeInTheDocument()
+
+    await user.keyboard(TEXT_FIXTURE)
+
+    expect(screen.queryByRole('region')).not.toBeInTheDocument()
+  })
 })

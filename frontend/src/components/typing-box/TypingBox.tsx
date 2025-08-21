@@ -20,6 +20,7 @@ function TypingBox() {
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
+  const [userFinishedTyping, setUserFinishedTyping] = useState(false)
 
   const prevLastTypedIndex = useRef(-1)
   const typingBoxRef = useRef<HTMLDivElement>(null)
@@ -43,6 +44,8 @@ function TypingBox() {
   }, [])
 
   useEffect(() => {
+    if (text && lastTypedIndex === text.length - 1) setUserFinishedTyping(true)
+
     if (!isUserTyping && lastTypedIndex > -1) dispatch(userStartedTyping())
 
     if (lastTypedIndex > prevLastTypedIndex.current) {
@@ -55,7 +58,7 @@ function TypingBox() {
     }
   }, [lastTypedIndex, incorrectTextStartIndex])
 
-  return (
+  return (!userFinishedTyping && (
     <div
       ref={typingBoxRef}
       className='typing-box'
@@ -81,7 +84,7 @@ function TypingBox() {
         showCursor={isFocused}
       />
     </div>
-  )
+  ))
 }
 
 export default TypingBox
