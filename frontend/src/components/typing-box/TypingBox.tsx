@@ -5,6 +5,10 @@ import TextContainer from './text-container/TextContainer'
 import FocusReminder from './focus-reminder/FocusReminder'
 import { useAppDispatch, useAppSelector } from '../../hooks'
 import { userStartedTyping } from '../../slices/isUserTyping.slice'
+import {
+  increaseCorrectKeysPressed,
+  increaseTotalKeysPressed,
+} from '../../slices/typingStats.slice'
 
 export const TEXTS_URL = 'http://localhost:8000/texts'
 
@@ -17,6 +21,7 @@ function TypingBox() {
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
 
+  const prevLastTypedIndex = useRef(-1)
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
 
@@ -39,7 +44,16 @@ function TypingBox() {
 
   useEffect(() => {
     if (!isUserTyping && lastTypedIndex > -1) dispatch(userStartedTyping())
-  }, [lastTypedIndex])
+
+    if (lastTypedIndex > prevLastTypedIndex.current) {
+      if (incorrectTextStartIndex === -1) dispatch(increaseCorrectKeysPressed())
+      dispatch(increaseTotalKeysPressed())
+    }
+
+    if (prevLastTypedIndex.current !== lastTypedIndex) {
+      prevLastTypedIndex.current = lastTypedIndex
+    }
+  }, [lastTypedIndex, incorrectTextStartIndex])
 
   return (
     <div

@@ -1,7 +1,11 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import isUserTypingReducer from './slices/isUserTyping.slice'
+import typingStatsReducer from './slices/typingStats.slice'
 
-const rootReducer = combineReducers({ isUserTyping: isUserTypingReducer })
+const rootReducer = combineReducers({
+  isUserTyping: isUserTypingReducer,
+  typingStats: typingStatsReducer,
+})
 
 export const store = configureStore({ reducer: rootReducer })
 
