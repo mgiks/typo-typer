@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef } from 'react'
 
 export const FOCUS_REMINDER_TIMEOUT_MS = 750
 
@@ -23,42 +23,43 @@ function InputCatcher(
     setIncorrectTextStartIndex,
   }: InputCatcherProps,
 ) {
-  const [input, setInput] = useState('')
-  const [lastIncorrectLetterIndex, setLastIncorrectLetterIndex] = useState(-1)
+  const lastIncorrectLetterIndex = useRef(-1)
   const timeOutRef = useRef(-1)
 
-  useEffect(() => {
+  const handleInput = (event: React.FormEvent<HTMLTextAreaElement>) => {
+    const input = event.currentTarget.value
+
     const inputLastIndex = input.length - 1
     setLastTypedIndex(inputLastIndex)
 
     if (inputLastIndex === -1) {
-      setLastIncorrectLetterIndex(-1)
+      lastIncorrectLetterIndex.current = -1
       setIncorrectTextStartIndex(-1)
       return
     }
 
     if (text[inputLastIndex] !== input.at(-1)) {
       if (
-        lastIncorrectLetterIndex === -1 ||
-        inputLastIndex < lastIncorrectLetterIndex
+        lastIncorrectLetterIndex.current === -1 ||
+        inputLastIndex < lastIncorrectLetterIndex.current
       ) {
         setIncorrectTextStartIndex(inputLastIndex)
-        setLastIncorrectLetterIndex(inputLastIndex)
+        lastIncorrectLetterIndex.current = inputLastIndex
       }
-    } else if (inputLastIndex < lastIncorrectLetterIndex) {
+    } else if (inputLastIndex < lastIncorrectLetterIndex.current) {
       setIncorrectTextStartIndex(-1)
-      setLastIncorrectLetterIndex(-1)
+      lastIncorrectLetterIndex.current = -1
     }
-  }, [input])
+  }
 
   return (
     <textarea
       ref={ref}
       className='typing-box__input-catcher'
-      onInput={(event) => setInput(event.currentTarget.value)}
+      onInput={handleInput}
       onBlur={() => {
         setIsFocused(false)
-        timeOutRef.current = setTimeout(
+        timeOutRef.current = window.setTimeout(
           setShowFocusReminder,
           FOCUS_REMINDER_TIMEOUT_MS,
           true,

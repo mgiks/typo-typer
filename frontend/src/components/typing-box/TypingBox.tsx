@@ -4,32 +4,52 @@ import InputCatcher from './input-catcher/InputCatcher'
 import TextContainer from './text-container/TextContainer'
 import FocusReminder from './focus-reminder/FocusReminder'
 import { useAppDispatch, useAppSelector } from '../../hooks'
-import { userStartedTyping } from '../../slices/isUserTyping.slice'
+import {
+  increaseCorrectKeysPressed,
+  increaseTotalKeysPressed,
+} from '../../slices/typingStats.slice'
+import {
+  playerFinishedTyping,
+  playerStartedTyping,
+  playerStatusInitialState,
+} from '../../slices/playerStatus.slice'
 
 export const TEXTS_URL = 'http://localhost:8000/texts'
 
 export type GETTextResponse = { text: string }
 
-function TypingBox() {
-  const [text, setText] = useState('')
+export type TypingBoxProps = {
+  detachStateStore?: boolean
+  initialText?: string
+}
+
+function TypingBox({ detachStateStore, initialText }: TypingBoxProps) {
+  const [text, setText] = useState(initialText ?? '')
   const [lastTypedIndex, setLastTypedIndex] = useState(-1)
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
 
+  const prevLastTypedIndex = useRef(-1)
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
-  const cursorRef = useRef<HTMLSpanElement>(null)
 
-  const isUserTyping = useAppSelector((state) => state.isUserTyping.value)
-  const dispatch = useAppDispatch()
+  const hasPlayerStartedTyping = detachStateStore
+    ? playerStatusInitialState.startedTyping
+    : useAppSelector((state) => state.playerStatus.startedTyping)
+  const hasPlayerFinishedTyping = detachStateStore
+    ? playerStatusInitialState.finishedTyping
+    : useAppSelector((state) => state.playerStatus.finishedTyping)
+  const dispatch = detachStateStore ? () => {} : useAppDispatch()
 
   useEffect(() => {
-    fetch(TEXTS_URL)
-      .then((resp) => resp.json())
-      .then((resp) => resp as GETTextResponse)
-      .then((json) => setText(json.text))
-      .catch((_) => console.error('Network error'))
+    if (typeof initialText === 'undefined') {
+      fetch(TEXTS_URL)
+        .then((resp) => resp.json())
+        .then((resp) => resp as GETTextResponse)
+        .then((json) => setText(json.text))
+        .catch((_) => console.error('Network error'))
+    }
 
     const handleKeyPress = () => typingBoxRef.current?.click()
 
@@ -39,28 +59,25 @@ function TypingBox() {
   }, [])
 
   useEffect(() => {
-    if (!isUserTyping && lastTypedIndex > -1) dispatch(userStartedTyping())
-
-    const cursorRect = cursorRef.current?.getBoundingClientRect()
-    const typingBoxRect = typingBoxRef.current?.getBoundingClientRect()
-
-    if (!cursorRect || !typingBoxRect) return
-
-    const typingBoxCenter = typingBoxRect.top + typingBoxRect.height / 2
-    const cursorCenter = cursorRect.top + cursorRect.height / 2
-
-    // Needed to prevent tiny scroll adjustments when this is not necessary
-    const isCursorOffCentered = Math.abs(typingBoxCenter - cursorCenter) > 5
-
-    if (isCursorOffCentered) {
-      cursorRef.current?.scrollIntoView({
-        behavior: 'instant',
-        block: 'center',
-      })
+    if (text && lastTypedIndex === text.length - 1) {
+      dispatch(playerFinishedTyping())
     }
-  }, [lastTypedIndex])
 
-  return (
+    if (!hasPlayerStartedTyping && lastTypedIndex > -1) {
+      dispatch(playerStartedTyping())
+    }
+
+    if (lastTypedIndex > prevLastTypedIndex.current) {
+      if (incorrectTextStartIndex === -1) dispatch(increaseCorrectKeysPressed())
+      dispatch(increaseTotalKeysPressed())
+    }
+
+    if (prevLastTypedIndex.current !== lastTypedIndex) {
+      prevLastTypedIndex.current = lastTypedIndex
+    }
+  }, [lastTypedIndex, incorrectTextStartIndex])
+
+  return (!hasPlayerFinishedTyping && (
     <div
       ref={typingBoxRef}
       className='typing-box'
@@ -80,14 +97,13 @@ function TypingBox() {
         visible={showFocusReminder}
       />
       <TextContainer
-        cursorRef={cursorRef}
         text={text}
         lastTypedIndex={lastTypedIndex}
         incorrectTextStartIndex={incorrectTextStartIndex}
         showCursor={isFocused}
       />
     </div>
-  )
+  ))
 }
 
 export default TypingBox

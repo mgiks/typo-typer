@@ -1,14 +1,11 @@
-import { renderWithProviders } from '../../tests/utils'
-import { act, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import StopWatch from './StopWatch'
 
 describe('StopWatch', async () => {
   it('should update every second', async () => {
     vi.useFakeTimers()
 
-    renderWithProviders(<StopWatch />, {
-      preloadedState: { isUserTyping: { value: true } },
-    })
+    render(<StopWatch forceVisible={true} detachStateStore={true} />)
 
     expect(screen.getByText('0')).toBeInTheDocument()
 

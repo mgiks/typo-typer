@@ -59,7 +59,6 @@ const defaultProps: TextContainerProps = {
   lastTypedIndex: -1,
   incorrectTextStartIndex: -1,
   text: '',
-  cursorRef: null,
 }
 
 function renderTextContainer(overrides: Partial<TextContainerProps> = {}) {

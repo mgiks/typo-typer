@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import './TextContainer.scss'
 import Cursor from './cursor/Cursor'
 
@@ -6,17 +7,11 @@ export type TextContainerProps = {
   text: string
   lastTypedIndex: number
   incorrectTextStartIndex: number
-  cursorRef: React.Ref<HTMLSpanElement | null>
 }
 
 function TextContainer(
-  {
-    text,
-    showCursor,
-    lastTypedIndex,
-    incorrectTextStartIndex,
-    cursorRef,
-  }: TextContainerProps,
+  { text, showCursor, lastTypedIndex, incorrectTextStartIndex }:
+    TextContainerProps,
 ) {
   let correctText = ''
   let incorrectText = ''
@@ -31,8 +26,33 @@ function TextContainer(
     )
   }
 
+  const textContainerRef = useRef<HTMLDivElement>(null)
+  const cursorRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    const cursorRect = cursorRef.current?.getBoundingClientRect()
+    const textContainerRect = textContainerRef.current?.getBoundingClientRect()
+
+    if (!cursorRect || !textContainerRect) return
+
+    const textContainerCenter = textContainerRect.top +
+      textContainerRect.height / 2
+    const cursorCenter = cursorRect.top + cursorRect.height / 2
+
+    // Needed to prevent tiny scroll adjustments when this is not necessary
+    const isCursorOffCentered = Math.abs(textContainerCenter - cursorCenter) > 5
+
+    if (isCursorOffCentered) {
+      cursorRef.current?.scrollIntoView({
+        behavior: 'instant',
+        block: 'center',
+      })
+    }
+  }, [lastTypedIndex])
+
   return (
     <div
+      ref={textContainerRef}
       className='text-container'
       role='status'
     >

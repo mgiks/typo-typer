@@ -4,9 +4,11 @@
   border: 1px solid black;
   width: 85%;
   height: global.$line-height * global.$line-number;
-  overflow-y: hidden;
   padding: 0px;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &__input-catcher {
     position: fixed;
