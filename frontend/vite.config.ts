@@ -10,11 +10,11 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'happy-dom',
-    setupFiles: './src/test-setup.ts',
+    setupFiles: './src/tests/tests-setup.ts',
     css: true,
     coverage: {
       reporter: ['text'],
-      include: ['src/components'],
+      include: ['src/components', 'src/tests/integration'],
     },
   },
 })
