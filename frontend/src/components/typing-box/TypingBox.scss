@@ -6,6 +6,9 @@
   height: global.$line-height * global.$line-number;
   padding: 0px;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &__input-catcher {
     position: fixed;
