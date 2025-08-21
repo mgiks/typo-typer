@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAppSelector } from '../../hooks'
 
-function StopWatch() {
+type StopWatchProps = {
+  forceVisible?: boolean
+}
+
+function StopWatch({ forceVisible }: StopWatchProps) {
   const [milliSecondsElapsed, setMilliSecondsElapsed] = useState(0)
   const startTime = useRef(0)
 
-  const hasUserStartedTyping = useAppSelector((state) =>
-    state.playerStatus.startedTyping
-  )
+  const hasUserStartedTyping = forceVisible ??
+    useAppSelector((state) => state.playerStatus.startedTyping)
 
   useEffect(() => {
     if (!hasUserStartedTyping) return
