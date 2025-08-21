@@ -6,7 +6,7 @@ export type typingStatsState = {
   timeElapsedInMinutes: number
 }
 
-const initialState: typingStatsState = {
+export const typingStatsInitialState: typingStatsState = {
   totalKeysPressed: 0,
   correctKeysPressed: 0,
   timeElapsedInMinutes: 0,
@@ -14,7 +14,7 @@ const initialState: typingStatsState = {
 
 export const typingStatsSlice = createSlice({
   name: 'typingStats',
-  initialState,
+  initialState: typingStatsInitialState,
   reducers: {
     increaseTotalKeysPressed: (state) => {
       state.totalKeysPressed += 1

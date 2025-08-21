@@ -11,13 +11,16 @@ import {
 import {
   playerFinishedTyping,
   playerStartedTyping,
+  playerStatusInitialState,
 } from '../../slices/playerStatus.slice'
 
 export const TEXTS_URL = 'http://localhost:8000/texts'
 
 export type GETTextResponse = { text: string }
 
-function TypingBox() {
+type TypingBoxProps = { detachStateStore?: boolean }
+
+function TypingBox({ detachStateStore }: TypingBoxProps) {
   const [text, setText] = useState('')
   const [lastTypedIndex, setLastTypedIndex] = useState(-1)
   const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
@@ -28,13 +31,13 @@ function TypingBox() {
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
 
-  const hasPlayerStartedTyping = useAppSelector((state) =>
-    state.playerStatus.startedTyping
-  )
-  const hasPlayerFinishedTyping = useAppSelector((state) =>
-    state.playerStatus.finishedTyping
-  )
-  const dispatch = useAppDispatch()
+  const hasPlayerStartedTyping = detachStateStore
+    ? playerStatusInitialState.startedTyping
+    : useAppSelector((state) => state.playerStatus.startedTyping)
+  const hasPlayerFinishedTyping = detachStateStore
+    ? playerStatusInitialState.finishedTyping
+    : useAppSelector((state) => state.playerStatus.finishedTyping)
+  const dispatch = detachStateStore ? () => {} : useAppDispatch()
 
   useEffect(() => {
     fetch(TEXTS_URL)

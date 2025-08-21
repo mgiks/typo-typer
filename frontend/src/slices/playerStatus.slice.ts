@@ -5,14 +5,14 @@ export type playerStatusState = {
   finishedTyping: boolean
 }
 
-const initialState: playerStatusState = {
+export const playerStatusInitialState: playerStatusState = {
   startedTyping: false,
   finishedTyping: false,
 }
 
 export const playerStatusSlice = createSlice({
   name: 'playerStatus',
-  initialState,
+  initialState: playerStatusInitialState,
   reducers: {
     playerStartedTyping: (state) => {
       state.startedTyping = true
