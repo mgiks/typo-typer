@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { useAppSelector } from '../../hooks'
+import { useAppDispatch, useAppSelector } from '../../hooks'
 import { playerStatusInitialState } from '../../slices/playerStatus.slice'
+import { setTimeElapsedInMinutesTo } from '../../slices/typingStats.slice'
 
 type StopWatchProps = {
   forceVisible?: boolean
@@ -10,6 +11,7 @@ type StopWatchProps = {
 function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
   const [milliSecondsElapsed, setMilliSecondsElapsed] = useState(0)
   const startTime = useRef(0)
+  const intervalId = useRef(-1)
 
   const playerStartedTyping = detachStateStore
     ? playerStatusInitialState.startedTyping
@@ -19,17 +21,26 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
     ? playerStatusInitialState.finishedTyping
     : useAppSelector((state) => state.playerStatus.finishedTyping)
 
+  const dispatch = detachStateStore ? () => {} : useAppDispatch()
+
   useEffect(() => {
     if (!playerStartedTyping && !forceVisible) return
 
     startTime.current = Date.now()
 
-    const intervalId = setInterval(() => {
+    intervalId.current = window.setInterval(() => {
       setMilliSecondsElapsed(Date.now() - startTime.current)
     }, 1)
 
-    return () => clearInterval(intervalId)
+    return () => clearInterval(intervalId.current)
   }, [playerStartedTyping])
+
+  useEffect(() => {
+    if (!playerFinishedTyping) return
+    clearInterval(intervalId.current)
+
+    dispatch(setTimeElapsedInMinutesTo(milliSecondsElapsed / 1000 / 60))
+  }, [playerFinishedTyping, milliSecondsElapsed])
 
   if (playerFinishedTyping) return null
 

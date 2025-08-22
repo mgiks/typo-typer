@@ -43,7 +43,7 @@ function TypingBox({ detachStateStore, initialText }: TypingBoxProps) {
   const dispatch = detachStateStore ? () => {} : useAppDispatch()
 
   useEffect(() => {
-    if (typeof initialText === 'undefined') {
+    if (!initialText) {
       fetch(TEXTS_URL)
         .then((resp) => resp.json())
         .then((resp) => resp as GETTextResponse)
