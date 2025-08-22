@@ -29,6 +29,20 @@ function TextContainer(
   const textContainerRef = useRef<HTMLDivElement>(null)
   const cursorRef = useRef<HTMLSpanElement>(null)
 
+  const scrollCursorIntoView = () => {
+    cursorRef.current?.scrollIntoView({ behavior: 'instant', block: 'center' })
+  }
+
+  useEffect(() => {
+    if (!textContainerRef.current) return
+
+    const observer = new ResizeObserver(() => scrollCursorIntoView())
+
+    observer.observe(textContainerRef.current)
+
+    return () => observer.disconnect()
+  }, [])
+
   useEffect(() => {
     const cursorRect = cursorRef.current?.getBoundingClientRect()
     const textContainerRect = textContainerRef.current?.getBoundingClientRect()
@@ -42,12 +56,7 @@ function TextContainer(
     // Needed to prevent tiny scroll adjustments when this is not necessary
     const isCursorOffCentered = Math.abs(textContainerCenter - cursorCenter) > 5
 
-    if (isCursorOffCentered) {
-      cursorRef.current?.scrollIntoView({
-        behavior: 'instant',
-        block: 'center',
-      })
-    }
+    if (isCursorOffCentered) scrollCursorIntoView()
   }, [lastTypedIndex])
 
   return (
