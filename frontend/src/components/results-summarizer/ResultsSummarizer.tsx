@@ -24,14 +24,16 @@ function ResultsSummarizer({ forceNoChart }: ResultsSummarizerProps) {
     { totalKeysPressed, correctKeysPressed, timeElapsedInMinutes }:
       typingStatsState,
   ) {
-    const wpm = Math.floor(totalKeysPressed / 5 / timeElapsedInMinutes)
-    const acc = correctKeysPressed / totalKeysPressed
+    const rawWpm = Math.floor(totalKeysPressed / 5 / timeElapsedInMinutes)
+    // Rounding until the nearest hundredth of a decimanl
+    const acc = Math.ceil(correctKeysPressed / totalKeysPressed * 100) / 100
+    const adjustedWpm = rawWpm * acc
 
     return (
       <div aria-label='Results summary' className='results-summarizer'>
         <div className='results-summarizer__wpm-acc-section'>
           <div className='results-summarizer__wpm'>
-            <div>wpm</div> <div>{wpm * acc}</div>
+            <div>wpm</div> <div>{adjustedWpm}</div>
           </div>
           <div className='results-summarizer__acc'>
             <div>acc</div> <div>{acc * 100}%</div>
