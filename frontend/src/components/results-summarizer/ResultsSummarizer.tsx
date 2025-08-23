@@ -4,9 +4,7 @@ import './ResultsSummarizer.scss'
 import { useAppSelector } from '../../hooks'
 import type { typingStatsState } from '../../slices/typingStats.slice'
 
-type ResultsSummarizerProps = {
-  forceNoChart: boolean
-}
+type ResultsSummarizerProps = { forceNoChart?: boolean }
 
 function ResultsSummarizer({ forceNoChart }: ResultsSummarizerProps) {
   const playerFinishedTyping = useAppSelector((state) =>
