@@ -24,7 +24,9 @@ function ResultsSummarizer({ forceNoChart }: ResultsSummarizerProps) {
     { totalKeysPressed, correctKeysPressed, timeElapsedInMinutes }:
       typingStatsState,
   ) {
-    const rawWpm = Math.floor(totalKeysPressed / 5 / timeElapsedInMinutes)
+    const rawWpm = timeElapsedInMinutes
+      ? Math.floor(totalKeysPressed / 5 / timeElapsedInMinutes)
+      : 0
     // Rounding until the nearest hundredth of a decimanl
     const acc = Math.ceil(correctKeysPressed / totalKeysPressed * 100) / 100
     const adjustedWpm = rawWpm * acc
