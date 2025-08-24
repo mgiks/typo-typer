@@ -30,7 +30,7 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
 
     intervalId.current = window.setInterval(() => {
       setMilliSecondsElapsed(Date.now() - startTime.current)
-    }, 1)
+    }, 100)
 
     return () => clearInterval(intervalId.current)
   }, [playerStartedTyping])
