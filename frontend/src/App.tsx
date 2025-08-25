@@ -8,7 +8,7 @@ function App() {
     <div className='app'>
       <div />
       <div className='app__middle-section'>
-        <TypingBox />
+        <TypingBox initialText='Bro.' />
         <StopWatch />
         <ResultsSummarizer />
       </div>

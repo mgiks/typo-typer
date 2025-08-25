@@ -2,13 +2,19 @@ import 'chart.js/auto'
 import { Line } from 'react-chartjs-2'
 import './ResultsSummarizer.scss'
 import { useAppSelector } from '../../hooks'
-import type { typingStatsState } from '../../slices/typingStats.slice'
-
+import {
+  calculateAccuracy,
+  calculateAdjustedWpm,
+  calculateRawWpm,
+} from '../../utils/typing-results.utils'
 type ResultsSummarizerProps = { forceNoChart?: boolean }
 
 function ResultsSummarizer({ forceNoChart }: ResultsSummarizerProps) {
   const playerFinishedTyping = useAppSelector((state) =>
     state.playerStatus.finishedTyping
+  )
+  const timeElapsedInMinutes = useAppSelector((state) =>
+    state.typingStats.timeElapsedInMinutes
   )
   const totalKeysPressed = useAppSelector((state) =>
     state.typingStats.totalKeysPressed
@@ -16,20 +22,13 @@ function ResultsSummarizer({ forceNoChart }: ResultsSummarizerProps) {
   const correctKeysPressed = useAppSelector((state) =>
     state.typingStats.correctKeysPressed
   )
-  const timeElapsedInMinutes = useAppSelector((state) =>
-    state.typingStats.timeElapsedInMinutes
-  )
+  const resultGraphData = useAppSelector((state) => state.resultGraph.data)
 
-  function buildResults(
-    { totalKeysPressed, correctKeysPressed, timeElapsedInMinutes }:
-      typingStatsState,
-  ) {
-    const rawWpm = timeElapsedInMinutes
-      ? Math.floor(totalKeysPressed / 5 / timeElapsedInMinutes)
-      : 0
-    // Rounding until the nearest hundredth of a decimanl
-    const acc = Math.ceil(correctKeysPressed / totalKeysPressed * 100) / 100
-    const adjustedWpm = rawWpm * acc
+  function buildResults() {
+    const hasTypedForLessThanASecond = 1 > timeElapsedInMinutes * 60
+    const rawWpm = calculateRawWpm(timeElapsedInMinutes, totalKeysPressed)
+    const acc = calculateAccuracy(totalKeysPressed, correctKeysPressed)
+    const adjustedWpm = calculateAdjustedWpm(rawWpm, acc)
 
     return (
       <div aria-label='Results summary' className='results-summarizer'>
@@ -38,7 +37,8 @@ function ResultsSummarizer({ forceNoChart }: ResultsSummarizerProps) {
             <div>wpm</div> <div>{adjustedWpm}</div>
           </div>
           <div className='results-summarizer__acc'>
-            <div>acc</div> <div>{acc * 100}%</div>
+            <div>acc</div>
+            <div>{acc * 100}%</div>
           </div>
         </div>
         {forceNoChart
@@ -56,10 +56,15 @@ function ResultsSummarizer({ forceNoChart }: ResultsSummarizerProps) {
                   },
                 }}
                 data={{
-                  labels: Array.from({ length: 100 }, (_, i) => i),
+                  labels: (hasTypedForLessThanASecond
+                    ? resultGraphData.filter((point) => point.time < 1000)
+                    : resultGraphData.filter((point) => point.time >= 1000))
+                    .map((point) => String(point.time)).concat(['LRM']),
                   datasets: [{
-                    data: Array.from({ length: 100 }, (_, i) =>
-                      Math.sin(i / 10)),
+                    data: (hasTypedForLessThanASecond
+                      ? resultGraphData.filter((point) => point.time < 1000)
+                      : resultGraphData.filter((point) => point.time >= 1000))
+                      .map((point) => point.wpm).concat([adjustedWpm]),
                   }],
                 }}
               />
@@ -69,13 +74,7 @@ function ResultsSummarizer({ forceNoChart }: ResultsSummarizerProps) {
     )
   }
 
-  return playerFinishedTyping
-    ? buildResults({
-      totalKeysPressed: totalKeysPressed,
-      correctKeysPressed: correctKeysPressed,
-      timeElapsedInMinutes: timeElapsedInMinutes,
-    })
-    : null
+  return playerFinishedTyping ? buildResults() : null
 }
 
 export default ResultsSummarizer
