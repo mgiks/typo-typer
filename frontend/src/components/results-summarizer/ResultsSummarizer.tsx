@@ -49,22 +49,65 @@ function ResultsSummarizer({ forceNoChart }: ResultsSummarizerProps) {
                 options={{
                   maintainAspectRatio: false,
                   responsive: true,
-                  plugins: { legend: { display: false } },
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: { position: 'nearest' },
+                  },
                   scales: {
-                    y: { min: 0, ticks: { stepSize: 1 } },
-                    x: { min: 0 },
+                    x: {
+                      grid: {
+                        display: false,
+                      },
+                      title: {
+                        display: true,
+                        text: 'Seconds',
+                      },
+                    },
+                    y: {
+                      title: {
+                        display: true,
+                        text: 'WPM',
+                      },
+                      min: 0,
+                      ticks: { stepSize: 1 },
+                    },
+                    errors: {
+                      grid: {
+                        display: false,
+                      },
+                      title: { display: true, text: 'Errors' },
+                      axis: 'y',
+                      min: 0,
+                      position: 'right',
+                      ticks: { stepSize: 1 },
+                    },
                   },
                 }}
                 data={{
                   labels: (hasTypedForLessThanASecond
                     ? resultGraphData.filter((point) => point.time < 1000)
-                    : resultGraphData.filter((point) => point.time >= 1000))
-                    .map((point) => String(point.time)).concat(['LRM']),
+                    : resultGraphData.filter((point) =>
+                      point.time > 0 && point.time % 1000 == 0
+                    ))
+                    .map((point) => String(point.time / 1000)).concat(['LRM']),
                   datasets: [{
                     data: (hasTypedForLessThanASecond
                       ? resultGraphData.filter((point) => point.time < 1000)
-                      : resultGraphData.filter((point) => point.time >= 1000))
+                      : resultGraphData.filter((point) =>
+                        point.time > 0 && point.time % 1000 == 0
+                      ))
                       .map((point) => point.wpm).concat([adjustedWpm]),
+                  }, {
+                    data: resultGraphData.map((point) => point.errs).concat([
+                      totalKeysPressed - correctKeysPressed,
+                    ]),
+                    yAxisID: 'errors',
+                  }, {
+                    data: resultGraphData.map((point) =>
+                      point.acc
+                    ).concat([
+                      acc,
+                    ]),
                   }],
                 }}
               />

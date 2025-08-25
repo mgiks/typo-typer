@@ -61,7 +61,7 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
   const prevTimePoint = useRef(-1)
 
   useEffect(() => {
-    if (prevTimePoint.current !== milliSecondsElapsed) {
+    if (milliSecondsElapsed && prevTimePoint.current !== milliSecondsElapsed) {
       const acc = calculateAccuracy(totalKeysPressed, correctKeysPressed)
       const rawWpm = calculateRawWpm(
         milliSecondsElapsed / 1000 / 60,
