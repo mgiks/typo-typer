@@ -20,7 +20,7 @@ describe('TypingBox', async () => {
       http.get(TEXTS_URL, () => HttpResponse.json({ text: TEXT_FIXTURE })),
     )
     server.listen()
-    renderTypingBox()
+    renderTypingBox({ initialText: '' })
 
     expect(await screen.findByText('Test text.')).toBeInTheDocument()
 
@@ -101,6 +101,7 @@ describe('TypingBox', async () => {
 
 const defaultProps: TypingBoxProps = {
   detachStateStore: true,
+  initialText: 'Placeholder',
 }
 
 function renderTypingBox(overrides?: Partial<TypingBoxProps>) {
