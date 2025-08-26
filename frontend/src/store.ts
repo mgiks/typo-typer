@@ -1,12 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
+import typingDataReducer from './slices/typingData.slice'
 import playerStatusReducer from './slices/playerStatus.slice'
-import typingStatsReducer from './slices/typingStats.slice'
-import resultGraphReducer from './slices/resultGraph.slice'
+import typingHistoryReducer from './slices/typingHistory.slice'
 
 const rootReducer = combineReducers({
+  typingData: typingDataReducer,
+  typingHistory: typingHistoryReducer,
   playerStatus: playerStatusReducer,
-  typingStats: typingStatsReducer,
-  resultGraph: resultGraphReducer,
 })
 
 export const store = configureStore({ reducer: rootReducer })

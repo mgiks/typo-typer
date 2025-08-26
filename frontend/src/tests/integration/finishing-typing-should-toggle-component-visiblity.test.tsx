@@ -12,7 +12,7 @@ it('finishing typing should toggle component visiblity', async () => {
     <>
       <TypingBox initialText={TEXT_FIXTURE} />
       <StopWatch />
-      <ResultsSummarizer forceNoChart={true} />
+      <ResultsSummarizer forceNoGraph={true} />
     </>,
   )
 

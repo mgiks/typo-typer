@@ -12,7 +12,7 @@ it('typing results should make sense', async () => {
     <>
       <TypingBox initialText={TEXT_FIXTURE} />
       <StopWatch />
-      <ResultsSummarizer forceNoChart={true} />
+      <ResultsSummarizer forceNoGraph={true} />
     </>,
   )
 

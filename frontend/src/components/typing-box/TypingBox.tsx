@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks'
 import {
   increaseCorrectKeysPressed,
   increaseTotalKeysPressed,
-} from '../../slices/typingStats.slice'
+} from '../../slices/typingData.slice'
 import {
   playerFinishedTyping,
   playerStartedTyping,
