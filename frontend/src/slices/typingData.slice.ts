@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-export type typingDataState = {
+export type TypingDataState = {
   totalKeysPressed: number
   correctKeysPressed: number
 }
 
-export const typingDataInitialState: typingDataState = {
+export const typingDataInitialState: TypingDataState = {
   totalKeysPressed: 0,
   correctKeysPressed: 0,
 }

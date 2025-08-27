@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-export type playerStatusState = {
+export type PlayerStatusState = {
   startedTyping: boolean
   finishedTyping: boolean
 }
 
-export const playerStatusInitialState: playerStatusState = {
+export const playerStatusInitialState: PlayerStatusState = {
   startedTyping: false,
   finishedTyping: false,
 }
