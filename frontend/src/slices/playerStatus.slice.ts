@@ -20,10 +20,14 @@ export const playerStatusSlice = createSlice({
     playerFinishedTyping: (state) => {
       state.finishedTyping = true
     },
+    resetPlayerStatus: (state) => {
+      state.startedTyping = playerStatusInitialState.startedTyping
+      state.finishedTyping = playerStatusInitialState.finishedTyping
+    },
   },
 })
 
-export const { playerStartedTyping, playerFinishedTyping } =
+export const { playerStartedTyping, playerFinishedTyping, resetPlayerStatus } =
   playerStatusSlice.actions
 
 export default playerStatusSlice.reducer

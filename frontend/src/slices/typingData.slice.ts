@@ -20,12 +20,17 @@ export const typingDataSlice = createSlice({
     increaseCorrectKeysPressed: (state) => {
       state.correctKeysPressed += 1
     },
+    resetTypingData: (state) => {
+      state.totalKeysPressed = typingDataInitialState.totalKeysPressed
+      state.correctKeysPressed = typingDataInitialState.correctKeysPressed
+    },
   },
 })
 
 export const {
   increaseTotalKeysPressed,
   increaseCorrectKeysPressed,
+  resetTypingData,
 } = typingDataSlice.actions
 
 export default typingDataSlice.reducer

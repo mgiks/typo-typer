@@ -9,19 +9,20 @@ export type TypingHistoryPoint = {
 }
 
 export type LastRecordedMoment = Omit<TypingHistoryPoint, 'timeInSeconds'>
+
 export type TypingHistoryState = {
   timedData: TypingHistoryPoint[]
   lastRecordedMoment: LastRecordedMoment
 }
 
-export const TypingHistoryInitialState: TypingHistoryState = {
+export const typingHistoryInitialState: TypingHistoryState = {
   timedData: [],
   lastRecordedMoment: { wpm: 0, acc: 0, errs: 0 },
 }
 
 export const typingHistorySlice = createSlice({
-  name: 'TimedTyping',
-  initialState: TypingHistoryInitialState,
+  name: 'typingHistory',
+  initialState: typingHistoryInitialState,
   reducers: {
     setTypingHistory: (
       state,
@@ -46,6 +47,10 @@ export const typingHistorySlice = createSlice({
     ) => {
       state.lastRecordedMoment = action.payload
     },
+    resetTypingHistory: (state) => {
+      state.timedData = typingHistoryInitialState.timedData
+      state.lastRecordedMoment = typingHistoryInitialState.lastRecordedMoment
+    },
   },
 })
 
@@ -53,6 +58,7 @@ export const {
   setTypingHistory,
   addTypingHistoryPoint,
   setLastRecordedMoment,
+  resetTypingHistory,
 } = typingHistorySlice.actions
 
 export default typingHistorySlice.reducer
