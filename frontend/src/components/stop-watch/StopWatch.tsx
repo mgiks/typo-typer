@@ -24,8 +24,8 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
   const intervalId = useRef(-1)
 
   // Keeps interval aware of these values
-  const totalKeysPressedRef = useRef(0)
-  const correctKeysPressedRef = useRef(0)
+  const totalKeysPressed = useRef(0)
+  const correctKeysPressed = useRef(0)
 
   const playerStartedTyping = detachStateStore
     ? playerStatusInitialState.startedTyping
@@ -35,23 +35,23 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
     ? playerStatusInitialState.finishedTyping
     : useAppSelector((state) => state.playerStatus.finishedTyping)
 
-  const totalKeysPressed = detachStateStore
+  const totalKeysPressedState = detachStateStore
     ? typingDataInitialState.totalKeysPressed
     : useAppSelector((state) => state.typingData.totalKeysPressed)
 
-  const correctKeysPressed = detachStateStore
+  const correctKeysPressedState = detachStateStore
     ? typingDataInitialState.correctKeysPressed
     : useAppSelector((state) => state.typingData.correctKeysPressed)
 
   const dispatch = detachStateStore ? () => {} : useAppDispatch()
 
   useEffect(() => {
-    totalKeysPressedRef.current = totalKeysPressed
-  }, [totalKeysPressed])
+    totalKeysPressed.current = totalKeysPressedState
+  }, [totalKeysPressedState])
 
   useEffect(() => {
-    correctKeysPressedRef.current = correctKeysPressed
-  }, [correctKeysPressed])
+    correctKeysPressed.current = correctKeysPressedState
+  }, [correctKeysPressedState])
 
   const prevTimePoint = useRef(-1)
 
@@ -70,17 +70,20 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
       if (timeDiffInMs) {
         const timeDiffInSeconds = timeDiffInMs / 1000
         const acc = calculateAccuracy(
-          totalKeysPressedRef.current,
-          correctKeysPressedRef.current,
+          totalKeysPressed.current,
+          correctKeysPressed.current,
         )
-        const rawWpm = calculateRawWpm(timeDiffInSeconds / 60, totalKeysPressed)
+        const rawWpm = calculateRawWpm(
+          timeDiffInSeconds / 60,
+          totalKeysPressed.current,
+        )
         const adjustedWpm = calculateAdjustedWpm(rawWpm, acc)
 
         dispatch(addTypingHistoryPoint({
           timeInSeconds: timeDiffInSeconds,
           acc: acc,
           wpm: adjustedWpm,
-          errs: totalKeysPressedRef.current - correctKeysPressedRef.current,
+          errs: totalKeysPressed.current - correctKeysPressed.current,
         }))
       }
 
@@ -97,19 +100,19 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
 
     const finaltimeDiffInSeconds = finaltimeDiffInMs / 1000
     const finalAcc = calculateAccuracy(
-      totalKeysPressedRef.current,
-      correctKeysPressedRef.current,
+      totalKeysPressed.current,
+      correctKeysPressed.current,
     )
     const finalRawWpm = calculateRawWpm(
       finaltimeDiffInSeconds / 60,
-      totalKeysPressed,
+      totalKeysPressed.current,
     )
     const finalAdjustedWpm = calculateAdjustedWpm(finalRawWpm, finalAcc)
 
     dispatch(setLastRecordedMoment({
       acc: finalAcc,
       wpm: finalAdjustedWpm,
-      errs: totalKeysPressedRef.current - correctKeysPressedRef.current,
+      errs: totalKeysPressed.current - correctKeysPressed.current,
     }))
   }, [playerFinishedTyping, milliSecondsElapsed])
 
