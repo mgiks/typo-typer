@@ -1,4 +1,5 @@
 import './App.scss'
+import ResetButton from './components/reset-button/ResetButton'
 import ResultsSummarizer from './components/results-summarizer/ResultsSummarizer'
 import StopWatch from './components/stop-watch/StopWatch'
 import TypingBox from './components/typing-box/TypingBox'
@@ -8,9 +9,12 @@ function App() {
     <div className='app'>
       <div />
       <div className='app__middle-section'>
-        <TypingBox initialText='Bro.' />
+        <TypingBox />
         <StopWatch />
-        <ResultsSummarizer />
+        <div className='app__result-section'>
+          <ResultsSummarizer />
+          <ResetButton />
+        </div>
       </div>
       <div />
     </div>

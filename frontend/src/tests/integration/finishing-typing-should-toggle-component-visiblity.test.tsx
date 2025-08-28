@@ -10,9 +10,9 @@ it('finishing typing should toggle component visiblity', async () => {
   const user = userEvent.setup()
   renderWithProviders(
     <>
-      <TypingBox initialText={TEXT_FIXTURE} />
+      <TypingBox forcedText={TEXT_FIXTURE} />
       <StopWatch />
-      <ResultsSummarizer forceNoChart={true} />
+      <ResultsSummarizer forceNoGraph={true} />
     </>,
   )
 

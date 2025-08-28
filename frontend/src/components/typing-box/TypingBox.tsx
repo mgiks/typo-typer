@@ -7,26 +7,27 @@ import { useAppDispatch, useAppSelector } from '../../hooks'
 import {
   increaseCorrectKeysPressed,
   increaseTotalKeysPressed,
-} from '../../slices/typingStats.slice'
+} from '../../slices/typingData.slice'
 import {
   playerFinishedTyping,
   playerStartedTyping,
   playerStatusInitialState,
 } from '../../slices/playerStatus.slice'
-
-export const TEXTS_URL = 'http://localhost:8000/texts'
-
-export type GETTextResponse = { text: string }
+import {
+  fetchText,
+  setIncorrectTextStartIndexTo,
+  setLastTypedIndexTo,
+  textDataInitialState,
+} from '../../slices/textData.slice'
 
 export type TypingBoxProps = {
   detachStateStore?: boolean
-  initialText?: string
+  forcedText?: string
 }
 
-function TypingBox({ detachStateStore, initialText }: TypingBoxProps) {
-  const [text, setText] = useState(initialText ?? '')
-  const [lastTypedIndex, setLastTypedIndex] = useState(-1)
-  const [incorrectTextStartIndex, setIncorrectTextStartIndex] = useState(-1)
+function TypingBox(
+  { detachStateStore, forcedText: initialText }: TypingBoxProps,
+) {
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
 
@@ -34,6 +35,16 @@ function TypingBox({ detachStateStore, initialText }: TypingBoxProps) {
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
 
+  const text = initialText ??
+    (detachStateStore
+      ? textDataInitialState.text
+      : useAppSelector((state) => state.textData.text))
+  const lastTypedIndex = detachStateStore
+    ? textDataInitialState.lastTypedIndex
+    : useAppSelector((state) => state.textData.lastTypedIndex)
+  const incorrectTextStartIndex = detachStateStore
+    ? textDataInitialState.incorrectTextStartIndex
+    : useAppSelector((state) => state.textData.incorrectTextStartIndex)
   const hasPlayerStartedTyping = detachStateStore
     ? playerStatusInitialState.startedTyping
     : useAppSelector((state) => state.playerStatus.startedTyping)
@@ -42,14 +53,16 @@ function TypingBox({ detachStateStore, initialText }: TypingBoxProps) {
     : useAppSelector((state) => state.playerStatus.finishedTyping)
   const dispatch = detachStateStore ? () => {} : useAppDispatch()
 
+  const setLastTypedIndex = (i: number) => {
+    dispatch(setLastTypedIndexTo(i))
+  }
+
+  const setIncorrectTextStartIndex = (i: number) => {
+    dispatch(setIncorrectTextStartIndexTo(i))
+  }
+
   useEffect(() => {
-    if (!initialText) {
-      fetch(TEXTS_URL)
-        .then((resp) => resp.json())
-        .then((resp) => resp as GETTextResponse)
-        .then((json) => setText(json.text))
-        .catch((_) => console.error('Network error'))
-    }
+    if (!initialText) dispatch(fetchText())
 
     const handleKeyPress = () => typingBoxRef.current?.click()
 

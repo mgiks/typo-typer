@@ -1,29 +1,31 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../hooks'
-import { playerStatusInitialState } from '../../slices/playerStatus.slice'
+import { typingDataInitialState } from '../../slices/typingData.slice'
 import {
-  setTimeElapsedInMinutesTo,
-  typingStatsInitialState,
-} from '../../slices/typingStats.slice'
-import { addResultGraphPoint } from '../../slices/resultGraph.slice'
+  addTypingHistoryPoint,
+  setLastRecordedMomentTo,
+} from '../../slices/typingHistory.slice'
 import {
   calculateAccuracy,
   calculateAdjustedWpm,
   calculateRawWpm,
 } from '../../utils/typing-results.utils'
+import { playerStatusInitialState } from '../../slices/playerStatus.slice'
 
 const TIME_FRAME_IN_MS = 100
 
-type StopWatchProps = {
-  forceVisible?: boolean
-  detachStateStore?: boolean
-}
+type StopWatchProps = { forceVisible?: boolean; detachStateStore?: boolean }
 
 function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
   const [milliSecondsElapsed, setMilliSecondsElapsed] = useState(0)
+
   const startTime = useRef(0)
   const currentTime = useRef(0)
   const intervalId = useRef(-1)
+
+  // Keeps interval aware of these values
+  const totalKeysPressed = useRef(0)
+  const correctKeysPressed = useRef(0)
 
   const playerStartedTyping = detachStateStore
     ? playerStatusInitialState.startedTyping
@@ -33,15 +35,25 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
     ? playerStatusInitialState.finishedTyping
     : useAppSelector((state) => state.playerStatus.finishedTyping)
 
-  const totalKeysPressed = detachStateStore
-    ? typingStatsInitialState.totalKeysPressed
-    : useAppSelector((state) => state.typingStats.totalKeysPressed)
+  const totalKeysPressedState = detachStateStore
+    ? typingDataInitialState.totalKeysPressed
+    : useAppSelector((state) => state.typingData.totalKeysPressed)
 
-  const correctKeysPressed = detachStateStore
-    ? typingStatsInitialState.correctKeysPressed
-    : useAppSelector((state) => state.typingStats.correctKeysPressed)
+  const correctKeysPressedState = detachStateStore
+    ? typingDataInitialState.correctKeysPressed
+    : useAppSelector((state) => state.typingData.correctKeysPressed)
 
   const dispatch = detachStateStore ? () => {} : useAppDispatch()
+
+  useEffect(() => {
+    totalKeysPressed.current = totalKeysPressedState
+  }, [totalKeysPressedState])
+
+  useEffect(() => {
+    correctKeysPressed.current = correctKeysPressedState
+  }, [correctKeysPressedState])
+
+  const prevTimePoint = useRef(-1)
 
   useEffect(() => {
     if (!playerStartedTyping && !forceVisible) return
@@ -51,38 +63,57 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
 
     intervalId.current = window.setInterval(() => {
       currentTime.current += TIME_FRAME_IN_MS
-      const timeDiff = currentTime.current - startTime.current
-      setMilliSecondsElapsed(timeDiff)
+      const timeDiffInMs = currentTime.current - startTime.current
+
+      setMilliSecondsElapsed(timeDiffInMs)
+
+      if (timeDiffInMs) {
+        const timeDiffInSeconds = timeDiffInMs / 1000
+        const acc = calculateAccuracy(
+          totalKeysPressed.current,
+          correctKeysPressed.current,
+        )
+        const rawWpm = calculateRawWpm(
+          timeDiffInSeconds / 60,
+          totalKeysPressed.current,
+        )
+        const adjustedWpm = calculateAdjustedWpm(rawWpm, acc)
+
+        dispatch(addTypingHistoryPoint({
+          timeInSeconds: timeDiffInSeconds,
+          acc: acc,
+          wpm: adjustedWpm,
+          errs: totalKeysPressed.current - correctKeysPressed.current,
+        }))
+      }
+
+      prevTimePoint.current = milliSecondsElapsed
     }, TIME_FRAME_IN_MS)
 
-    return () => clearInterval(intervalId.current)
+    return () => (setMilliSecondsElapsed(0), clearInterval(intervalId.current))
   }, [playerStartedTyping])
-
-  const prevTimePoint = useRef(-1)
-
-  useEffect(() => {
-    if (milliSecondsElapsed && prevTimePoint.current !== milliSecondsElapsed) {
-      const acc = calculateAccuracy(totalKeysPressed, correctKeysPressed)
-      const rawWpm = calculateRawWpm(
-        milliSecondsElapsed / 1000 / 60,
-        totalKeysPressed,
-      )
-      const adjustedWpm = calculateAdjustedWpm(rawWpm, acc)
-
-      dispatch(addResultGraphPoint({
-        time: milliSecondsElapsed,
-        acc: acc,
-        wpm: adjustedWpm,
-        errs: totalKeysPressed - correctKeysPressed,
-      }))
-    }
-    prevTimePoint.current = milliSecondsElapsed
-  }, [totalKeysPressed, correctKeysPressed, milliSecondsElapsed])
 
   useEffect(() => {
     if (!playerFinishedTyping) return
     clearInterval(intervalId.current)
-    dispatch(setTimeElapsedInMinutesTo(milliSecondsElapsed / 1000 / 60))
+    const finaltimeDiffInMs = currentTime.current - startTime.current
+
+    const finaltimeDiffInSeconds = finaltimeDiffInMs / 1000
+    const finalAcc = calculateAccuracy(
+      totalKeysPressed.current,
+      correctKeysPressed.current,
+    )
+    const finalRawWpm = calculateRawWpm(
+      finaltimeDiffInSeconds / 60,
+      totalKeysPressed.current,
+    )
+    const finalAdjustedWpm = calculateAdjustedWpm(finalRawWpm, finalAcc)
+
+    dispatch(setLastRecordedMomentTo({
+      acc: finalAcc,
+      wpm: finalAdjustedWpm,
+      errs: totalKeysPressed.current - correctKeysPressed.current,
+    }))
   }, [playerFinishedTyping, milliSecondsElapsed])
 
   if (playerFinishedTyping) return null
