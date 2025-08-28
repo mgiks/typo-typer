@@ -2,9 +2,11 @@ import { act, render, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import userEvent from '@testing-library/user-event'
-import TypingBox, { TEXTS_URL, type TypingBoxProps } from './TypingBox.tsx'
+import TypingBox, { type TypingBoxProps } from './TypingBox.tsx'
 import { FOCUS_REMINDER_TIMEOUT_MS } from './input-catcher/InputCatcher.tsx'
 import { TEXT_FIXTURE } from '../../tests/fixtures.ts'
+import { TEXTS_URL } from '../../slices/textData.slice.ts'
+import { renderWithProviders } from '../../tests/utils.tsx'
 
 const FOCUS_REMINDER_TEXT = /click here or press any key to focus/i
 
@@ -20,7 +22,8 @@ describe('TypingBox', async () => {
       http.get(TEXTS_URL, () => HttpResponse.json({ text: TEXT_FIXTURE })),
     )
     server.listen()
-    renderTypingBox({ initialText: '' })
+
+    renderWithProviders(<TypingBox />)
 
     expect(await screen.findByText('Test text.')).toBeInTheDocument()
 
