@@ -24,7 +24,7 @@ export const typingHistorySlice = createSlice({
   name: 'typingHistory',
   initialState: typingHistoryInitialState,
   reducers: {
-    setTypingHistory: (
+    setTypingHistoryTo: (
       state,
       action: PayloadAction<TypingHistoryPoint[]>,
     ) => {
@@ -41,7 +41,7 @@ export const typingHistorySlice = createSlice({
         errs: action.payload.errs,
       })
     },
-    setLastRecordedMoment: (
+    setLastRecordedMomentTo: (
       state,
       action: PayloadAction<LastRecordedMoment>,
     ) => {
@@ -55,9 +55,9 @@ export const typingHistorySlice = createSlice({
 })
 
 export const {
-  setTypingHistory,
+  setTypingHistoryTo,
   addTypingHistoryPoint,
-  setLastRecordedMoment,
+  setLastRecordedMomentTo,
   resetTypingHistory,
 } = typingHistorySlice.actions
 

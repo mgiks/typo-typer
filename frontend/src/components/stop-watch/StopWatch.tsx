@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks'
 import { typingDataInitialState } from '../../slices/typingData.slice'
 import {
   addTypingHistoryPoint,
-  setLastRecordedMoment,
+  setLastRecordedMomentTo,
 } from '../../slices/typingHistory.slice'
 import {
   calculateAccuracy,
@@ -109,7 +109,7 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
     )
     const finalAdjustedWpm = calculateAdjustedWpm(finalRawWpm, finalAcc)
 
-    dispatch(setLastRecordedMoment({
+    dispatch(setLastRecordedMomentTo({
       acc: finalAcc,
       wpm: finalAdjustedWpm,
       errs: totalKeysPressed.current - correctKeysPressed.current,
