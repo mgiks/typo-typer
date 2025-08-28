@@ -22,10 +22,12 @@ import {
 
 export type TypingBoxProps = {
   detachStateStore?: boolean
-  initialText?: string
+  forcedText?: string
 }
 
-function TypingBox({ detachStateStore, initialText }: TypingBoxProps) {
+function TypingBox(
+  { detachStateStore, forcedText: initialText }: TypingBoxProps,
+) {
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
 

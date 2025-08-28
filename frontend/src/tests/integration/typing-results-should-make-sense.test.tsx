@@ -10,7 +10,7 @@ it('typing results should make sense', async () => {
   const user = userEvent.setup()
   renderWithProviders(
     <>
-      <TypingBox initialText={TEXT_FIXTURE} />
+      <TypingBox forcedText={TEXT_FIXTURE} />
       <StopWatch />
       <ResultsSummarizer forceNoGraph={true} />
     </>,

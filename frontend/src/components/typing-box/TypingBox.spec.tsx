@@ -104,7 +104,7 @@ describe('TypingBox', async () => {
 
 const defaultProps: TypingBoxProps = {
   detachStateStore: true,
-  initialText: 'Placeholder',
+  forcedText: 'Placeholder',
 }
 
 function renderTypingBox(overrides?: Partial<TypingBoxProps>) {

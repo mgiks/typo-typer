@@ -9,7 +9,7 @@ it('typing should show stopwatch', async () => {
   const user = userEvent.setup()
   renderWithProviders(
     <>
-      <TypingBox initialText={TEXT_FIXTURE} />
+      <TypingBox forcedText={TEXT_FIXTURE} />
       <StopWatch />
     </>,
   )

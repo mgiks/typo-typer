@@ -11,7 +11,7 @@ it('reset button should hide and show components', async () => {
 
   renderWithProviders(
     <>
-      <TypingBox initialText={TEXT_FIXTURE} />
+      <TypingBox forcedText={TEXT_FIXTURE} />
       <ResultsSummarizer forceNoGraph={true} />
       <ResetButton />
     </>,
