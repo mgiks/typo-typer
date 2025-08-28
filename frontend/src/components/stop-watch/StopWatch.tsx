@@ -90,7 +90,7 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
       prevTimePoint.current = milliSecondsElapsed
     }, TIME_FRAME_IN_MS)
 
-    return () => clearInterval(intervalId.current)
+    return () => (setMilliSecondsElapsed(0), clearInterval(intervalId.current))
   }, [playerStartedTyping])
 
   useEffect(() => {
