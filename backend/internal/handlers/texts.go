@@ -1,28 +1,20 @@
-package server
+package handlers
 
 import (
 	"context"
 	"encoding/json"
 	"net/http"
 
-	"github.com/mgiks/typo-typer/internal/pg"
+	"github.com/mgiks/typo-typer/internal/texts"
 )
 
-type Server struct {
-	Pg *pg.DB
-}
-
-func New(pgDB *pg.DB) (*Server, error) {
-	return &Server{Pg: pgDB}, nil
-}
-
-type GETTextResponse struct {
+type TextResponse struct {
 	Text string `json:"text"`
 }
 
-func NewGETTextHandler(g pg.RandomTextGetter) func(http.ResponseWriter, *http.Request) {
+func NewRandomTextHandler(g texts.RandomTextGetter) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 		text, err := g.GetRandomText(context.TODO())
 		if err != nil {
@@ -30,7 +22,7 @@ func NewGETTextHandler(g pg.RandomTextGetter) func(http.ResponseWriter, *http.Re
 			return
 		}
 
-		resp := GETTextResponse{Text: text}
+		resp := TextResponse{Text: text}
 
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			http.Error(w, "", http.StatusInternalServerError)

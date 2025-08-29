@@ -6,9 +6,9 @@ import (
 	"net/http"
 
 	"github.com/joho/godotenv"
+	"github.com/mgiks/typo-typer/internal/handlers"
 	"github.com/mgiks/typo-typer/internal/middleware"
-	"github.com/mgiks/typo-typer/internal/pg"
-	"github.com/mgiks/typo-typer/internal/server"
+	"github.com/mgiks/typo-typer/internal/storage/postgres"
 )
 
 func main() {
@@ -17,18 +17,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	pgDB, err := pg.Connect(context.TODO())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	s, err := server.New(pgDB)
+	DB, err := postgres.Connect(context.TODO())
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /texts", server.NewGETTextHandler(s.Pg))
+	mux.HandleFunc("GET /texts", handlers.NewRandomTextHandler(DB))
 
 	handler := middleware.CORS(mux)
 
