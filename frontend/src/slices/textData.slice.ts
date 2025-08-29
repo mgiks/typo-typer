@@ -10,7 +10,7 @@ export type TextDataState = {
   incorrectTextStartIndex: number
 }
 
-export type GETTextResponse = { text: string }
+export type TextResponse = { text: string }
 
 export const TEXTS_URL = 'http://localhost:8000/texts'
 
@@ -19,7 +19,7 @@ export const fetchText = createAsyncThunk(
   async () => {
     const text = await fetch(TEXTS_URL)
       .then((resp) => resp.json())
-      .then((resp) => resp as GETTextResponse)
+      .then((resp) => resp as TextResponse)
       .then((json) => json.text)
       .catch((err) => err)
 
