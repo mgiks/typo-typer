@@ -1,4 +1,4 @@
-package server
+package handlers
 
 import (
 	"context"
@@ -8,25 +8,14 @@ import (
 	"testing"
 )
 
-func TestNew(t *testing.T) {
-	s, err := New(nil)
-	if err != nil {
-		t.Fatal("failed to create server")
-	}
-
-	if s == nil {
-		t.Error("should return a non-nil value")
-	}
-}
-
-func TestGETTextHandler(t *testing.T) {
+func TestRandomTextHandler(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/texts", nil)
 	response := httptest.NewRecorder()
 
-	getTextHandler := NewGETTextHandler(mockedRandomTextGetter{})
-	getTextHandler(response, request)
+	randomTextHandler := NewRandomTextHandler(mockedRandomTextGetter{})
+	randomTextHandler(response, request)
 
-	var got GETTextResponse
+	var got TextResponse
 
 	err := json.Unmarshal(response.Body.Bytes(), &got)
 	if err != nil {

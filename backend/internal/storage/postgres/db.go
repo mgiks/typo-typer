@@ -1,4 +1,4 @@
-package pg
+package postgres
 
 import (
 	"context"
@@ -43,21 +43,6 @@ func Connect(ctx context.Context) (*DB, error) {
 	db := &DB{pool: dbPool}
 
 	return db, nil
-}
-
-type RandomTextGetter interface {
-	GetRandomText(ctx context.Context) (string, error)
-}
-
-func (db *DB) GetRandomText(ctx context.Context) (string, error) {
-	var text string
-
-	err := db.pool.QueryRow(ctx, `SELECT text FROM typing_text`).Scan(&text)
-	if err != nil {
-		return "", fmt.Errorf("pg.GetRandomText: failed to query row: %w", err)
-	}
-
-	return text, nil
 }
 
 func checkEnvs(envs ...string) (map[string]string, error) {
