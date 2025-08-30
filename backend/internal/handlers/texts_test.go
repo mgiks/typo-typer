@@ -9,15 +9,15 @@ import (
 )
 
 func TestRandomTextHandler(t *testing.T) {
-	request := httptest.NewRequest(http.MethodGet, "/texts", nil)
-	response := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/texts", nil)
+	res := httptest.NewRecorder()
 
-	randomTextHandler := NewRandomTextHandler(mockedRandomTextGetter{})
-	randomTextHandler(response, request)
+	h := NewRandomTextHandler(mockedRandomTextGetter{})
+	h(res, req)
 
 	var got TextResponse
 
-	err := json.Unmarshal(response.Body.Bytes(), &got)
+	err := json.Unmarshal(res.Body.Bytes(), &got)
 	if err != nil {
 		t.Fatal("failed to unmarshal response")
 	}

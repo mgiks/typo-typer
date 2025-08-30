@@ -15,11 +15,11 @@ func TestConnect(t *testing.T) {
 	}
 }
 
-func unsetEnvs(t testing.TB, envs ...string) {
+func unsetEnvs(t testing.TB, keys ...string) {
 	t.Helper()
 
-	for _, env := range envs {
-		err := os.Unsetenv(env)
+	for _, key := range keys {
+		err := os.Unsetenv(key)
 		if err != nil {
 			t.Error("failed to unset environmental variable: %w", err)
 		}

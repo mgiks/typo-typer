@@ -13,12 +13,12 @@ func TestCORS(t *testing.T) {
 
 	handler := CORS(next)
 
-	request := httptest.NewRequest(http.MethodGet, "/", nil)
-	response := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	res := httptest.NewRecorder()
 
-	handler.ServeHTTP(response, request)
+	handler.ServeHTTP(res, req)
 
-	got := response.Header().Get("Access-Control-Allow-Origin")
+	got := res.Header().Get("Access-Control-Allow-Origin")
 	want := allowedOrigin
 
 	if got != want {
