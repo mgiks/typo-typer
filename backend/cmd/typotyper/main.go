@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -10,6 +11,8 @@ import (
 	"github.com/mgiks/typo-typer/internal/middleware"
 	"github.com/mgiks/typo-typer/internal/storage/postgres"
 )
+
+const port = "8000"
 
 func main() {
 	err := godotenv.Load()
@@ -27,5 +30,7 @@ func main() {
 
 	handler := middleware.CORS(mux)
 
-	log.Fatal(http.ListenAndServe(":8000", handler))
+	fmt.Println("Listening and serving on port", port)
+
+	log.Fatal(http.ListenAndServe(":"+port, handler))
 }
