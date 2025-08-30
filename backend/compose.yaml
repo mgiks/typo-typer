@@ -5,7 +5,7 @@ services:
     container_name: postgres
     build:
       context: ./docker/postgres/
-      dockerfile: initialize.dockerfile
+      dockerfile: Dockerfile
     volumes:
       - postgres:/data/postgres
     env_file: ./.env

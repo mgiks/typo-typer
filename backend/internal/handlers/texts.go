@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/mgiks/typo-typer/internal/texts"
@@ -16,13 +17,14 @@ func NewRandomTextHandler(g texts.RandomTextGetter) func(http.ResponseWriter, *h
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-		text, err := g.GetRandomText(context.TODO())
+		t, err := g.GetRandomText(context.TODO())
 		if err != nil {
+			log.Printf("handlers.randomTextHandler: failed to get random text: %v", err)
 			http.Error(w, "", http.StatusInternalServerError)
 			return
 		}
 
-		resp := TextResponse{Text: text}
+		resp := TextResponse{Text: t}
 
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			http.Error(w, "", http.StatusInternalServerError)
