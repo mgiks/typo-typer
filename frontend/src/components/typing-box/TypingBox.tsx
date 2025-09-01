@@ -90,7 +90,10 @@ function TypingBox(
       className='typing-box'
       role='region'
       aria-label='Typing Box'
-      onClick={() => inputCatcherRef.current?.focus()}
+      onClick={() => {
+        console.log('BANANA')
+        inputCatcherRef.current?.focus()
+      }}
     >
       <InputCatcher
         ref={inputCatcherRef}
@@ -101,7 +104,7 @@ function TypingBox(
         setShowFocusReminder={setShowFocusReminder}
       />
       <FocusReminder
-        visible={showFocusReminder}
+        show={showFocusReminder}
       />
       <TextContainer
         text={text}
