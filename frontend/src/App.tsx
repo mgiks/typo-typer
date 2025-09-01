@@ -1,4 +1,5 @@
 import './App.scss'
+import ModeSwitcher from './components/mode-switcher/ModeSwitcher'
 import ResetButton from './components/reset-button/ResetButton'
 import ResultsSummarizer from './components/results-summarizer/ResultsSummarizer'
 import StopWatch from './components/stop-watch/StopWatch'
@@ -15,6 +16,7 @@ function App() {
           <ResultsSummarizer />
           <ResetButton />
         </div>
+        <ModeSwitcher />
       </div>
       <div />
     </div>
