@@ -91,7 +91,6 @@ function TypingBox(
       role='region'
       aria-label='Typing Box'
       onClick={() => {
-        console.log('BANANA')
         inputCatcherRef.current?.focus()
       }}
     >
