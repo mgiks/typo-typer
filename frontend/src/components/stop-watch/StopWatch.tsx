@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../hooks'
-import { typingDataInitialState } from '../../slices/typingData.slice'
 import {
   addTypingHistoryPoint,
   setLastRecordedMomentTo,
@@ -10,13 +9,12 @@ import {
   calculateAdjustedWpm,
   calculateRawWpm,
 } from '../../utils/typing-results.utils'
-import { playerStatusInitialState } from '../../slices/playerStatus.slice'
 
 const TIME_FRAME_IN_MS = 100
 
-type StopWatchProps = { forceVisible?: boolean; detachStateStore?: boolean }
+type StopWatchProps = { forceVisible?: boolean }
 
-function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
+function StopWatch({ forceVisible }: StopWatchProps) {
   const [milliSecondsElapsed, setMilliSecondsElapsed] = useState(0)
 
   const startTime = useRef(0)
@@ -27,23 +25,23 @@ function StopWatch({ detachStateStore, forceVisible }: StopWatchProps) {
   const totalKeysPressed = useRef(0)
   const correctKeysPressed = useRef(0)
 
-  const playerStartedTyping = detachStateStore
-    ? playerStatusInitialState.startedTyping
-    : useAppSelector((state) => state.playerStatus.startedTyping)
+  const playerStartedTyping = useAppSelector((state) =>
+    state.playerStatus.startedTyping
+  )
 
-  const playerFinishedTyping = detachStateStore
-    ? playerStatusInitialState.finishedTyping
-    : useAppSelector((state) => state.playerStatus.finishedTyping)
+  const playerFinishedTyping = useAppSelector((state) =>
+    state.playerStatus.finishedTyping
+  )
 
-  const totalKeysPressedState = detachStateStore
-    ? typingDataInitialState.totalKeysPressed
-    : useAppSelector((state) => state.typingData.totalKeysPressed)
+  const totalKeysPressedState = useAppSelector((state) =>
+    state.typingData.totalKeysPressed
+  )
 
-  const correctKeysPressedState = detachStateStore
-    ? typingDataInitialState.correctKeysPressed
-    : useAppSelector((state) => state.typingData.correctKeysPressed)
+  const correctKeysPressedState = useAppSelector((state) =>
+    state.typingData.correctKeysPressed
+  )
 
-  const dispatch = detachStateStore ? () => {} : useAppDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     totalKeysPressed.current = totalKeysPressedState

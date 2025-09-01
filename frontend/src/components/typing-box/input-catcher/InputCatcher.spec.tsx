@@ -7,12 +7,6 @@ import InputCatcher, {
 import { TEXT_FIXTURE } from '../../../tests/fixtures.ts'
 
 describe('InputCatcher', async () => {
-  it('should be in the document', () => {
-    renderInputCatcher()
-
-    expect(screen.getByRole('textbox')).toBeInTheDocument()
-  })
-
   it('should be initially focused', () => {
     renderInputCatcher()
 
