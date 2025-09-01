@@ -1,11 +1,9 @@
 import { createPortal } from 'react-dom'
 import './ModeModal.scss'
 
-type Setter<T> = (i: T) => void
-
 type ModeModalProps = {
   isVisible: boolean
-  setModalVisibility: Setter<boolean>
+  setModalVisibility: (i: boolean) => void
 }
 
 function ModeModal({ isVisible, setModalVisibility }: ModeModalProps) {
