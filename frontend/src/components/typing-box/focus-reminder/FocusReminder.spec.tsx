@@ -1,20 +1,27 @@
 import { act, render, screen } from '@testing-library/react'
-import FocusReminder, { FOCUS_REMINDER_TIMEOUT_MS } from './FocusReminder'
+import FocusReminder from './FocusReminder'
 
 describe('FocusReminder', async () => {
-  it("should be in the document after a timeout when 'visible' prop is true", () => {
+  beforeEach(() => {
     vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it("should be in the document after some time when 'visible' prop is true", async () => {
     render(<FocusReminder show={true} />)
 
-    act(() => {
-      vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS).useRealTimers()
-    })
+    act(() => vi.runAllTimers())
 
     expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
   it("should not be in the document when 'visible' prop is false", () => {
     render(<FocusReminder show={false} />)
+
+    act(() => vi.runAllTimers())
 
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })

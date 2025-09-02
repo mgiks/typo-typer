@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import './FocusReminder.scss'
 
-export const FOCUS_REMINDER_TIMEOUT_MS = 750
+export const FOCUS_REMINDER = {
+  TIMEOUT_MS: 750,
+  TEXT: 'Click here or press any key to focus',
+}
 
 type FocusReminderProps = {
   show: boolean
@@ -14,13 +17,12 @@ function FocusReminder({ show }: FocusReminderProps) {
   useEffect(() => {
     if (show) {
       timeOutRef.current = window.setTimeout(
-        setVisible,
-        FOCUS_REMINDER_TIMEOUT_MS,
-        true,
+        () => setVisible(true),
+        FOCUS_REMINDER.TIMEOUT_MS,
       )
     }
 
-    return () => (setVisible(false), clearTimeout(timeOutRef.current))
+    return () => (clearTimeout(timeOutRef.current), setVisible(false))
   }, [show])
 
   const reminderToFocus = (
@@ -29,7 +31,7 @@ function FocusReminder({ show }: FocusReminderProps) {
       role='status'
       aria-live='polite'
     >
-      Click here or press any key to focus
+      {FOCUS_REMINDER.TEXT}
     </div>
   )
 
