@@ -5,9 +5,17 @@ import TypingBox from '../../components/typing-box/TypingBox'
 import { renderWithProviders } from '../utils'
 import userEvent from '@testing-library/user-event'
 import { TEXT_FIXTURE } from '../fixtures'
+import { http, HttpResponse } from 'msw'
+import { TEXTS_URL } from '../../slices/textData.slice'
+import { setupServer } from 'msw/node'
 
 it('reset button should hide and show components', async () => {
   const user = userEvent.setup()
+  const server = setupServer(
+    http.get(TEXTS_URL, () => HttpResponse.json({ text: TEXT_FIXTURE })),
+  )
+
+  server.listen()
 
   renderWithProviders(
     <>
@@ -31,4 +39,6 @@ it('reset button should hide and show components', async () => {
   expect(screen.getByRole('region')).toBeInTheDocument()
   expect(screen.queryByLabelText('Results summary')).not.toBeInTheDocument()
   expect(screen.queryByRole('button')).not.toBeInTheDocument()
+
+  server.close()
 })
