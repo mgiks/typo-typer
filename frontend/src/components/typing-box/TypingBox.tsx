@@ -11,22 +11,19 @@ import {
 import {
   playerFinishedTyping,
   playerStartedTyping,
-  playerStatusInitialState,
 } from '../../slices/playerStatus.slice'
 import {
   fetchText,
   setIncorrectTextStartIndexTo,
   setLastTypedIndexTo,
-  textDataInitialState,
 } from '../../slices/textData.slice'
 
 export type TypingBoxProps = {
-  detachStateStore?: boolean
   forcedText?: string
 }
 
 function TypingBox(
-  { detachStateStore, forcedText: initialText }: TypingBoxProps,
+  { forcedText: initialText }: TypingBoxProps,
 ) {
   const [isFocused, setIsFocused] = useState(true)
   const [showFocusReminder, setShowFocusReminder] = useState(false)
@@ -35,23 +32,20 @@ function TypingBox(
   const typingBoxRef = useRef<HTMLDivElement>(null)
   const inputCatcherRef = useRef<HTMLTextAreaElement>(null)
 
-  const text = initialText ??
-    (detachStateStore
-      ? textDataInitialState.text
-      : useAppSelector((state) => state.textData.text))
-  const lastTypedIndex = detachStateStore
-    ? textDataInitialState.lastTypedIndex
-    : useAppSelector((state) => state.textData.lastTypedIndex)
-  const incorrectTextStartIndex = detachStateStore
-    ? textDataInitialState.incorrectTextStartIndex
-    : useAppSelector((state) => state.textData.incorrectTextStartIndex)
-  const hasPlayerStartedTyping = detachStateStore
-    ? playerStatusInitialState.startedTyping
-    : useAppSelector((state) => state.playerStatus.startedTyping)
-  const hasPlayerFinishedTyping = detachStateStore
-    ? playerStatusInitialState.finishedTyping
-    : useAppSelector((state) => state.playerStatus.finishedTyping)
-  const dispatch = detachStateStore ? () => {} : useAppDispatch()
+  const text = initialText ?? (useAppSelector((state) => state.textData.text))
+  const lastTypedIndex = useAppSelector((state) =>
+    state.textData.lastTypedIndex
+  )
+  const incorrectTextStartIndex = useAppSelector((state) =>
+    state.textData.incorrectTextStartIndex
+  )
+  const hasPlayerStartedTyping = useAppSelector((state) =>
+    state.playerStatus.startedTyping
+  )
+  const hasPlayerFinishedTyping = useAppSelector((state) =>
+    state.playerStatus.finishedTyping
+  )
+  const dispatch = useAppDispatch()
 
   const setLastTypedIndex = (i: number) => {
     dispatch(setLastTypedIndexTo(i))
@@ -96,7 +90,9 @@ function TypingBox(
       className='typing-box'
       role='region'
       aria-label='Typing Box'
-      onClick={() => inputCatcherRef.current?.focus()}
+      onClick={() => {
+        inputCatcherRef.current?.focus()
+      }}
     >
       <InputCatcher
         ref={inputCatcherRef}
@@ -107,7 +103,7 @@ function TypingBox(
         setShowFocusReminder={setShowFocusReminder}
       />
       <FocusReminder
-        visible={showFocusReminder}
+        show={showFocusReminder}
       />
       <TextContainer
         text={text}

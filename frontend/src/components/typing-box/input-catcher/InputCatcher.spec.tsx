@@ -1,18 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import InputCatcher, {
-  FOCUS_REMINDER_TIMEOUT_MS,
-  type InputCatcherProps,
-} from './InputCatcher.tsx'
+import InputCatcher, { type InputCatcherProps } from './InputCatcher.tsx'
 import { TEXT_FIXTURE } from '../../../tests/fixtures.ts'
+import { FOCUS_REMINDER } from '../focus-reminder/FocusReminder.tsx'
 
 describe('InputCatcher', async () => {
-  it('should be in the document', () => {
-    renderInputCatcher()
-
-    expect(screen.getByRole('textbox')).toBeInTheDocument()
-  })
-
   it('should be initially focused', () => {
     renderInputCatcher()
 
@@ -99,7 +91,7 @@ describe('InputCatcher', async () => {
 
     vi.useFakeTimers()
     inputCatcher.blur()
-    vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS).useRealTimers()
+    vi.advanceTimersByTime(FOCUS_REMINDER.TIMEOUT_MS).useRealTimers()
 
     expect(setIsFocused).toHaveReturnedWith(false)
   })
@@ -112,7 +104,7 @@ describe('InputCatcher', async () => {
 
     vi.useFakeTimers()
     inputCatcher.blur()
-    vi.advanceTimersByTime(FOCUS_REMINDER_TIMEOUT_MS).useRealTimers()
+    vi.advanceTimersByTime(FOCUS_REMINDER.TIMEOUT_MS).useRealTimers()
 
     inputCatcher.focus()
 

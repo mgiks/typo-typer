@@ -1,7 +1,5 @@
 import React, { useRef } from 'react'
 
-export const FOCUS_REMINDER_TIMEOUT_MS = 750
-
 type Setter<T> = (i: T) => void
 
 export type InputCatcherProps = {
@@ -24,7 +22,6 @@ function InputCatcher(
   }: InputCatcherProps,
 ) {
   const lastIncorrectLetterIndex = useRef(-1)
-  const timeOutRef = useRef(-1)
 
   const handleInput = (event: React.FormEvent<HTMLTextAreaElement>) => {
     const input = event.currentTarget.value
@@ -59,15 +56,10 @@ function InputCatcher(
       onInput={handleInput}
       onBlur={() => {
         setIsFocused(false)
-        timeOutRef.current = window.setTimeout(
-          setShowFocusReminder,
-          FOCUS_REMINDER_TIMEOUT_MS,
-          true,
-        )
+        setShowFocusReminder(true)
       }}
       onFocus={() => {
         setIsFocused(true)
-        clearTimeout(timeOutRef.current)
         setShowFocusReminder(false)
       }}
       autoFocus

@@ -3,12 +3,6 @@ import TextContainer, { type TextContainerProps } from './TextContainer.tsx'
 import { TEXT_FIXTURE } from '../../../tests/fixtures.ts'
 
 describe('TextContainer', async () => {
-  it('should be in the document', () => {
-    renderTextContainer()
-
-    expect(screen.getByRole('status')).toBeInTheDocument()
-  })
-
   it("should display text from 'text' prop", () => {
     renderTextContainer({ text: TEXT_FIXTURE })
 

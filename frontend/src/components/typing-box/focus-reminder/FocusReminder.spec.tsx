@@ -1,15 +1,23 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import FocusReminder from './FocusReminder'
 
-describe('FocusReminder', () => {
-  it("should be in the document when 'visible' prop is true", () => {
-    render(<FocusReminder visible={true} />)
+describe('FocusReminder', async () => {
+  beforeEach(() => vi.useFakeTimers())
 
-    expect(screen.getByRole('status')).toBeInTheDocument()
+  afterEach(() => vi.useRealTimers())
+
+  it("should be in the document after some time when 'visible' prop is true", async () => {
+    render(<FocusReminder show={true} />)
+
+    act(() => (vi.runAllTimers(), vi.useRealTimers()))
+
+    expect(await screen.findByRole('status')).toBeInTheDocument()
   })
 
   it("should not be in the document when 'visible' prop is false", () => {
-    render(<FocusReminder visible={false} />)
+    render(<FocusReminder show={false} />)
+
+    act(() => vi.runAllTimers())
 
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })
