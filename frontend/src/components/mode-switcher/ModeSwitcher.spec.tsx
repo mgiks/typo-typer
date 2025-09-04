@@ -1,11 +1,12 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import ModeSwitcher from './ModeSwitcher'
 import userEvent from '@testing-library/user-event'
+import { renderWithProviders } from '../../tests/utils'
 
 describe('ModeSwitcher', async () => {
   it('should show modal on click', async () => {
     const user = userEvent.setup()
-    render(
+    renderWithProviders(
       <>
         <ModeSwitcher />
         <div id='modal-container' />
