@@ -8,17 +8,23 @@ import TypingBox from './components/typing-box/TypingBox'
 function App() {
   return (
     <div className='app'>
-      <div />
+      <div>
+        Header placeholder
+      </div>
       <div className='app__middle-section'>
-        <TypingBox />
-        <StopWatch />
+        <div className='app__typing-section'>
+          <ModeSwitcher />
+          <TypingBox />
+          <StopWatch />
+        </div>
         <div className='app__result-section'>
           <ResultsSummarizer />
           <ResetButton />
         </div>
-        <ModeSwitcher />
       </div>
-      <div />
+      <div>
+        Footer placeholder
+      </div>
     </div>
   )
 }
