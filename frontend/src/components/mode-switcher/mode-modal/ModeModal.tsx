@@ -4,7 +4,7 @@ import { useAppDispatch } from '../../../hooks'
 import {
   setModeToMultiPlayer,
   setModeToSinglePlayer,
-} from '../../../slices/playerMode.slic'
+} from '../../../slices/playerMode.slice'
 
 type ModeModalProps = {
   isVisible: boolean
