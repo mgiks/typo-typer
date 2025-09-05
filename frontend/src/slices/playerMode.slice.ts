@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 export type PlayerModeState = {
-  mode: 'singlePlayer' | 'multiPlayer'
+  mode: 'Solo' | 'Multiplayer'
 }
 
 export const playerModeInitialState: PlayerModeState = {
-  mode: 'singlePlayer',
+  mode: 'Solo',
 }
 
 export const playerModeSlice = createSlice({
@@ -13,10 +13,10 @@ export const playerModeSlice = createSlice({
   initialState: playerModeInitialState,
   reducers: {
     setModeToSinglePlayer: (state) => {
-      state.mode = 'singlePlayer'
+      state.mode = 'Solo'
     },
     setModeToMultiPlayer: (state) => {
-      state.mode = 'multiPlayer'
+      state.mode = 'Multiplayer'
     },
   },
 })
