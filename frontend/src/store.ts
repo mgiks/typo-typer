@@ -4,6 +4,7 @@ import playerStatusReducer from './slices/playerStatus.slice'
 import typingHistoryReducer from './slices/typingHistory.slice'
 import textDataReducer from './slices/textData.slice'
 import playerModeReducer from './slices/playerMode.slice.ts'
+import multiplayerDataReducer from './slices/multiplayerData.slice.ts'
 
 const rootReducer = combineReducers({
   typingData: typingDataReducer,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   playerStatus: playerStatusReducer,
   textData: textDataReducer,
   playerMode: playerModeReducer,
+  multiplayerData: multiplayerDataReducer,
 })
 
 export const store = configureStore({ reducer: rootReducer })

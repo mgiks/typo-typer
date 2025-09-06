@@ -4,6 +4,13 @@
   height: 100%;
   font-family: 'JetBrains Mono', monospace;
 
+  &__header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   &__middle-section {
     width: 100%;
     display: flex;
