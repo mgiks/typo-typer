@@ -13,6 +13,7 @@
     "coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@faker-js/faker": "^10.0.0",
     "@reduxjs/toolkit": "^2.8.2",
     "chart.js": "^4.5.0",
     "react": "^19.1.1",
