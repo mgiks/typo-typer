@@ -5,8 +5,8 @@ import { resetTypingData } from '../../slices/typingData.slice'
 import { resetTypingHistory } from '../../slices/typingHistory.slice'
 
 function ResetButton() {
-  const playerFinishedTyping = useAppSelector((state) =>
-    state.playerStatus.finishedTyping
+  const playerStartedTyping = useAppSelector((state) =>
+    state.playerStatus.startedTyping
   )
 
   const dispatch = useAppDispatch()
@@ -19,7 +19,7 @@ function ResetButton() {
     dispatch(fetchText())
   }
 
-  return (playerFinishedTyping ? <button onClick={reset}>Reset</button> : null)
+  return (!playerStartedTyping ? <button onClick={reset}>Reset</button> : null)
 }
 
 export default ResetButton
