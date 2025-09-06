@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import ModeModal from './mode-modal/ModeModal'
+import './ModeSwitcher.scss'
 import { useAppSelector } from '../../hooks'
 
 function ModeSwitcher() {
@@ -8,7 +9,10 @@ function ModeSwitcher() {
 
   return (
     <>
-      <button onClick={() => setModalVisibility(true)}>
+      <button
+        className='mode-switcher__button'
+        onClick={() => setModalVisibility(true)}
+      >
         {playerMode}
       </button>
       <ModeModal
