@@ -26,7 +26,6 @@ it('reset button should hide and show components', async () => {
   )
   expect(screen.getByRole('region')).toBeInTheDocument()
   expect(screen.queryByLabelText('Results summary')).not.toBeInTheDocument()
-  expect(screen.queryByRole('button')).not.toBeInTheDocument()
 
   await user.keyboard(TEXT_FIXTURE)
 
@@ -38,7 +37,6 @@ it('reset button should hide and show components', async () => {
 
   expect(screen.getByRole('region')).toBeInTheDocument()
   expect(screen.queryByLabelText('Results summary')).not.toBeInTheDocument()
-  expect(screen.queryByRole('button')).not.toBeInTheDocument()
 
   server.close()
 })

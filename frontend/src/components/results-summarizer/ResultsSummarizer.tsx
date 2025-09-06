@@ -29,14 +29,14 @@ function ResultsSummarizer({ forceNoGraph }: ResultsSummarizerProps) {
             <div>acc</div> <div>{latestAcc * 100}%</div>
           </div>
         </div>
-        {forceNoGraph
-          ? null
-          : (
+        <div className='results-summarizer__graph-wrapper'>
+          {forceNoGraph ? null : (
             <TypingHistoryGraph
               timedData={timedtypingHistory}
               lastRecordedMoment={lastRecordedMoment}
             />
           )}
+        </div>
       </div>
     )
   }

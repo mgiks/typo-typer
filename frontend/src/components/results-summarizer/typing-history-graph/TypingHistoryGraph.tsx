@@ -16,55 +16,53 @@ function TypingHistoryGraph(
   const showDataBelowOneSecond = 1 >= latestTime
 
   return (
-    <div className='results-summarizer__graph-wrapper'>
-      <Line
-        options={{
-          maintainAspectRatio: false,
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            tooltip: { position: 'nearest' },
+    <Line
+      options={{
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { position: 'nearest' },
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            title: { display: true, text: 'Seconds' },
           },
-          scales: {
-            x: {
-              grid: { display: false },
-              title: { display: true, text: 'Seconds' },
-            },
-            y: {
-              title: { display: true, text: 'WPM' },
-              min: 0,
-              ticks: { stepSize: 1 },
-            },
-            errors: {
-              grid: { display: false },
-              title: { display: true, text: 'Errors' },
-              axis: 'y',
-              min: 0,
-              position: 'right',
-              ticks: { stepSize: 1 },
-            },
+          y: {
+            title: { display: true, text: 'WPM' },
+            min: 0,
+            ticks: { stepSize: 1 },
           },
-        }}
-        data={{
-          labels: filterData(timedData, showDataBelowOneSecond).map((point) =>
-            String(point.timeInSeconds)
-          ).concat(['LRM']),
-          datasets: [
-            {
-              data: filterData(timedData, showDataBelowOneSecond).map((point) =>
-                point.wpm
-              ).concat([lastRecordedMoment.wpm]),
-            },
-            {
-              data: filterData(timedData, showDataBelowOneSecond).map((point) =>
-                point.errs
-              ).concat([lastRecordedMoment.errs]),
-              yAxisID: 'errors',
-            },
-          ],
-        }}
-      />
-    </div>
+          errors: {
+            grid: { display: false },
+            title: { display: true, text: 'Errors' },
+            axis: 'y',
+            min: 0,
+            position: 'right',
+            ticks: { stepSize: 1 },
+          },
+        },
+      }}
+      data={{
+        labels: filterData(timedData, showDataBelowOneSecond).map((point) =>
+          String(point.timeInSeconds)
+        ).concat(['LRM']),
+        datasets: [
+          {
+            data: filterData(timedData, showDataBelowOneSecond).map((point) =>
+              point.wpm
+            ).concat([lastRecordedMoment.wpm]),
+          },
+          {
+            data: filterData(timedData, showDataBelowOneSecond).map((point) =>
+              point.errs
+            ).concat([lastRecordedMoment.errs]),
+            yAxisID: 'errors',
+          },
+        ],
+      }}
+    />
   )
 }
 

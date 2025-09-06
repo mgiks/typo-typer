@@ -1,8 +1,15 @@
 .app {
   display: grid;
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 10fr 1fr;
   height: 100%;
   font-family: 'JetBrains Mono', monospace;
+
+  &__header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
   &__middle-section {
     width: 100%;
@@ -10,6 +17,19 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+  }
+
+  &__typing-section {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__lower-typing-section {
+    height: 10%;
   }
 
   &__result-section {

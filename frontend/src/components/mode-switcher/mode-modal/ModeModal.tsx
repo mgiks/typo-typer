@@ -1,5 +1,10 @@
 import { createPortal } from 'react-dom'
 import './ModeModal.scss'
+import { useAppDispatch } from '../../../hooks'
+import {
+  setModeToMultiPlayer,
+  setModeToSinglePlayer,
+} from '../../../slices/playerMode.slice'
 
 type ModeModalProps = {
   isVisible: boolean
@@ -8,6 +13,8 @@ type ModeModalProps = {
 
 function ModeModal({ isVisible, setModalVisibility }: ModeModalProps) {
   if (!isVisible) return null
+
+  const dispatch = useAppDispatch()
 
   return createPortal(
     <div
@@ -32,6 +39,7 @@ function ModeModal({ isVisible, setModalVisibility }: ModeModalProps) {
           <button
             className='mode-modal__mode-button'
             onClick={() => {
+              dispatch(setModeToSinglePlayer())
               setModalVisibility(false)
             }}
           >
@@ -40,6 +48,7 @@ function ModeModal({ isVisible, setModalVisibility }: ModeModalProps) {
           <button
             className='mode-modal__mode-button'
             onClick={() => {
+              dispatch(setModeToMultiPlayer())
               setModalVisibility(false)
             }}
           >
