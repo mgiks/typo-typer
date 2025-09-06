@@ -14,16 +14,14 @@ function App() {
         <ProfileCorner />
       </div>
       <div className='app__middle-section'>
-        <div className='app__upper-typing-section'>
+        <div className='app__typing-section'>
           <ModeSwitcher />
           <TypingBox />
-        </div>
-        <div className='app__lower-typing-section'>
-          <ResetButton />
-          <StopWatch />
-        </div>
-        <div className='app__result-section'>
           <ResultsSummarizer />
+          <div className='app__lower-typing-section'>
+            <ResetButton />
+            <StopWatch />
+          </div>
         </div>
       </div>
       <div>
