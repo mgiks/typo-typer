@@ -1,12 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 export type PlayerStatusState = {
-  startedTyping: boolean
+  isTyping: boolean
   finishedTyping: boolean
 }
 
 export const playerStatusInitialState: PlayerStatusState = {
-  startedTyping: false,
+  isTyping: false,
   finishedTyping: false,
 }
 
@@ -14,20 +14,28 @@ export const playerStatusSlice = createSlice({
   name: 'playerStatus',
   initialState: playerStatusInitialState,
   reducers: {
-    playerStartedTyping: (state) => {
-      state.startedTyping = true
+    playerIsTyping: (state) => {
+      state.isTyping = true
+    },
+    playerIsNotTyping: (state) => {
+      state.isTyping = false
     },
     playerFinishedTyping: (state) => {
       state.finishedTyping = true
+      state.isTyping = false
     },
     resetPlayerStatus: (state) => {
-      state.startedTyping = playerStatusInitialState.startedTyping
+      state.isTyping = playerStatusInitialState.isTyping
       state.finishedTyping = playerStatusInitialState.finishedTyping
     },
   },
 })
 
-export const { playerStartedTyping, playerFinishedTyping, resetPlayerStatus } =
-  playerStatusSlice.actions
+export const {
+  playerIsTyping,
+  playerIsNotTyping,
+  playerFinishedTyping,
+  resetPlayerStatus,
+} = playerStatusSlice.actions
 
 export default playerStatusSlice.reducer

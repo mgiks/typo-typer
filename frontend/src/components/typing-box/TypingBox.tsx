@@ -10,7 +10,8 @@ import {
 } from '../../slices/typingData.slice'
 import {
   playerFinishedTyping,
-  playerStartedTyping,
+  playerIsNotTyping,
+  playerIsTyping,
 } from '../../slices/playerStatus.slice'
 import {
   fetchText,
@@ -40,7 +41,7 @@ function TypingBox(
     state.textData.incorrectTextStartIndex
   )
   const hasPlayerStartedTyping = useAppSelector((state) =>
-    state.playerStatus.startedTyping
+    state.playerStatus.isTyping
   )
   const hasPlayerFinishedTyping = useAppSelector((state) =>
     state.playerStatus.finishedTyping
@@ -59,10 +60,15 @@ function TypingBox(
     if (!initialText) dispatch(fetchText())
 
     const handleKeyPress = () => typingBoxRef.current?.click()
+    const adjustPlayerTypingStatus = () => dispatch(playerIsNotTyping())
 
     document.addEventListener('keyup', handleKeyPress)
+    document.addEventListener('mousemove', adjustPlayerTypingStatus)
 
-    return () => document.removeEventListener('keyup', handleKeyPress)
+    return () => {
+      document.removeEventListener('keyup', handleKeyPress)
+      document.removeEventListener('keyup', adjustPlayerTypingStatus)
+    }
   }, [])
 
   useEffect(() => {
@@ -71,7 +77,7 @@ function TypingBox(
     }
 
     if (!hasPlayerStartedTyping && lastTypedIndex > -1) {
-      dispatch(playerStartedTyping())
+      dispatch(playerIsTyping())
     }
 
     if (lastTypedIndex > prevLastTypedIndex.current) {

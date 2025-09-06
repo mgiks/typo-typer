@@ -26,7 +26,7 @@ function StopWatch({ forceVisible }: StopWatchProps) {
   const correctKeysPressed = useRef(0)
 
   const playerStartedTyping = useAppSelector((state) =>
-    state.playerStatus.startedTyping
+    state.playerStatus.isTyping
   )
 
   const playerFinishedTyping = useAppSelector((state) =>
