@@ -1,7 +1,12 @@
 import './App.css'
+import TypingBox from './components/TypingBox'
 
 function App() {
-  return <div></div>
+  return (
+    <div>
+      <TypingBox />
+    </div>
+  )
 }
 
 export default App
