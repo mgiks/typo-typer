@@ -1,3 +1,6 @@
+BEGIN
+;
+
 CREATE TABLE IF NOT EXISTS typing_text (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     content TEXT NOT NULL
@@ -15,3 +18,5 @@ VALUES
     (
         'Here''s an account of how a man really lost his balance.'
     );
+
+COMMIT;
