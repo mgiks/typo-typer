@@ -23,7 +23,7 @@ func NewGetTextHandler(g RandomTextGetter) http.HandlerFunc {
 		text, err := g.GetRandomText(r.Context())
 		if err != nil {
 			slog.Error("failed to get random text", "error", err)
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+			writeInternalServerErrorJSON(w)
 			return
 		}
 
@@ -32,11 +32,10 @@ func NewGetTextHandler(g RandomTextGetter) http.HandlerFunc {
 		var buf bytes.Buffer
 		if err := json.NewEncoder(&buf).Encode(resp); err != nil {
 			slog.Error("response encoding failed", "error", err)
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+			writeInternalServerErrorJSON(w)
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
 		if _, err = w.Write(buf.Bytes()); err != nil {
 			slog.Error("response write failed", "error", err)
 		}

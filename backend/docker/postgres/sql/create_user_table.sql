@@ -1,0 +1,10 @@
+CREATE EXTENSION IF NOT EXISTS citext;
+
+CREATE TABLE IF NOT EXISTS account (
+    id UUID DEFAULT uuidv7() PRIMARY KEY,
+    username VARCHAR(256) UNIQUE NOT NULL,
+    email CITEXT UNIQUE,
+    passhash TEXT NOT NULL,
+    salt TEXT NOT NULL,
+    wpm DOUBLE PRECISION
+);

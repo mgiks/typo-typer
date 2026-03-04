@@ -1,0 +1,28 @@
+package database
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/mgiks/typo-typer/internal/account"
+)
+
+func (db *DB) AddAccount(ctx context.Context, username, passhash, salt string) error {
+	rows, err := db.pool.Query(ctx, "INSERT INTO account (username, passhash, salt) VALUES ($1, $2, $3)", username, passhash, salt)
+	if err != nil {
+		return fmt.Errorf("query add account failed: %w", err)
+	}
+	defer rows.Close()
+	return nil
+}
+
+func (db *DB) GetAccountByName(ctx context.Context, username string) (account.Account, error) {
+	row := db.pool.QueryRow(ctx, "SELECT (id, username, email, passhash, salt, wpm) FROM account WHERE username=$1", username)
+
+	var a account.Account
+	if err := row.Scan(&a); err != nil {
+		return account.Account{}, fmt.Errorf("query get account failed: %w", err)
+	}
+
+	return a, nil
+}
