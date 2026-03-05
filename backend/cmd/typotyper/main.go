@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"reflect"
 	"strings"
 
@@ -14,9 +15,11 @@ import (
 	"github.com/mgiks/typo-typer/internal/database"
 	"github.com/mgiks/typo-typer/internal/handler"
 	"github.com/mgiks/typo-typer/internal/hashing"
+	"github.com/mgiks/typo-typer/internal/token"
 )
 
 const port = "8080"
+const jwtSecret = "JWT_SECRET"
 
 func main() {
 	err := godotenv.Load()
@@ -32,10 +35,11 @@ func main() {
 		return
 	}
 
-	hashingService := hashing.NewService(hashing.DefaultHashingConfig)
-	accountService := account.NewService(db, hashingService)
-	validate := validator.New(validator.WithRequiredStructEnabled())
-	validate.RegisterTagNameFunc(func(field reflect.StructField) string {
+	hs := hashing.NewService(hashing.DefaultHashingConfig)
+	as := account.NewService(db, hs)
+
+	v := validator.New(validator.WithRequiredStructEnabled())
+	v.RegisterTagNameFunc(func(field reflect.StructField) string {
 		name := strings.SplitN(field.Tag.Get("json"), ",", 2)[0]
 		if name == "-" {
 			return ""
@@ -43,10 +47,21 @@ func main() {
 		return name
 	})
 
+	secret, ok := os.LookupEnv(jwtSecret)
+	if !ok {
+		slog.Error("failed to find environment variable", "name", jwtSecret)
+		return
+	}
+	ts, err := token.NewService(os.Getenv(secret))
+	if err != nil {
+		slog.Error("token service initialization failed", "error", err)
+		return
+	}
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/texts", handler.NewGetTextHandler(db))
-	mux.HandleFunc("POST /auth/register", handler.NewRegisterHandler(accountService, validate))
-	mux.HandleFunc("POST /auth/login", handler.NewLoginHandler(accountService, validate))
+	mux.HandleFunc("POST /auth/register", handler.NewRegisterHandler(as, v))
+	mux.HandleFunc("POST /auth/login", handler.NewLoginHandler(as, v, ts))
 
 	fmt.Printf("Listening and serving on port %s\n", port)
 	if err := http.ListenAndServe(":"+port, mux); err != nil {

@@ -65,14 +65,18 @@ type loginData struct {
 }
 
 type loginResponse struct {
-	Username string `json:"username"`
+	AccessToken string `json:"access_token"`
 }
 
 type AccountPasswordChecker interface {
 	PasswordCorrect(ctx context.Context, username, password string) error
 }
 
-func NewLoginHandler(c AccountPasswordChecker, v Validator) http.HandlerFunc {
+type TokenService interface {
+	CreateToken(username string) (string, error)
+}
+
+func NewLoginHandler(c AccountPasswordChecker, v Validator, ts TokenService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -93,7 +97,14 @@ func NewLoginHandler(c AccountPasswordChecker, v Validator) http.HandlerFunc {
 			return
 		}
 
-		resp := loginResponse{Username: data.Username}
+		t, err := ts.CreateToken(data.Username)
+		if err != nil {
+			slog.Error("token creation failed", "error", err)
+			writeInternalServerErrorJSON(w)
+			return
+		}
+
+		resp := loginResponse{AccessToken: t}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			slog.Error("login response encoding failed", "error", err)
 			writeInternalServerErrorJSON(w)
