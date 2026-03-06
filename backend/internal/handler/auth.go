@@ -65,7 +65,8 @@ type loginData struct {
 }
 
 type loginResponse struct {
-	AccessToken string `json:"access_token"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 type AccountPasswordChecker interface {
@@ -73,7 +74,8 @@ type AccountPasswordChecker interface {
 }
 
 type TokenService interface {
-	CreateToken(username string) (string, error)
+	CreateAccessToken(ctx context.Context, username string) (string, error)
+	CreateRefreshToken(ctx context.Context, username string) (string, error)
 }
 
 func NewLoginHandler(c AccountPasswordChecker, v Validator, ts TokenService) http.HandlerFunc {
@@ -97,14 +99,21 @@ func NewLoginHandler(c AccountPasswordChecker, v Validator, ts TokenService) htt
 			return
 		}
 
-		t, err := ts.CreateToken(data.Username)
+		accToken, err := ts.CreateAccessToken(r.Context(), data.Username)
 		if err != nil {
-			slog.Error("token creation failed", "error", err)
+			slog.Error("access token creation failed", "error", err)
 			writeInternalServerErrorJSON(w)
 			return
 		}
 
-		resp := loginResponse{AccessToken: t}
+		refToken, err := ts.CreateRefreshToken(r.Context(), data.Username)
+		if err != nil {
+			slog.Error("refresh token creation failed", "error", err)
+			writeInternalServerErrorJSON(w)
+			return
+		}
+
+		resp := loginResponse{AccessToken: accToken, RefreshToken: refToken}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			slog.Error("login response encoding failed", "error", err)
 			writeInternalServerErrorJSON(w)

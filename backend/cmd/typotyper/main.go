@@ -52,7 +52,7 @@ func main() {
 		slog.Error("failed to find environment variable", "name", jwtSecret)
 		return
 	}
-	ts, err := token.NewService(os.Getenv(secret))
+	ts, err := token.NewService(os.Getenv(secret), db, hs, db)
 	if err != nil {
 		slog.Error("token service initialization failed", "error", err)
 		return

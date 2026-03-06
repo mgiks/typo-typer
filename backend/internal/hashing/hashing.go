@@ -39,19 +39,19 @@ func (s *HashingService) generateSalt(length uint8) []byte {
 	return salt
 }
 
-func (s *HashingService) HashPassword(password string) (string, string) {
+func (s *HashingService) HashString(str string) (string, string) {
 	salt := s.generateSalt(s.conf.saltLength)
-	hash := argon2.IDKey([]byte(password), salt, s.conf.time, s.conf.memory, s.conf.threads, s.conf.keyLength)
+	hash := argon2.IDKey([]byte(str), salt, s.conf.time, s.conf.memory, s.conf.threads, s.conf.keyLength)
 	return b64.StdEncoding.EncodeToString(hash), b64.StdEncoding.EncodeToString(salt)
 }
 
-func (s *HashingService) PasswordCorrect(password, passHash, salt string) (bool, error) {
+func (s *HashingService) SameHash(str, hashedStr, salt string) (bool, error) {
 	b64salt, err := b64.StdEncoding.DecodeString(salt)
 	if err != nil {
 		return false, err
 	}
-	newPassHash := argon2.IDKey([]byte(password), b64salt, s.conf.time, s.conf.memory, s.conf.threads, s.conf.keyLength)
+	newPassHash := argon2.IDKey([]byte(str), b64salt, s.conf.time, s.conf.memory, s.conf.threads, s.conf.keyLength)
 	newPassHashString := b64.StdEncoding.EncodeToString(newPassHash)
 
-	return newPassHashString == passHash, nil
+	return newPassHashString == hashedStr, nil
 }

@@ -38,8 +38,8 @@ type AccountRepo interface {
 }
 
 type PasswordHasher interface {
-	HashPassword(password string) (string, string)
-	PasswordCorrect(password, passHash, salt string) (bool, error)
+	HashString(str string) (string, string)
+	SameHash(str, hashedStr, salt string) (bool, error)
 }
 
 type AccountService struct {
@@ -66,7 +66,7 @@ func (s *AccountService) CreateAccount(ctx context.Context, username, password s
 		return err
 	}
 
-	passhash, salt := s.hasher.HashPassword(password)
+	passhash, salt := s.hasher.HashString(password)
 	return s.repo.AddAccount(ctx, username, passhash, salt)
 }
 
@@ -80,7 +80,7 @@ func (s *AccountService) PasswordCorrect(ctx context.Context, username, password
 		return fmt.Errorf("account retrieving failed: %w", err)
 	}
 
-	ok, err := s.hasher.PasswordCorrect(password, a.PassHash, a.Salt)
+	ok, err := s.hasher.SameHash(password, a.PassHash, a.Salt)
 	if err != nil {
 		return fmt.Errorf("password correctness check failed: %w", err)
 	}

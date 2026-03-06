@@ -8,11 +8,11 @@ import (
 )
 
 func (db *DB) AddAccount(ctx context.Context, username, passhash, salt string) error {
-	rows, err := db.pool.Query(ctx, "INSERT INTO account (username, passhash, salt) VALUES ($1, $2, $3)", username, passhash, salt)
-	if err != nil {
+	if _, err := db.pool.Exec(ctx,
+		"INSERT INTO account (username, passhash, salt) VALUES ($1, $2, $3)",
+		username, passhash, salt); err != nil {
 		return fmt.Errorf("query add account failed: %w", err)
 	}
-	defer rows.Close()
 	return nil
 }
 
