@@ -15,6 +15,7 @@ import (
 	"github.com/mgiks/typo-typer/internal/database"
 	"github.com/mgiks/typo-typer/internal/handler"
 	"github.com/mgiks/typo-typer/internal/hashing"
+	"github.com/mgiks/typo-typer/internal/middleware"
 	"github.com/mgiks/typo-typer/internal/token"
 )
 
@@ -63,8 +64,10 @@ func main() {
 	mux.HandleFunc("POST /auth/register", handler.NewRegisterHandler(as, v))
 	mux.HandleFunc("POST /auth/login", handler.NewLoginHandler(as, v, ts))
 
+	handler := middleware.CORS(mux)
+
 	fmt.Printf("Listening and serving on port %s\n", port)
-	if err := http.ListenAndServe(":"+port, mux); err != nil {
+	if err := http.ListenAndServe(":"+port, handler); err != nil {
 		slog.Error("http listening and serving failed", "error", err)
 	}
 
