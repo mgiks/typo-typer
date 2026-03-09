@@ -19,8 +19,10 @@ import (
 	"github.com/mgiks/typo-typer/internal/token"
 )
 
-const port = "8080"
-const jwtSecret = "JWT_SECRET"
+const (
+	defaultPort  = "8080"
+	envJWTSecret = "JWT_SECRET"
+)
 
 func main() {
 	err := godotenv.Load()
@@ -48,9 +50,9 @@ func main() {
 		return name
 	})
 
-	secret, ok := os.LookupEnv(jwtSecret)
+	secret, ok := os.LookupEnv(envJWTSecret)
 	if !ok {
-		slog.Error("failed to find environment variable", "name", jwtSecret)
+		slog.Error("failed to find environment variable", "name", envJWTSecret)
 		return
 	}
 	ts, err := token.NewService(os.Getenv(secret), db, hs, db)
@@ -65,6 +67,11 @@ func main() {
 	mux.HandleFunc("POST /auth/login", handler.NewLoginHandler(as, v, ts))
 
 	handler := middleware.CORS(mux)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = defaultPort
+	}
 
 	fmt.Printf("Listening and serving on port %s\n", port)
 	if err := http.ListenAndServe(":"+port, handler); err != nil {
