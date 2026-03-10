@@ -15,6 +15,7 @@ import (
 	"github.com/mgiks/typo-typer/internal/database"
 	"github.com/mgiks/typo-typer/internal/handler"
 	"github.com/mgiks/typo-typer/internal/hashing"
+	"github.com/mgiks/typo-typer/internal/matchmaking"
 	"github.com/mgiks/typo-typer/internal/middleware"
 	"github.com/mgiks/typo-typer/internal/token"
 )
@@ -62,10 +63,13 @@ func main() {
 		return
 	}
 
+	q := matchmaking.NewQueue()
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/texts", handler.NewGetTextHandler(db))
 	mux.HandleFunc("POST /auth/register", handler.NewRegisterHandler(as, v))
 	mux.HandleFunc("POST /auth/login", handler.NewLoginHandler(as, v, ts))
+	mux.HandleFunc("POST /ws/queue", handler.NewQueueHandler(q))
 
 	handler := middleware.CORS(mux)
 
