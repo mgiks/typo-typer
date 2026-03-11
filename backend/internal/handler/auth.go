@@ -20,15 +20,15 @@ type registrationResponse struct {
 	Username string `json:"username"`
 }
 
-type AccountCreator interface {
+type accountCreator interface {
 	CreateAccount(ctx context.Context, username, password string) error
 }
 
-type Validator interface {
+type structValidator interface {
 	Struct(s interface{}) error
 }
 
-func NewRegisterHandler(c AccountCreator, v Validator) http.HandlerFunc {
+func NewRegisterHandler(c accountCreator, v structValidator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -69,16 +69,16 @@ type loginResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-type AccountPasswordChecker interface {
+type accountPasswordChecker interface {
 	PasswordCorrect(ctx context.Context, username, password string) error
 }
 
-type TokenService interface {
+type tokenService interface {
 	CreateAccessToken(ctx context.Context, username string) (string, error)
 	CreateRefreshToken(ctx context.Context, username string) (string, error)
 }
 
-func NewLoginHandler(c AccountPasswordChecker, v Validator, ts TokenService) http.HandlerFunc {
+func NewLoginHandler(c accountPasswordChecker, v structValidator, ts tokenService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 

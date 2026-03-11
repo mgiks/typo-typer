@@ -12,11 +12,11 @@ type getTextResponse struct {
 	Text string `json:"text"`
 }
 
-type RandomTextGetter interface {
+type randomTextGetter interface {
 	GetRandomText(ctx context.Context) (string, error)
 }
 
-func NewGetTextHandler(g RandomTextGetter) http.HandlerFunc {
+func NewGetTextHandler(g randomTextGetter) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 

@@ -24,34 +24,26 @@ type Account struct {
 	Wpm      *float32
 }
 
-type AccountGetter interface {
+type accountRepo interface {
 	GetAccountByName(ctx context.Context, username string) (Account, error)
-}
-
-type AccountAdder interface {
 	AddAccount(ctx context.Context, username, passhash, salt string) error
 }
 
-type AccountRepo interface {
-	AccountGetter
-	AccountAdder
-}
-
-type PasswordHasher interface {
+type passwordHasher interface {
 	HashString(str string) (string, string)
 	SameHash(str, hashedStr, salt string) (bool, error)
 }
 
-type AccountService struct {
-	repo   AccountRepo
-	hasher PasswordHasher
+type accountService struct {
+	repo   accountRepo
+	hasher passwordHasher
 }
 
-func NewService(repo AccountRepo, hasher PasswordHasher) *AccountService {
-	return &AccountService{repo: repo, hasher: hasher}
+func NewService(repo accountRepo, hasher passwordHasher) *accountService {
+	return &accountService{repo: repo, hasher: hasher}
 }
 
-func (s *AccountService) CreateAccount(ctx context.Context, username, password string) error {
+func (s *accountService) CreateAccount(ctx context.Context, username, password string) error {
 	username = strings.TrimSpace(username)
 	if err := validateUsername(username); err != nil {
 		return err
@@ -70,7 +62,7 @@ func (s *AccountService) CreateAccount(ctx context.Context, username, password s
 	return s.repo.AddAccount(ctx, username, passhash, salt)
 }
 
-func (s *AccountService) PasswordCorrect(ctx context.Context, username, password string) error {
+func (s *accountService) PasswordCorrect(ctx context.Context, username, password string) error {
 	if err := validateUsername(username); err != nil {
 		return err
 	}

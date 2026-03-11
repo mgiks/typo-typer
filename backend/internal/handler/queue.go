@@ -15,11 +15,11 @@ type queueRequest struct {
 	WPM  float32 `json:"wpm"`
 }
 
-type Queue interface {
+type queue interface {
 	AddPlayer(p *matchmaking.Player)
 }
 
-func NewQueueHandler(q Queue) http.HandlerFunc {
+func NewQueueHandler(q queue) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var qr queueRequest
 		if err := json.NewDecoder(r.Body).Decode(&qr); err != nil {

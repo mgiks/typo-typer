@@ -11,26 +11,26 @@ import (
 	"github.com/mgiks/typo-typer/internal/account"
 )
 
-type RefreshTokenAdder interface {
+type refreshTokenAdder interface {
 	AddRefreshToken(ctx context.Context, tokenHash, salt, accountId string, expiresAt time.Time) error
 }
 
-type AccountGetter interface {
+type accountGetter interface {
 	GetAccountByName(ctx context.Context, username string) (account.Account, error)
 }
 
-type StringHasher interface {
+type stringHasher interface {
 	HashString(str string) (string, string)
 }
 
 type TokenService struct {
 	privateKey []byte
-	a          RefreshTokenAdder
-	h          StringHasher
-	g          AccountGetter
+	a          refreshTokenAdder
+	h          stringHasher
+	g          accountGetter
 }
 
-func NewService(privateKey string, a RefreshTokenAdder, h StringHasher, g AccountGetter) (*TokenService, error) {
+func NewService(privateKey string, a refreshTokenAdder, h stringHasher, g accountGetter) (*TokenService, error) {
 	key, err := base64.StdEncoding.DecodeString(privateKey)
 	if err != nil {
 		return nil, fmt.Errorf("base64 string encoding failed: %w", err)
