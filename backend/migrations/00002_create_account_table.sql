@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS account (
     email citext UNIQUE,
     passhash text NOT NULL,
     salt text NOT NULL,
-    wpm double precision
+    wpm smallint
 );
 
 -- +goose Down

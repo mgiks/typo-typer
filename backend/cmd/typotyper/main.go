@@ -63,13 +63,14 @@ func main() {
 		return
 	}
 
-	q := matchmaking.NewQueue()
+	mm := matchmaking.NewMatchMaker()
+	go mm.Run()
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/texts", handler.NewGetTextHandler(db))
 	mux.HandleFunc("POST /auth/register", handler.NewRegisterHandler(as, v))
 	mux.HandleFunc("POST /auth/login", handler.NewLoginHandler(as, v, ts))
-	mux.HandleFunc("GET /matchmaking/queue", handler.NewJoinQueueHandler(q))
+	mux.HandleFunc("GET /matchmaking/queue", handler.NewJoinQueueHandler(mm))
 
 	handler := middleware.CORS(mux)
 

@@ -14,15 +14,15 @@ import (
 )
 
 type queueInitMsg struct {
-	Name string  `json:"name"`
-	WPM  float32 `json:"wpm"`
+	Name string `json:"name"`
+	WPM  int16  `json:"wpm"`
 }
 
-type queue interface {
-	AddPlayer(p *matchmaking.Player)
+type matchMakingPool interface {
+	Join(p *matchmaking.Player)
 }
 
-func NewJoinQueueHandler(q queue) http.HandlerFunc {
+func NewJoinQueueHandler(mm matchMakingPool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{
 			OriginPatterns: []string{os.Getenv("FRONTEND_URL")},
@@ -46,6 +46,6 @@ func NewJoinQueueHandler(q queue) http.HandlerFunc {
 		fmt.Println(msg)
 
 		p := matchmaking.NewPlayer(msg.Name, msg.WPM, conn)
-		q.AddPlayer(p)
+		mm.Join(p)
 	}
 }

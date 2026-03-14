@@ -4,12 +4,12 @@ import "github.com/coder/websocket"
 
 type Player struct {
 	name           string
-	wpm            float32
+	wpm            int16
 	conn           *websocket.Conn
 	queueTimeInSec uint64
 }
 
-func NewPlayer(name string, wpm float32, conn *websocket.Conn) *Player {
+func NewPlayer(name string, wpm int16, conn *websocket.Conn) *Player {
 	return &Player{
 		name: name,
 		wpm:  wpm,

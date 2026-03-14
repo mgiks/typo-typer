@@ -21,7 +21,7 @@ type Account struct {
 	Email    *string
 	PassHash string
 	Salt     string
-	Wpm      *float32
+	Wpm      *uint16
 }
 
 type accountRepo interface {
