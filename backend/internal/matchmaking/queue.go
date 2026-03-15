@@ -1,6 +1,8 @@
 package matchmaking
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type queue struct {
 	players []*Player

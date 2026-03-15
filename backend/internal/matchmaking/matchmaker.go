@@ -1,20 +1,18 @@
 package matchmaking
 
 import (
-	"log/slog"
-	"sync"
 	"time"
 )
 
 type bucketID int16
 
 type matchMaker struct {
-	mu      sync.Mutex
-	buckets map[bucketID]*queue
+	buckets *bucketMap
+	matches *matchMap
 }
 
 func NewMatchMaker() *matchMaker {
-	return &matchMaker{buckets: make(map[bucketID]*queue)}
+	return &matchMaker{matches: newMatchMap(), buckets: newBucketMap()}
 }
 
 func (mm *matchMaker) Run() {
@@ -22,26 +20,30 @@ func (mm *matchMaker) Run() {
 	defer t.Stop()
 
 	for range t.C {
-		for id := range mm.buckets {
+		for id := range mm.buckets.m {
 			mm.matchBucket(id)
 		}
 	}
 }
 
-func (mm *matchMaker) Join(p *Player) {
-	mm.mu.Lock()
-	defer mm.mu.Unlock()
+func (mm *matchMaker) JoinPool(p *Player) {
+	mm.buckets.mu.Lock()
+	defer mm.buckets.mu.Unlock()
 
 	id := bucketID(p.wpm / 10)
-	if mm.buckets[id] == nil {
-		mm.buckets[id] = &queue{}
+	if mm.buckets.m[id] == nil {
+		mm.buckets.m[id] = &queue{}
 	}
 
-	mm.buckets[id].enqueue(p)
+	mm.buckets.m[id].enqueue(p)
+}
+
+func (mm *matchMaker) EnterMatch(matchId, name string) {
+	mm.matches.m[matchId].enter(name)
 }
 
 func (mm *matchMaker) matchBucket(id bucketID) {
-	q := mm.buckets[id]
+	q := mm.buckets.m[id]
 	if q == nil {
 		return
 	}
@@ -49,10 +51,6 @@ func (mm *matchMaker) matchBucket(id bucketID) {
 	for len(q.players) >= 2 {
 		p1, _ := q.dequeue()
 		p2, _ := q.dequeue()
-		createMatch(p1, p2)
+		mm.matches.createMatch(p1, p2)
 	}
-}
-
-func createMatch(p1, p2 *Player) {
-	slog.Info("match created", "p1", p1, "p2", p2)
 }

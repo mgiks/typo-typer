@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -13,39 +12,36 @@ import (
 	"github.com/mgiks/typo-typer/internal/matchmaking"
 )
 
-type queueInitMsg struct {
+type poolJoinMsg struct {
 	Name string `json:"name"`
 	WPM  int16  `json:"wpm"`
 }
 
-type matchMakingPool interface {
-	Join(p *matchmaking.Player)
+type poolJoiner interface {
+	JoinPool(p *matchmaking.Player)
 }
 
-func NewJoinQueueHandler(mm matchMakingPool) http.HandlerFunc {
+func NewJoinPoolHandler(pj poolJoiner) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{
 			OriginPatterns: []string{os.Getenv("FRONTEND_URL")},
 		})
 		if err != nil {
-			slog.Error("websocket handshake failed", "error", err)
+			slog.Error("pool joining websocket handshake failed", "error", err)
 			return
 		}
-		defer conn.CloseNow()
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancel()
 
-		var msg queueInitMsg
+		var msg poolJoinMsg
 		err = wsjson.Read(ctx, conn, &msg)
 		if err != nil {
-			slog.Error("websocket message reading failed", "error", err)
+			slog.Error("pool joining websocket message reading failed", "error", err)
 			return
 		}
 
-		fmt.Println(msg)
-
 		p := matchmaking.NewPlayer(msg.Name, msg.WPM, conn)
-		mm.Join(p)
+		pj.JoinPool(p)
 	}
 }

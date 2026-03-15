@@ -70,7 +70,8 @@ func main() {
 	mux.HandleFunc("GET /api/texts", handler.NewGetTextHandler(db))
 	mux.HandleFunc("POST /auth/register", handler.NewRegisterHandler(as, v))
 	mux.HandleFunc("POST /auth/login", handler.NewLoginHandler(as, v, ts))
-	mux.HandleFunc("GET /matchmaking/queue", handler.NewJoinQueueHandler(mm))
+	mux.HandleFunc("GET /matchmaking/pool", handler.NewJoinPoolHandler(mm))
+	mux.HandleFunc("GET /matchmaking/match", handler.NewEnterMatchHandler(mm))
 
 	handler := middleware.CORS(mux)
 
