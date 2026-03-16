@@ -128,7 +128,7 @@ func validationErr(err error, w http.ResponseWriter, logMsg string) bool {
 
 	var validateErrs validator.ValidationErrors
 	if errors.As(err, &validateErrs) {
-		writeJSON(w, http.StatusBadRequest, APIErrDetailed{
+		writeJSON(w, http.StatusBadRequest, apiErrDetailed{
 			Error:   "incorrect json data",
 			Details: buildValidationErrJSON(validateErrs)},
 		)
@@ -149,10 +149,10 @@ func serviceErr(err error, w http.ResponseWriter, logMsg string) bool {
 	case errors.Is(err, account.ErrAccountAlreadyExists),
 		errors.Is(err, account.ErrUsernameEmpty),
 		errors.Is(err, account.ErrPasswordTooShort):
-		writeJSON(w, http.StatusBadRequest, APIErr{Error: err.Error()})
+		writeJSON(w, http.StatusBadRequest, apiErr{Error: err.Error()})
 	case errors.Is(err, account.ErrAccountNotFound),
 		errors.Is(err, account.ErrIncorrectPassword):
-		writeJSON(w, http.StatusBadRequest, APIErr{Error: "incorrect username or password"})
+		writeJSON(w, http.StatusBadRequest, apiErr{Error: "incorrect username or password"})
 	default:
 		slog.Error(logMsg, "error", err)
 		writeInternalServerErrorJSON(w)

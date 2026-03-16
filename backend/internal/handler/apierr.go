@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-type APIErr struct {
+type apiErr struct {
 	Error string `json:"error"`
 }
 
-type APIErrDetailed struct {
+type apiErrDetailed struct {
 	Error   string `json:"error"`
 	Details any    `json:"details"`
 }
@@ -23,7 +23,7 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 func writeInternalServerErrorJSON(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusInternalServerError)
-	json.NewEncoder(w).Encode(APIErr{
+	json.NewEncoder(w).Encode(apiErr{
 		Error: "internal server error",
 	})
 }
