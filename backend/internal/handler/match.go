@@ -12,8 +12,7 @@ import (
 )
 
 type matchEnterMsg struct {
-	MatchId string `json:"matchId"`
-	Name    string `json:"name"`
+	Name string `json:"name"`
 }
 
 type matchEnterer interface {
@@ -40,6 +39,7 @@ func NewEnterMatchHandler(me matchEnterer) http.HandlerFunc {
 			return
 		}
 
-		me.EnterMatch(msg.MatchId, msg.Name)
+		matchId := r.PathValue("matchId")
+		me.EnterMatch(matchId, msg.Name)
 	}
 }
