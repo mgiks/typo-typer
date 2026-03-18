@@ -1,6 +1,7 @@
 package matchmaking
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -38,8 +39,13 @@ func (mm *matchMaker) JoinPool(p *Player) {
 	mm.buckets.m[id].enqueue(p)
 }
 
-func (mm *matchMaker) EnterMatch(matchId, name string) {
-	mm.matches.m[matchId].enter(name)
+func (mm *matchMaker) EnterMatch(matchId, name string) error {
+	match, ok := mm.matches.m[matchId]
+	if !ok {
+		return fmt.Errorf("match with id %s not found", matchId)
+	}
+	match.enter(name)
+	return nil
 }
 
 func (mm *matchMaker) matchBucket(id bucketID) {

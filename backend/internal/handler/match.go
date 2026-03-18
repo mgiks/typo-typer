@@ -16,7 +16,7 @@ type matchEnterMsg struct {
 }
 
 type matchEnterer interface {
-	EnterMatch(matchId, name string)
+	EnterMatch(matchId, name string) error
 }
 
 func NewEnterMatchHandler(me matchEnterer) http.HandlerFunc {
@@ -40,6 +40,9 @@ func NewEnterMatchHandler(me matchEnterer) http.HandlerFunc {
 		}
 
 		matchId := r.PathValue("matchId")
-		me.EnterMatch(matchId, msg.Name)
+		if err = me.EnterMatch(matchId, msg.Name); err != nil {
+			slog.Error("failed to enter match:", "error", err)
+			conn.Close(websocket.StatusInternalError, "internal server error")
+		}
 	}
 }
