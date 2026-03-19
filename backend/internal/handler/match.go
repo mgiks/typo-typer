@@ -9,6 +9,7 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
+	"github.com/mgiks/typo-typer/internal/matchmaking"
 )
 
 type matchEnterMsg struct {
@@ -16,7 +17,7 @@ type matchEnterMsg struct {
 }
 
 type matchEnterer interface {
-	EnterMatch(matchId, name string) error
+	EnterMatch(matchId string, p *matchmaking.MatchedPlayer) error
 }
 
 func NewEnterMatchHandler(me matchEnterer) http.HandlerFunc {
@@ -40,7 +41,9 @@ func NewEnterMatchHandler(me matchEnterer) http.HandlerFunc {
 		}
 
 		matchId := r.PathValue("matchId")
-		if err = me.EnterMatch(matchId, msg.Name); err != nil {
+		p := matchmaking.NewMatchedPlayer(msg.Name, conn)
+
+		if err = me.EnterMatch(matchId, p); err != nil {
 			slog.Error("failed to enter match:", "error", err)
 			conn.Close(websocket.StatusInternalError, "internal server error")
 		}

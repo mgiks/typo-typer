@@ -27,7 +27,7 @@ func (mm *matchMaker) Run() {
 	}
 }
 
-func (mm *matchMaker) JoinPool(p *Player) {
+func (mm *matchMaker) JoinPool(p *SearchingPlayer) {
 	mm.buckets.mu.Lock()
 	defer mm.buckets.mu.Unlock()
 
@@ -39,12 +39,12 @@ func (mm *matchMaker) JoinPool(p *Player) {
 	mm.buckets.m[id].enqueue(p)
 }
 
-func (mm *matchMaker) EnterMatch(matchId, name string) error {
+func (mm *matchMaker) EnterMatch(matchId string, p *MatchedPlayer) error {
 	match, ok := mm.matches.m[matchId]
 	if !ok {
 		return fmt.Errorf("match with id %s not found", matchId)
 	}
-	match.enter(name)
+	match.enter(p)
 	return nil
 }
 

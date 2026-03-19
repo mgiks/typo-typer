@@ -5,14 +5,14 @@ import (
 )
 
 type queue struct {
-	players []*Player
+	players []*SearchingPlayer
 }
 
-func (q *queue) enqueue(p *Player) {
-	q.players = append([]*Player{p}, q.players...)
+func (q *queue) enqueue(p *SearchingPlayer) {
+	q.players = append([]*SearchingPlayer{p}, q.players...)
 }
 
-func (q *queue) dequeue() (*Player, error) {
+func (q *queue) dequeue() (*SearchingPlayer, error) {
 	if len(q.players) == 0 {
 		return nil, fmt.Errorf("unable to dequeue from empty queue")
 	}

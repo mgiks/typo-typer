@@ -18,7 +18,7 @@ type poolJoinMsg struct {
 }
 
 type poolJoiner interface {
-	JoinPool(p *matchmaking.Player)
+	JoinPool(p *matchmaking.SearchingPlayer)
 }
 
 func NewJoinPoolHandler(pj poolJoiner) http.HandlerFunc {
@@ -41,7 +41,7 @@ func NewJoinPoolHandler(pj poolJoiner) http.HandlerFunc {
 			return
 		}
 
-		p := matchmaking.NewPlayer(msg.Name, msg.WPM, conn)
+		p := matchmaking.NewSearchingPlayer(msg.Name, msg.WPM, conn)
 		pj.JoinPool(p)
 	}
 }
