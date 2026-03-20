@@ -2,8 +2,6 @@ package matchmaking
 
 import (
 	"context"
-	"fmt"
-	"log/slog"
 	"time"
 
 	"github.com/coder/websocket"
@@ -45,7 +43,7 @@ type matchMsg struct {
 }
 
 type playerListPayload struct {
-	Name []string `json:"name"`
+	Names []string `json:"names"`
 }
 
 type match struct {
@@ -71,8 +69,15 @@ func (m *match) run() {
 
 		for _, p := range m.players {
 			wsjson.Write(ctx, p.conn, msg)
-			fmt.Println(msg)
 		}
+	}
+}
+
+func (m *match) readMsgs(p *MatchedPlayer) {
+	for {
+		var msg matchMsg
+		wsjson.Read(context.Background(), p.conn, &msg)
+		m.msgCh <- msg
 	}
 }
 
@@ -82,11 +87,10 @@ func (m *match) enter(p *MatchedPlayer) {
 		go m.run()
 	}
 	m.players = append(m.players, p)
+	go m.readMsgs(p)
 
 	m.msgCh <- matchMsg{
-		Type: "playerList",
-		Payload: playerListPayload{
-			Name: m.players.getNamesSlice(),
-		},
+		Type:    "playerList",
+		Payload: playerListPayload{Names: m.players.getNamesSlice()},
 	}
 }
