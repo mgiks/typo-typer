@@ -50,7 +50,9 @@ type match struct {
 	playerCountTarget uint
 	players           matchedPlayers
 	msgCh             chan matchMsg
-	started           bool
+	running           bool
+	startedAt         *time.Time
+	endsAt            *time.Time
 }
 
 func newMatch() *match {
@@ -58,7 +60,9 @@ func newMatch() *match {
 		playerCountTarget: 2,
 		players:           make([]*MatchedPlayer, 0, 2),
 		msgCh:             make(chan matchMsg, 10),
-		started:           false,
+		running:           false,
+		startedAt:         nil,
+		endsAt:            nil,
 	}
 }
 
@@ -73,21 +77,39 @@ func (m *match) run() {
 	}
 }
 
-func (m *match) readMsgs(p *MatchedPlayer) {
+func (m *match) start() {
+	startTime := time.Now()
+	m.startedAt = &startTime
+
+	endTime := startTime.Add(time.Minute * 2)
+	m.endsAt = &endTime
+
+	m.msgCh <- matchMsg{Type: "matchStarted"}
+}
+
+func (m *match) listenForMsgs(p *MatchedPlayer) {
 	for {
 		var msg matchMsg
-		wsjson.Read(context.Background(), p.conn, &msg)
+		err := wsjson.Read(context.Background(), p.conn, &msg)
+		if err != nil {
+			break
+		}
 		m.msgCh <- msg
 	}
 }
 
 func (m *match) enter(p *MatchedPlayer) {
-	if !m.started {
-		m.started = true
+	m.players = append(m.players, p)
+	go m.listenForMsgs(p)
+
+	if !m.running {
+		m.running = true
 		go m.run()
 	}
-	m.players = append(m.players, p)
-	go m.readMsgs(p)
+
+	if m.startedAt == nil && len(m.players) >= 2 {
+		m.start()
+	}
 
 	m.msgCh <- matchMsg{
 		Type:    "playerList",
