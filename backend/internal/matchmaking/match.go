@@ -21,9 +21,9 @@ type matchFoundMsg struct {
 	MatchId string `json:"matchId"`
 }
 
-func (matchMap *matchMap) createMatch(p1, p2 *SearchingPlayer) {
+func (matchMap *matchMap) createMatch(p1, p2 *SearchingPlayer, text string) {
 	id := gonanoid.Must()
-	matchMap.m[id] = newMatch()
+	matchMap.m[id] = newMatch(text)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -46,19 +46,25 @@ type playerListPayload struct {
 	Names []string `json:"names"`
 }
 
+type textPayload struct {
+	Text string `json:"text"`
+}
+
 type match struct {
 	playerCountTarget uint
 	players           matchedPlayers
+	text              string
 	msgCh             chan matchMsg
 	running           bool
 	startedAt         *time.Time
 	endsAt            *time.Time
 }
 
-func newMatch() *match {
+func newMatch(text string) *match {
 	return &match{
 		playerCountTarget: 2,
 		players:           make([]*MatchedPlayer, 0, 2),
+		text:              text,
 		msgCh:             make(chan matchMsg, 10),
 		running:           false,
 		startedAt:         nil,
@@ -110,6 +116,13 @@ func (m *match) enter(p *MatchedPlayer) {
 	if m.startedAt == nil && len(m.players) >= 2 {
 		m.start()
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	wsjson.Write(ctx, p.conn, matchMsg{
+		Type:    "text",
+		Payload: textPayload{Text: m.text},
+	})
 
 	m.msgCh <- matchMsg{
 		Type:    "playerList",

@@ -63,7 +63,7 @@ func main() {
 		return
 	}
 
-	mm := matchmaking.NewMatchMaker()
+	mm := matchmaking.NewMatchMaker(db)
 	go mm.Run()
 
 	mux := http.NewServeMux()
