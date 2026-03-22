@@ -18,14 +18,16 @@ func NewSearchingPlayer(name string, wpm int16, conn *websocket.Conn) *Searching
 }
 
 type MatchedPlayer struct {
-	name string
-	conn *websocket.Conn
+	name      string
+	conn      *websocket.Conn
+	textIndex int
 }
 
 func NewMatchedPlayer(name string, conn *websocket.Conn) *MatchedPlayer {
 	return &MatchedPlayer{
-		name: name,
-		conn: conn,
+		name:      name,
+		conn:      conn,
+		textIndex: -1,
 	}
 }
 

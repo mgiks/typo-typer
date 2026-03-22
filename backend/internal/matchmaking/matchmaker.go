@@ -57,7 +57,9 @@ func (mm *matchMaker) EnterMatch(matchId string, p *MatchedPlayer) error {
 	if !ok {
 		return fmt.Errorf("match with id %s not found", matchId)
 	}
-	match.enter(p)
+	if err := match.enter(p); err != nil {
+		return fmt.Errorf("failed to enter match: %w", err)
+	}
 	return nil
 }
 
@@ -73,9 +75,15 @@ func (mm *matchMaker) matchBucket(id bucketID) error {
 	}
 
 	for len(q.players) >= 2 {
-		p1, _ := q.dequeue()
-		p2, _ := q.dequeue()
-		mm.matches.createMatch(p1, p2, text)
+		p1 := q.peek(0)
+		p2 := q.peek(1)
+
+		if err := mm.matches.createMatch(p1, p2, text); err != nil {
+			return fmt.Errorf("failed to create match: %w", err)
+		}
+
+		q.dequeue()
+		q.dequeue()
 	}
 
 	return nil

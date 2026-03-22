@@ -20,3 +20,11 @@ func (q *queue) dequeue() (*SearchingPlayer, error) {
 	q.players = q.players[:len(q.players)-1]
 	return p, nil
 }
+
+func (q *queue) peek(leftShift int) *SearchingPlayer {
+	i := len(q.players) - 1 - leftShift
+	if len(q.players) == 0 || i < 0 {
+		return nil
+	}
+	return q.players[i]
+}
