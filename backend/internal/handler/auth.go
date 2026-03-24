@@ -25,7 +25,7 @@ type accountCreator interface {
 }
 
 type structValidator interface {
-	Struct(s interface{}) error
+	Struct(s any) error
 }
 
 func NewRegisterHandler(c accountCreator, v structValidator) http.HandlerFunc {
