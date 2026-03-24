@@ -25,7 +25,7 @@ type Account struct {
 }
 
 type accountRepo interface {
-	GetAccountByName(ctx context.Context, username string) (Account, error)
+	GetAccountByName(ctx context.Context, username string) (*Account, error)
 	AddAccount(ctx context.Context, username, passhash, salt string) error
 }
 

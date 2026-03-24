@@ -16,12 +16,12 @@ func (db *DB) AddAccount(ctx context.Context, username, passhash, salt string) e
 	return nil
 }
 
-func (db *DB) GetAccountByName(ctx context.Context, username string) (account.Account, error) {
+func (db *DB) GetAccountByName(ctx context.Context, username string) (*account.Account, error) {
 	row := db.pool.QueryRow(ctx, "SELECT (id, username, email, passhash, salt, wpm) FROM account WHERE username=$1", username)
 
-	var a account.Account
-	if err := row.Scan(&a); err != nil {
-		return account.Account{}, fmt.Errorf("query get account failed: %w", err)
+	var a *account.Account
+	if err := row.Scan(a); err != nil {
+		return nil, fmt.Errorf("query get account failed: %w", err)
 	}
 
 	return a, nil
