@@ -1,6 +1,8 @@
 package matchmaking
 
-import "github.com/coder/websocket"
+import (
+	"github.com/coder/websocket"
+)
 
 type SearchingPlayer struct {
 	name           string
@@ -18,29 +20,13 @@ func NewSearchingPlayer(name string, wpm int16, conn *websocket.Conn) *Searching
 }
 
 type MatchedPlayer struct {
-	name      string
-	conn      *websocket.Conn
-	textIndex int
+	name string
+	conn *websocket.Conn
 }
 
 func NewMatchedPlayer(name string, conn *websocket.Conn) *MatchedPlayer {
 	return &MatchedPlayer{
-		name:      name,
-		conn:      conn,
-		textIndex: -1,
+		name: name,
+		conn: conn,
 	}
-}
-
-type matchedPlayers []*MatchedPlayer
-
-func newMatchedPlayersSlice() matchedPlayers {
-	return matchedPlayers(make([]*MatchedPlayer, 2))
-}
-
-func (ps matchedPlayers) getNamesSlice() []string {
-	names := make([]string, 0, 2)
-	for _, p := range ps {
-		names = append(names, p.name)
-	}
-	return names
 }
