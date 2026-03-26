@@ -108,7 +108,7 @@ func (m *match) start() error {
 	return nil
 }
 
-func (m *match) listenForMsgs(p *MatchedPlayer) {
+func (m *match) listenForMsgs(p MatchedPlayer) {
 	for {
 		var msg msg
 		err := wsjson.Read(context.Background(), p.conn, &msg)
@@ -121,7 +121,7 @@ func (m *match) listenForMsgs(p *MatchedPlayer) {
 	}
 }
 
-func (m *match) enter(p *MatchedPlayer) error {
+func (m *match) enter(p MatchedPlayer) error {
 	m.psm[p.name] = newPlayerState(p.conn)
 	go m.listenForMsgs(p)
 

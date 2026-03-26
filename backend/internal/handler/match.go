@@ -17,7 +17,7 @@ type matchEnterMsg struct {
 }
 
 type matchEnterer interface {
-	EnterMatch(matchId string, p *matchmaking.MatchedPlayer) error
+	EnterMatch(matchId string, p matchmaking.MatchedPlayer) error
 }
 
 func NewEnterMatchHandler(me matchEnterer) http.HandlerFunc {

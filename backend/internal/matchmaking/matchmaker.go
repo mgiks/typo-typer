@@ -52,7 +52,7 @@ func (mm *matchMaker) JoinPool(p *SearchingPlayer) {
 	mm.buckets.m[id].enqueue(p)
 }
 
-func (mm *matchMaker) EnterMatch(matchId string, p *MatchedPlayer) error {
+func (mm *matchMaker) EnterMatch(matchId string, p MatchedPlayer) error {
 	match, ok := mm.matches.m[matchId]
 	if !ok {
 		return fmt.Errorf("match with id %s not found", matchId)

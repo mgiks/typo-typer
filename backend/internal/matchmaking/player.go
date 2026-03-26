@@ -24,8 +24,8 @@ type MatchedPlayer struct {
 	conn *websocket.Conn
 }
 
-func NewMatchedPlayer(name string, conn *websocket.Conn) *MatchedPlayer {
-	return &MatchedPlayer{
+func NewMatchedPlayer(name string, conn *websocket.Conn) MatchedPlayer {
+	return MatchedPlayer{
 		name: name,
 		conn: conn,
 	}
