@@ -200,8 +200,7 @@ func newMatchMap() *matchMap {
 	return &matchMap{m: make(map[string]*match)}
 }
 
-// TODO: make this function variadic(possibly accept more than 2 players )
-func (matchMap *matchMap) createMatch(p1, p2 *SearchingPlayer, text string) error {
+func (matchMap *matchMap) createMatch(text string, ps ...SearchingPlayer) error {
 	id := gonanoid.Must()
 	matchMap.m[id] = newMatch(text)
 
@@ -213,11 +212,10 @@ func (matchMap *matchMap) createMatch(p1, p2 *SearchingPlayer, text string) erro
 		return fmt.Errorf("failed to create message: %w", err)
 	}
 
-	wsjson.Write(ctx, p1.conn, msg)
-	wsjson.Write(ctx, p2.conn, msg)
-
-	p1.conn.Close(websocket.StatusNormalClosure, "match found")
-	p2.conn.Close(websocket.StatusNormalClosure, "match found")
+	for _, p := range ps {
+		wsjson.Write(ctx, p.conn, msg)
+		p.conn.Close(websocket.StatusNormalClosure, "match found")
+	}
 
 	return nil
 }

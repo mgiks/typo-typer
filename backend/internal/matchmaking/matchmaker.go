@@ -78,12 +78,16 @@ func (mm *matchMaker) matchBucket(id bucketID) error {
 		p1 := q.peek(0)
 		p2 := q.peek(1)
 
-		if err := mm.matches.createMatch(p1, p2, text); err != nil {
+		if err := mm.matches.createMatch(text, *p1, *p2); err != nil {
 			return fmt.Errorf("failed to create match: %w", err)
 		}
 
-		q.dequeue()
-		q.dequeue()
+		if err := q.dequeue(); err != nil {
+			return fmt.Errorf("failed to dequeue player1: %w", err)
+		}
+		if err := q.dequeue(); err != nil {
+			return fmt.Errorf("failed to dequeue player2: %w", err)
+		}
 	}
 
 	return nil
