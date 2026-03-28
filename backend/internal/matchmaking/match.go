@@ -32,8 +32,8 @@ type textPayload struct {
 }
 
 type keyEvent struct {
-	Id  int    `json:"id"`
-	Key string `json:"key"`
+	Key      string `json:"key"`
+	TimeInMs int    `json:"timeInMs"`
 }
 
 type keyEventBatchPayload struct {
@@ -155,31 +155,61 @@ func (m *match) enter(p MatchedPlayer) error {
 }
 
 type playerState struct {
-	conn           *websocket.Conn
-	lastKeyEventId int
-	textState      string
-	textIndex      int
+	conn              *websocket.Conn
+	lastEventTimeInMs int
+	prevTextState     string
+	textState         string
+	textIndex         int
+	wpmHistory        []int
+	avgWpm            int
 }
 
 func newPlayerState(conn *websocket.Conn) *playerState {
-	return &playerState{conn: conn, lastKeyEventId: -1, textIndex: -1}
+	return &playerState{conn: conn, lastEventTimeInMs: -1, textIndex: -1}
 }
 
 func (s *playerState) applyKeyEvents(events []keyEvent) {
 	var textState strings.Builder
 	textState.WriteString(s.textState)
 
-	var lastId int
+	var lastEventTimeInMs int
 	for _, e := range events {
-		if e.Id < s.lastKeyEventId {
+		if e.TimeInMs < 0 || e.TimeInMs < s.lastEventTimeInMs {
 			break
 		}
-		lastId = e.Id
+		lastEventTimeInMs = e.TimeInMs
 		textState.WriteString(e.Key)
 	}
 
+	s.prevTextState = s.textState
 	s.textState = textState.String()
-	s.lastKeyEventId = max(s.lastKeyEventId, lastId)
+	s.lastEventTimeInMs = max(s.lastEventTimeInMs, lastEventTimeInMs)
+
+	s.updateWpm(lastEventTimeInMs)
+}
+
+func (s *playerState) updateWpm(prevEventTimeInMs int) {
+	wpm := 0
+
+	if len(s.textState) > len(s.prevTextState) {
+		// 1 word is 5 symbols due to a convention
+		wordSize := 5
+
+		wordCount := (len(s.textState) - len(s.prevTextState)) / wordSize
+		timeInSec := (s.lastEventTimeInMs - prevEventTimeInMs) * 1000
+		wpm = wordCount / timeInSec
+	}
+
+	s.wpmHistory = append(s.wpmHistory, wpm)
+	s.avgWpm = sum(s.wpmHistory) / len(s.wpmHistory)
+}
+
+func sum(slice []int) int {
+	res := 0
+	for _, v := range slice {
+		res += v
+	}
+	return res
 }
 
 type playerStateMap map[string]*playerState
