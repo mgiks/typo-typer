@@ -71,7 +71,7 @@ func main() {
 	mux.HandleFunc("POST /auth/register", handler.NewRegisterHandler(as, v))
 	mux.HandleFunc("POST /auth/login", handler.NewLoginHandler(as, v, ts))
 	mux.HandleFunc("GET /matchmaking/pool", handler.NewJoinPoolHandler(mm))
-	mux.HandleFunc("GET /matchmaking/match/{matchId}", handler.NewEnterMatchHandler(mm))
+	mux.HandleFunc("GET /matchmaking/match/{matchId}", handler.NewEnterMatchHandler(mm, ts))
 
 	handler := middleware.CORS(mux)
 

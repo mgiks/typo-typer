@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -53,6 +54,26 @@ func (s *TokenService) CreateAccessToken(ctx context.Context, username string) (
 		return "", fmt.Errorf("token signing failed: %w", err)
 	}
 	return str, nil
+}
+
+func (s *TokenService) ParseAccessToken(ctx context.Context, tokenString string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (any, error) {
+		secret := os.Getenv("JWT_SECRET")
+		if len(secret) == 0 {
+			return nil, fmt.Errorf("failed to retreive secret")
+		}
+		return []byte(secret), nil
+	}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
+	if err != nil {
+		return nil, fmt.Errorf("token parsing failed: %w", err)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("failed to parse token claims")
+	}
+
+	return claims, nil
 }
 
 func (s *TokenService) CreateRefreshToken(ctx context.Context, username string) (string, error) {

@@ -2,10 +2,13 @@ package matchmaking
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"time"
 )
+
+var ErrMatchNotFound = errors.New("match not found")
 
 type bucketID int16
 
@@ -52,11 +55,24 @@ func (mm *matchMaker) JoinPool(p *SearchingPlayer) {
 	mm.buckets.m[id].enqueue(p)
 }
 
-func (mm *matchMaker) EnterMatch(matchId string, p MatchedPlayer) error {
-	match, ok := mm.matches.m[matchId]
-	if !ok {
-		return fmt.Errorf("match with id %s not found", matchId)
+func (mm *matchMaker) MatchExists(matchId string) bool {
+	_, ok := mm.matches.m[matchId]
+	return ok
+}
+
+func (mm *matchMaker) PlayerBelongs(matchId, playerId string) bool {
+	if ok := mm.MatchExists(matchId); !ok {
+		return false
 	}
+	match := mm.matches.m[matchId]
+	return match.playerBelongs(playerId)
+}
+
+func (mm *matchMaker) EnterMatch(matchId string, p MatchedPlayer) error {
+	if ok := mm.MatchExists(matchId); !ok {
+		return ErrMatchNotFound
+	}
+	match := mm.matches.m[matchId]
 	if err := match.enter(p); err != nil {
 		return fmt.Errorf("failed to enter match: %w", err)
 	}

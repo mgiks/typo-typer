@@ -59,6 +59,7 @@ type match struct {
 	running           bool
 	startedAt         *time.Time
 	endsAt            *time.Time
+	allowedPlayerIds  []string
 	psm               playerStateMap
 }
 
@@ -152,6 +153,15 @@ func (m *match) enter(p MatchedPlayer) error {
 	m.msgCh <- playerListMsg
 
 	return nil
+}
+
+func (m *match) playerBelongs(id string) bool {
+	for _, pId := range m.allowedPlayerIds {
+		if pId == id {
+			return true
+		}
+	}
+	return false
 }
 
 type playerState struct {
