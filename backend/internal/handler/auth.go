@@ -65,8 +65,7 @@ type loginData struct {
 }
 
 type loginResponse struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
+	Status string `json:"status"`
 }
 
 type accountPasswordChecker interface {
@@ -113,7 +112,25 @@ func NewLoginHandler(c accountPasswordChecker, v structValidator, ts tokenServic
 			return
 		}
 
-		resp := loginResponse{AccessToken: accToken, RefreshToken: refToken}
+		http.SetCookie(w, &http.Cookie{
+			Name:     "access_token",
+			Value:    accToken,
+			Path:     "/matchmaking",
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteLaxMode,
+		})
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "refresh_token",
+			Value:    refToken,
+			Path:     "/auth",
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: http.SameSiteLaxMode,
+		})
+
+		resp := loginResponse{Status: "success"}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			slog.Error("login response encoding failed", "error", err)
 			writeInternalServerErrorJSON(w)
