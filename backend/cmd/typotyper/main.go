@@ -3,6 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/joho/godotenv"
 	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/handler"
@@ -12,9 +16,6 @@ import (
 	"github.com/mgiks/typo-typer/internal/postgres"
 	"github.com/mgiks/typo-typer/internal/token"
 	"github.com/mgiks/typo-typer/internal/validation"
-	"log/slog"
-	"net/http"
-	"os"
 )
 
 const (
@@ -23,33 +24,26 @@ const (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		slog.Error("error loading .env file", "error", err)
-		return
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("error loading environment variables: %v\n", err)
+	}
+	jwtSecret, ok := os.LookupEnv(envJWTSecret)
+	if !ok {
+		log.Fatalf("failed to find environment variable %v\n", envJWTSecret)
 	}
 
 	ctx := context.Background()
-
 	pg, err := postgres.Connect(ctx)
 	if err != nil {
-		slog.Error("database connection failed", "error", err)
-		return
+		log.Fatalf("database connection failed: %v\n", err)
 	}
 
 	hs := hashing.NewService(hashing.DefaultHashingConfig)
 	as := account.NewService(pg, hs)
 	v := validation.NewValidator()
-
-	secret, ok := os.LookupEnv(envJWTSecret)
-	if !ok {
-		slog.Error("failed to find environment variable", "name", envJWTSecret)
-		return
-	}
-
-	ts, err := token.NewService(secret, pg, hs, pg)
+	ts, err := token.NewService(jwtSecret, pg, hs, pg)
 	if err != nil {
-		slog.Error("token service initialization failed", "error", err)
+		log.Fatalf("failed to initialize token service: %v\n", err)
 		return
 	}
 
@@ -63,16 +57,15 @@ func main() {
 	mux.HandleFunc("GET /matchmaking/pool", handler.NewJoinPoolHandler(mm))
 	mux.HandleFunc("GET /matchmaking/match/{matchId}", handler.NewEnterMatchHandler(mm, ts))
 
-	handler := middleware.CORS(mux)
-
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
 	}
 
 	fmt.Printf("Listening and serving on port %s\n", port)
-	if err := http.ListenAndServe(":"+port, handler); err != nil {
-		slog.Error("http listening and serving failed", "error", err)
-	}
 
+	handler := middleware.CORS(mux)
+	if err := http.ListenAndServe(":"+port, handler); err != nil {
+		log.Fatal("http listening and serving failed: %s", err)
+	}
 }
