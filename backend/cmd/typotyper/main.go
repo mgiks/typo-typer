@@ -12,11 +12,11 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"github.com/mgiks/typo-typer/internal/account"
-	"github.com/mgiks/typo-typer/internal/database"
 	"github.com/mgiks/typo-typer/internal/handler"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/matchmaking"
 	"github.com/mgiks/typo-typer/internal/middleware"
+	"github.com/mgiks/typo-typer/internal/postgres"
 	"github.com/mgiks/typo-typer/internal/token"
 )
 
@@ -33,14 +33,15 @@ func main() {
 	}
 
 	ctx := context.Background()
-	db, err := database.Connect(ctx)
+
+	pg, err := postgres.Connect(ctx)
 	if err != nil {
 		slog.Error("database connection failed", "error", err)
 		return
 	}
 
 	hs := hashing.NewService(hashing.DefaultHashingConfig)
-	as := account.NewService(db, hs)
+	as := account.NewService(pg, hs)
 
 	v := validator.New(validator.WithRequiredStructEnabled())
 	v.RegisterTagNameFunc(func(field reflect.StructField) string {
@@ -57,17 +58,17 @@ func main() {
 		return
 	}
 
-	ts, err := token.NewService(secret, db, hs, db)
+	ts, err := token.NewService(secret, pg, hs, pg)
 	if err != nil {
 		slog.Error("token service initialization failed", "error", err)
 		return
 	}
 
-	mm := matchmaking.NewMatchMaker(db)
+	mm := matchmaking.NewMatchMaker(pg)
 	go mm.Run()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/texts", handler.NewGetTextHandler(db))
+	mux.HandleFunc("GET /api/texts", handler.NewGetTextHandler(pg))
 	mux.HandleFunc("POST /auth/register", handler.NewRegisterHandler(as, v))
 	mux.HandleFunc("POST /auth/login", handler.NewLoginHandler(as, v, ts))
 	mux.HandleFunc("GET /matchmaking/pool", handler.NewJoinPoolHandler(mm))

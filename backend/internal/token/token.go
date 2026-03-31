@@ -17,7 +17,7 @@ type refreshTokenAdder interface {
 }
 
 type accountGetter interface {
-	GetAccountByName(ctx context.Context, username string) (*account.Account, error)
+	GetAccountByName(ctx context.Context, username string) (account.Account, error)
 }
 
 type stringHasher interface {
