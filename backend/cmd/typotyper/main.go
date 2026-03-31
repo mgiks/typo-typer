@@ -3,13 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
-	"net/http"
-	"os"
-	"reflect"
-	"strings"
-
-	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
 	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/handler"
@@ -18,6 +11,10 @@ import (
 	"github.com/mgiks/typo-typer/internal/middleware"
 	"github.com/mgiks/typo-typer/internal/postgres"
 	"github.com/mgiks/typo-typer/internal/token"
+	"github.com/mgiks/typo-typer/internal/validation"
+	"log/slog"
+	"net/http"
+	"os"
 )
 
 const (
@@ -42,15 +39,7 @@ func main() {
 
 	hs := hashing.NewService(hashing.DefaultHashingConfig)
 	as := account.NewService(pg, hs)
-
-	v := validator.New(validator.WithRequiredStructEnabled())
-	v.RegisterTagNameFunc(func(field reflect.StructField) string {
-		name := strings.SplitN(field.Tag.Get("json"), ",", 2)[0]
-		if name == "-" {
-			return ""
-		}
-		return name
-	})
+	v := validation.NewValidator()
 
 	secret, ok := os.LookupEnv(envJWTSecret)
 	if !ok {
