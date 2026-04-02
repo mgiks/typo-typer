@@ -3,8 +3,6 @@ package postgres
 import (
 	"context"
 	"fmt"
-
-	"github.com/mgiks/typo-typer/internal/account"
 )
 
 func (db pgDb) AddAccount(ctx context.Context, username, passhash, salt string) error {
@@ -15,13 +13,46 @@ func (db pgDb) AddAccount(ctx context.Context, username, passhash, salt string) 
 	return nil
 }
 
-func (db pgDb) GetAccountByName(ctx context.Context, username string) (account.Account, error) {
+type account struct {
+	id       string
+	username string
+	email    *string
+	passHash string
+	salt     string
+	wpm      *uint16
+}
+
+func (a account) Id() string {
+	return a.id
+}
+
+func (a account) Username() string {
+	return a.username
+}
+
+func (a account) Email() *string {
+	return a.email
+}
+
+func (a account) PassHash() string {
+	return a.passHash
+}
+
+func (a account) Salt() string {
+	return a.salt
+}
+
+func (a account) Wpm() *uint16 {
+	return a.wpm
+}
+
+func (db pgDb) GetAccountByName(ctx context.Context, username string) (account, error) {
 	sql := "SELECT id, username, email, passhash, salt, wpm FROM account WHERE username=$1"
 	row := db.pool.QueryRow(ctx, sql, username)
 
-	var a account.Account
-	if err := row.Scan(&a.Id, &a.Username, &a.Email, &a.PassHash, &a.Salt, &a.Wpm); err != nil {
-		return account.Account{}, fmt.Errorf("failed to get account by name: %w", err)
+	var a account
+	if err := row.Scan(&a.id, &a.username, &a.email, &a.passHash, &a.salt, &a.wpm); err != nil {
+		return account{}, fmt.Errorf("failed to get account by name: %w", err)
 	}
 
 	return a, nil
