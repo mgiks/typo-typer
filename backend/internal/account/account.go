@@ -2,18 +2,16 @@ package account
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
-
-	"github.com/jackc/pgx/v5"
+	"time"
 )
 
-var ErrAccountAlreadyExists = errors.New("account already exists")
-var ErrUsernameEmpty = errors.New("non-empty username required")
-var ErrPasswordTooShort = errors.New("password less than 8 characters in length")
-var ErrIncorrectPassword = errors.New("incorrect password")
-var ErrAccountNotFound = pgx.ErrNoRows
+var ErrAccountAlreadyExists = fmt.Errorf("account already exists")
+var ErrUsernameEmpty = fmt.Errorf("non-empty username required")
+var ErrPasswordTooShort = fmt.Errorf("password less than 8 characters in length")
+var ErrIncorrectPassword = fmt.Errorf("incorrect password")
+var ErrAccountNotFound = fmt.Errorf("account not found")
 
 type Account struct {
 	Id       string
@@ -30,65 +28,50 @@ type accountRepo interface {
 }
 
 type passwordHasher interface {
-	HashString(str string) (string, string)
-	VerifyHash(str, b64salt, b64hash string) error
+	HashString(str string) (b64hash string, b64salt string)
+	VerifyHash(str, b64hash, b64salt string) error
 }
 
 type accountService struct {
-	repo   accountRepo
-	hasher passwordHasher
+	ar accountRepo
+	ph passwordHasher
 }
 
-func NewService(repo accountRepo, hasher passwordHasher) *accountService {
-	return &accountService{repo: repo, hasher: hasher}
+func NewService(ar accountRepo, ph passwordHasher) *accountService {
+	return &accountService{ar: ar, ph: ph}
 }
 
 func (s *accountService) CreateAccount(ctx context.Context, username, password string) error {
 	username = strings.TrimSpace(username)
-	if err := validateUsername(username); err != nil {
-		return err
-	}
-
-	_, err := s.repo.GetAccountByName(ctx, username)
-	if err == nil {
-		return ErrAccountAlreadyExists
-	}
-
-	if err := validatePassword(password); err != nil {
-		return err
-	}
-
-	passhash, salt := s.hasher.HashString(password)
-	return s.repo.AddAccount(ctx, username, passhash, salt)
-}
-
-func (s *accountService) PasswordCorrect(ctx context.Context, username, password string) error {
-	if err := validateUsername(username); err != nil {
-		return err
-	}
-
-	a, err := s.repo.GetAccountByName(ctx, username)
-	if err != nil {
-		return fmt.Errorf("account retrieving failed: %w", err)
-	}
-
-	if err := s.hasher.VerifyHash(password, a.Salt, a.PassHash); err != nil {
-		return ErrIncorrectPassword
-	}
-
-	return nil
-}
-
-func validateUsername(username string) error {
 	if len(username) == 0 {
 		return ErrUsernameEmpty
 	}
-	return nil
-}
-
-func validatePassword(password string) error {
 	if len(password) < 8 {
 		return ErrPasswordTooShort
+	}
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
+	defer cancel()
+
+	if _, err := s.ar.GetAccountByName(ctx, username); err == nil {
+		return ErrAccountAlreadyExists
+	}
+
+	passhash, salt := s.ph.HashString(password)
+	return s.ar.AddAccount(ctx, username, passhash, salt)
+}
+
+func (s *accountService) PasswordCorrect(ctx context.Context, username, password string) error {
+	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
+	defer cancel()
+
+	a, err := s.ar.GetAccountByName(ctx, username)
+	if err != nil {
+		return ErrAccountNotFound
+	}
+
+	if err := s.ph.VerifyHash(password, a.PassHash, a.Salt); err != nil {
+		return ErrIncorrectPassword
 	}
 
 	return nil
