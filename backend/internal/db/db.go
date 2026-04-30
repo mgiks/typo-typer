@@ -1,4 +1,4 @@
-package postgres
+package db
 
 import (
 	"context"
@@ -9,22 +9,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-const (
-	pgUserEnv = "POSTGRES_USER"
-	pgPassEnv = "POSTGRES_PASSWORD"
-	pgHostEnv = "POSTGRES_HOST"
-	pgPortEnv = "POSTGRES_PORT"
-	pgDbEnv   = "POSTGRES_DB"
-)
-
-type pgDb struct {
-	pool *pgxpool.Pool
-}
-
-func Connect(ctx context.Context) (pgDb, error) {
+func Connect(ctx context.Context) (*pgxpool.Pool, error) {
 	url, err := buildUrl()
 	if err != nil {
-		return pgDb{}, fmt.Errorf("failed to build url: %w", err)
+		return nil, fmt.Errorf("failed to build url: %w", err)
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
@@ -32,10 +20,10 @@ func Connect(ctx context.Context) (pgDb, error) {
 
 	p, err := pgxpool.New(ctx, url)
 	if err != nil {
-		return pgDb{}, fmt.Errorf("failed to create new pool connection to pg db: %w", err)
+		return nil, fmt.Errorf("failed to create new pool connection to pg db: %w", err)
 	}
 
-	return pgDb{pool: p}, nil
+	return p, nil
 }
 
 func findEnvs(keys ...string) (map[string]string, error) {
@@ -57,6 +45,14 @@ func findEnvs(keys ...string) (map[string]string, error) {
 
 	return foundEnvs, nil
 }
+
+const (
+	pgUserEnv = "POSTGRES_USER"
+	pgPassEnv = "POSTGRES_PASSWORD"
+	pgHostEnv = "POSTGRES_HOST"
+	pgPortEnv = "POSTGRES_PORT"
+	pgDbEnv   = "POSTGRES_DB"
+)
 
 func buildUrl() (string, error) {
 	envs, err := findEnvs(pgUserEnv, pgPassEnv, pgHostEnv, pgPortEnv, pgDbEnv)
