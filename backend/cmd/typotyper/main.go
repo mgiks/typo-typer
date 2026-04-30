@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/handler"
 	"github.com/mgiks/typo-typer/internal/hashing"
@@ -24,9 +23,6 @@ const (
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatalf("error loading environment variables: %v\n", err)
-	}
 	jwtSecret, ok := os.LookupEnv(envJWTSecret)
 	if !ok {
 		log.Fatalf("failed to find environment variable %v\n", envJWTSecret)
