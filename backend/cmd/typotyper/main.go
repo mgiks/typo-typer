@@ -8,11 +8,12 @@ import (
 	"os"
 
 	"github.com/mgiks/typo-typer/internal/account"
+	"github.com/mgiks/typo-typer/internal/db"
 	"github.com/mgiks/typo-typer/internal/handler"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/matchmaking"
 	"github.com/mgiks/typo-typer/internal/middleware"
-	"github.com/mgiks/typo-typer/internal/postgres"
+	"github.com/mgiks/typo-typer/internal/store"
 	"github.com/mgiks/typo-typer/internal/token"
 	"github.com/mgiks/typo-typer/internal/validation"
 )
@@ -29,25 +30,27 @@ func main() {
 	}
 
 	ctx := context.Background()
-	pg, err := postgres.Connect(ctx)
+	pg, err := db.Connect(ctx)
 	if err != nil {
 		log.Fatalf("database connection failed: %v\n", err)
 	}
 
+	storage := store.NewStore(pg)
+
 	hs := hashing.NewService(hashing.DefaultHashingConfig)
-	as := account.NewService(pg, hs)
+	as := account.NewService(storage.Account(), hs)
 	v := validation.NewValidator()
-	ts, err := token.NewService(jwtSecret, pg, hs, pg)
+	ts, err := token.NewService(jwtSecret, storage, hs)
 	if err != nil {
 		log.Fatalf("failed to initialize token service: %v\n", err)
 		return
 	}
 
-	mm := matchmaking.NewMatchMaker(pg)
+	mm := matchmaking.NewMatchMaker(storage.Text())
 	go mm.Run()
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/texts", handler.NewGetTextHandler(pg))
+	mux.HandleFunc("GET /api/texts", handler.NewGetTextHandler(storage.Text()))
 	mux.HandleFunc("POST /auth/register", handler.NewRegisterHandler(as, v))
 	mux.HandleFunc("POST /auth/login", handler.NewLoginHandler(as, v, ts))
 	mux.HandleFunc("GET /matchmaking/pool", handler.NewJoinPoolHandler(mm))
