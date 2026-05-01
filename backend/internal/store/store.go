@@ -16,6 +16,7 @@ type Store interface {
 type AccountRepository interface {
 	CreateAccount(ctx context.Context, username, passhash, salt string) error
 	GetAccountByID(context.Context, int64) (Account, error)
+	GetAccountByName(context.Context, string) (Account, error)
 }
 
 type TextRepository interface {

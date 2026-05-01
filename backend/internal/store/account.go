@@ -39,3 +39,15 @@ func (as AccountStore) GetAccountByID(ctx context.Context, id int64) (Account, e
 
 	return a, nil
 }
+
+func (s AccountStore) GetAccountByName(ctx context.Context, name string) (Account, error) {
+	sql := "SELECT id, username, email, passhash, salt, wpm FROM account WHERE name=$1"
+	row := s.db.QueryRow(ctx, sql, name)
+
+	var a Account
+	if err := row.Scan(&a.ID, &a.Username, &a.Email, &a.PassHash, &a.Salt, &a.WPM); err != nil {
+		return Account{}, fmt.Errorf("failed to get account by name: %w", err)
+	}
+
+	return a, nil
+}
