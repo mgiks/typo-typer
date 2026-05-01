@@ -19,11 +19,12 @@ import (
 )
 
 func main() {
-	ctx := context.Background()
-	pg, err := db.Connect(ctx)
+	pg, err := db.Connect(context.Background())
 	if err != nil {
 		log.Fatalf("database connection failed: %v\n", err)
 	}
+
+	defer pg.Close()
 
 	storage := store.NewStore(pg)
 
