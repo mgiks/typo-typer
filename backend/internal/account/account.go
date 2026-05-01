@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/mgiks/typo-typer/internal/store"
 )
 
 var ErrAccountAlreadyExists = fmt.Errorf("account already exists")
@@ -22,23 +24,18 @@ type Account struct {
 	Wpm      *uint16
 }
 
-type accountRepo interface {
-	GetAccountByName(ctx context.Context, username string) (Account, error)
-	AddAccount(ctx context.Context, username, passhash, salt string) error
-}
-
 type passwordHasher interface {
 	HashString(str string) (b64hash string, b64salt string)
 	VerifyHash(str, b64hash, b64salt string) error
 }
 
 type accountService struct {
-	ar accountRepo
-	ph passwordHasher
+	repo store.AccountRepository
+	ph   passwordHasher
 }
 
-func NewService(ar accountRepo, ph passwordHasher) *accountService {
-	return &accountService{ar: ar, ph: ph}
+func NewService(repo store.AccountRepository, ph passwordHasher) *accountService {
+	return &accountService{repo: repo, ph: ph}
 }
 
 func (s *accountService) CreateAccount(ctx context.Context, username, password string) error {
@@ -53,19 +50,19 @@ func (s *accountService) CreateAccount(ctx context.Context, username, password s
 	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
 	defer cancel()
 
-	if _, err := s.ar.GetAccountByName(ctx, username); err == nil {
+	if _, err := s.repo.GetAccountByName(ctx, username); err == nil {
 		return ErrAccountAlreadyExists
 	}
 
 	passhash, salt := s.ph.HashString(password)
-	return s.ar.AddAccount(ctx, username, passhash, salt)
+	return s.repo.CreateAccount(ctx, username, passhash, salt)
 }
 
 func (s *accountService) PasswordCorrect(ctx context.Context, username, password string) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
 	defer cancel()
 
-	a, err := s.ar.GetAccountByName(ctx, username)
+	a, err := s.repo.GetAccountByName(ctx, username)
 	if err != nil {
 		return ErrAccountNotFound
 	}
