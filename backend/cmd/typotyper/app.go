@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/matchmaking"
@@ -28,5 +26,5 @@ type dbConfig struct {
 	url             string
 	maxConns        int32
 	minIdleConns    int32
-	maxConnIdleTime time.Duration
+	maxConnIdleTime string
 }

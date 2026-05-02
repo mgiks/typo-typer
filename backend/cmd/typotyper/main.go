@@ -26,7 +26,7 @@ func main() {
 			// url:             "",
 			maxConns:        35,
 			minIdleConns:    5,
-			maxConnIdleTime: time.Minute * 15,
+			maxConnIdleTime: env.GetString("DB_MAX_CONN_IDLE_TIME", "15m"),
 		},
 	}
 
