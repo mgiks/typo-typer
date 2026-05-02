@@ -15,6 +15,7 @@ import (
 	"github.com/mgiks/typo-typer/internal/matchmaking"
 	"github.com/mgiks/typo-typer/internal/middleware"
 	"github.com/mgiks/typo-typer/internal/storage"
+	"github.com/mgiks/typo-typer/internal/text"
 	"github.com/mgiks/typo-typer/internal/token"
 	"github.com/mgiks/typo-typer/internal/validation"
 )
@@ -48,6 +49,7 @@ func main() {
 
 	store := storage.NewStore(pg)
 
+	textService := text.NewService(store.Text())
 	hashingService := hashing.NewService(hashing.DefaultHashingConfig)
 	accountService := account.NewService(store.Account(), hashingService)
 	validator := validation.NewService()
@@ -60,6 +62,7 @@ func main() {
 
 	app := application{
 		config:         config,
+		textService:    textService,
 		hashingService: hashingService,
 		accountService: accountService,
 		tokenService:   tokenService,
