@@ -19,15 +19,15 @@ type TokenService struct {
 	hasher     hashing.HashingService
 }
 
-func NewService(privateKey string, store storage.Store, hasher hashing.HashingService) (*TokenService, error) {
+func NewService(privateKey string, store storage.Store, hasher hashing.HashingService) (TokenService, error) {
 	key, err := base64.StdEncoding.DecodeString(privateKey)
 	if err != nil {
-		return nil, fmt.Errorf("base64 string encoding failed: %w", err)
+		return TokenService{}, fmt.Errorf("base64 string encoding failed: %w", err)
 	}
-	return &TokenService{privateKey: key, store: store, hasher: hasher}, nil
+	return TokenService{privateKey: key, store: store, hasher: hasher}, nil
 }
 
-func (s *TokenService) CreateAccessToken(ctx context.Context, username string) (string, error) {
+func (s TokenService) CreateAccessToken(ctx context.Context, username string) (string, error) {
 	account, err := s.store.Account().GetAccountByName(ctx, username)
 	if err != nil {
 		return "", fmt.Errorf("failed to find account with such name %s: %w", username, err)
@@ -44,7 +44,7 @@ func (s *TokenService) CreateAccessToken(ctx context.Context, username string) (
 	return str, nil
 }
 
-func (s *TokenService) ParseAccessToken(ctx context.Context, tokenString string) (jwt.MapClaims, error) {
+func (s TokenService) ParseAccessToken(ctx context.Context, tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (any, error) {
 		secret := os.Getenv("JWT_SECRET")
 		if len(secret) == 0 {
@@ -64,7 +64,7 @@ func (s *TokenService) ParseAccessToken(ctx context.Context, tokenString string)
 	return claims, nil
 }
 
-func (s *TokenService) CreateRefreshToken(ctx context.Context, username string) (string, error) {
+func (s TokenService) CreateRefreshToken(ctx context.Context, username string) (string, error) {
 	token := make([]byte, 32)
 	rand.Read(token)
 	tokenStr := base64.RawURLEncoding.EncodeToString(token)
