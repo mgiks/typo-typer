@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/mgiks/typo-typer/internal/env"
 	"github.com/mgiks/typo-typer/internal/handler"
 	"github.com/mgiks/typo-typer/internal/hashing"
+	"github.com/mgiks/typo-typer/internal/logger"
 	"github.com/mgiks/typo-typer/internal/matchmaking"
 	"github.com/mgiks/typo-typer/internal/middleware"
 	"github.com/mgiks/typo-typer/internal/storage"
@@ -60,6 +62,8 @@ func main() {
 		return
 	}
 
+	logger := logger.NewService(*slog.Default())
+
 	app := application{
 		config:         config,
 		textService:    textService,
@@ -68,6 +72,7 @@ func main() {
 		tokenService:   tokenService,
 		matchmaker:     matchmaker,
 		validator:      validator,
+		logger:         logger,
 	}
 
 	go app.matchmaker.Run()

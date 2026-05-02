@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/hashing"
+	"github.com/mgiks/typo-typer/internal/logger"
 	"github.com/mgiks/typo-typer/internal/matchmaking"
 	"github.com/mgiks/typo-typer/internal/text"
 	"github.com/mgiks/typo-typer/internal/token"
@@ -17,6 +18,7 @@ type application struct {
 	tokenService   token.TokenService
 	matchmaker     *matchmaking.MatchMakingService
 	validator      validation.ValidationService
+	logger         logger.LoggerService
 }
 
 type config struct {
