@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mgiks/typo-typer/internal/store"
+	"github.com/mgiks/typo-typer/internal/storage"
 )
 
 var ErrAccountAlreadyExists = fmt.Errorf("account already exists")
@@ -30,12 +30,12 @@ type passwordHasher interface {
 }
 
 type accountService struct {
-	repo store.AccountRepository
+	repo storage.AccountRepository
 	ph   passwordHasher
 }
 
-func NewService(repo store.AccountRepository, ph passwordHasher) *accountService {
-	return &accountService{repo: repo, ph: ph}
+func NewService(repo storage.AccountRepository, ph passwordHasher) *accountService {
+	return AccountService{repo: repo, ph: ph}
 }
 
 func (s *accountService) CreateAccount(ctx context.Context, username, password string) error {

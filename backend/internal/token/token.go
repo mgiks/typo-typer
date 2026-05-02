@@ -10,16 +10,16 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/mgiks/typo-typer/internal/hashing"
-	"github.com/mgiks/typo-typer/internal/store"
+	"github.com/mgiks/typo-typer/internal/storage"
 )
 
 type TokenService struct {
 	privateKey []byte
-	store      store.Store
+	store      storage.Store
 	hasher     hashing.HashingService
 }
 
-func NewService(privateKey string, store store.Store, hasher hashing.HashingService) (*TokenService, error) {
+func NewService(privateKey string, store storage.Store, hasher hashing.HashingService) (*TokenService, error) {
 	key, err := base64.StdEncoding.DecodeString(privateKey)
 	if err != nil {
 		return nil, fmt.Errorf("base64 string encoding failed: %w", err)
