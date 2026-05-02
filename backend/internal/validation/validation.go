@@ -1,20 +1,24 @@
 package validation
 
 import (
-	"reflect"
-	"strings"
+	"fmt"
 
 	"github.com/go-playground/validator/v10"
 )
 
-func NewValidator() *validator.Validate {
-	v := validator.New(validator.WithRequiredStructEnabled())
-	v.RegisterTagNameFunc(func(field reflect.StructField) string {
-		name := strings.SplitN(field.Tag.Get("json"), ",", 2)[0]
-		if name == "-" {
-			return ""
-		}
-		return name
-	})
-	return v
+type ValidationService struct {
+	validator *validator.Validate
+}
+
+func NewService() ValidationService {
+	return ValidationService{
+		validator: validator.New(validator.WithRequiredStructEnabled()),
+	}
+}
+
+func (s ValidationService) ValidateJSON(data any) error {
+	if err := s.validator.Struct(data); err != nil {
+		return fmt.Errorf("failed to validate struct: %w", err)
+	}
+	return nil
 }
