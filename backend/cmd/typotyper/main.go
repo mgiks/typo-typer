@@ -23,9 +23,9 @@ func main() {
 	config := config{
 		port: env.GetString("PORT", ":8080"),
 		db: dbConfig{
-			// url:             "",
-			maxConns:        35,
-			minIdleConns:    5,
+			url:             env.GetString("DB_URL", "postgres://admin:adminpassword@localhost:5433/typo-typer"),
+			maxConns:        env.GetInt32("DB_MAX_CONNS", 35),
+			minIdleConns:    env.GetInt32("DB_MIN_IDLE_CONNS", 5),
 			maxConnIdleTime: env.GetString("DB_MAX_CONN_IDLE_TIME", "15m"),
 		},
 	}

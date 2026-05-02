@@ -7,10 +7,12 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
     environment:
-      PGUSER: ${POSTGRES_USER}
-      PGPASSWORD: ${POSTGRES_PASSWORD}
-      PGDATABASE: ${POSTGRES_DB}
-      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: typo-typer
+      PGDATABASE: typo-typer
+      POSTGRES_USER: admin
+      PGUSER: admin
+      POSTGRES_PASSWORD: adminpassword
+      PGPASSWORD: adminpassword
     ports:
       - "${POSTGRES_PORT}:5432"
     restart: always
