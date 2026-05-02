@@ -6,6 +6,7 @@ import (
 	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/matchmaking"
+	"github.com/mgiks/typo-typer/internal/token"
 	"github.com/mgiks/typo-typer/internal/validation"
 )
 
@@ -13,6 +14,7 @@ type application struct {
 	config         config
 	hashingService hashing.HashingService
 	accountService account.AccountService
+	tokenService   token.TokenService
 	matchmaker     *matchmaking.MatchMakingService
 	validator      validation.ValidationService
 }
