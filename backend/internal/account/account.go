@@ -29,16 +29,16 @@ type passwordHasher interface {
 	VerifyHash(str, b64hash, b64salt string) error
 }
 
-type accountService struct {
+type AccountService struct {
 	repo storage.AccountRepository
 	ph   passwordHasher
 }
 
-func NewService(repo storage.AccountRepository, ph passwordHasher) *accountService {
+func NewService(repo storage.AccountRepository, ph passwordHasher) AccountService {
 	return AccountService{repo: repo, ph: ph}
 }
 
-func (s *accountService) CreateAccount(ctx context.Context, username, password string) error {
+func (s AccountService) CreateAccount(ctx context.Context, username, password string) error {
 	username = strings.TrimSpace(username)
 	if len(username) == 0 {
 		return ErrUsernameEmpty
@@ -58,7 +58,7 @@ func (s *accountService) CreateAccount(ctx context.Context, username, password s
 	return s.repo.CreateAccount(ctx, username, passhash, salt)
 }
 
-func (s *accountService) PasswordCorrect(ctx context.Context, username, password string) error {
+func (s AccountService) PasswordCorrect(ctx context.Context, username, password string) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
 	defer cancel()
 
