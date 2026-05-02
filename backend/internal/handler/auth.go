@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/mgiks/typo-typer/internal/account"
+	"github.com/mgiks/typo-typer/internal/validation"
 )
 
 type registrationData struct {
@@ -24,11 +25,7 @@ type accountCreator interface {
 	CreateAccount(ctx context.Context, username, password string) error
 }
 
-type structValidator interface {
-	Struct(s any) error
-}
-
-func NewRegisterHandler(c accountCreator, v structValidator) http.HandlerFunc {
+func NewRegisterHandler(c accountCreator, v validation.ValidationService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -39,7 +36,7 @@ func NewRegisterHandler(c accountCreator, v structValidator) http.HandlerFunc {
 			return
 		}
 
-		err := v.Struct(data)
+		err := v.ValidateJSON(data)
 		if validationErr(err, w, "registration data validation failed") {
 			return
 		}
@@ -77,7 +74,7 @@ type tokenService interface {
 	CreateRefreshToken(ctx context.Context, username string) (string, error)
 }
 
-func NewLoginHandler(c accountPasswordChecker, v structValidator, ts tokenService) http.HandlerFunc {
+func NewLoginHandler(c accountPasswordChecker, v validation.ValidationService, ts tokenService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -88,7 +85,7 @@ func NewLoginHandler(c accountPasswordChecker, v structValidator, ts tokenServic
 			return
 		}
 
-		err := v.Struct(data)
+		err := v.ValidateJSON(data)
 		if validationErr(err, w, "login data validation failed") {
 			return
 		}
