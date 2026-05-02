@@ -16,21 +16,21 @@ type randomTextGetter interface {
 	GetRandomText(ctx context.Context) (string, error)
 }
 
-type matchMaker struct {
+type MatchMakingService struct {
 	buckets *bucketMap
 	matches *matchMap
 	tg      randomTextGetter
 }
 
-func NewMatchMaker(tg randomTextGetter) *matchMaker {
-	return &matchMaker{
+func NewService(tg randomTextGetter) *MatchMakingService {
+	return &MatchMakingService{
 		matches: newMatchMap(),
 		buckets: newBucketMap(),
 		tg:      tg,
 	}
 }
 
-func (mm *matchMaker) Run() {
+func (mm *MatchMakingService) Run() {
 	t := time.NewTicker(time.Second * 1)
 	defer t.Stop()
 
@@ -43,7 +43,7 @@ func (mm *matchMaker) Run() {
 	}
 }
 
-func (mm *matchMaker) JoinPool(p *SearchingPlayer) {
+func (mm *MatchMakingService) JoinPool(p *SearchingPlayer) {
 	mm.buckets.mu.Lock()
 	defer mm.buckets.mu.Unlock()
 
@@ -55,12 +55,12 @@ func (mm *matchMaker) JoinPool(p *SearchingPlayer) {
 	mm.buckets.m[id].enqueue(p)
 }
 
-func (mm *matchMaker) MatchExists(matchId string) bool {
+func (mm *MatchMakingService) MatchExists(matchId string) bool {
 	_, ok := mm.matches.m[matchId]
 	return ok
 }
 
-func (mm *matchMaker) PlayerBelongs(matchId, playerId string) bool {
+func (mm *MatchMakingService) PlayerBelongs(matchId, playerId string) bool {
 	if ok := mm.MatchExists(matchId); !ok {
 		return false
 	}
@@ -68,7 +68,7 @@ func (mm *matchMaker) PlayerBelongs(matchId, playerId string) bool {
 	return match.playerBelongs(playerId)
 }
 
-func (mm *matchMaker) EnterMatch(matchId string, p MatchedPlayer) error {
+func (mm *MatchMakingService) EnterMatch(matchId string, p MatchedPlayer) error {
 	if ok := mm.MatchExists(matchId); !ok {
 		return ErrMatchNotFound
 	}
@@ -79,7 +79,7 @@ func (mm *matchMaker) EnterMatch(matchId string, p MatchedPlayer) error {
 	return nil
 }
 
-func (mm *matchMaker) matchBucket(id bucketID) error {
+func (mm *MatchMakingService) matchBucket(id bucketID) error {
 	q := mm.buckets.m[id]
 	if q == nil {
 		return fmt.Errorf("bucket with id %d doesn't exist", id)
