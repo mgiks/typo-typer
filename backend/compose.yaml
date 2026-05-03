@@ -14,10 +14,10 @@ services:
       POSTGRES_PASSWORD: adminpassword
       PGPASSWORD: adminpassword
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "5433:5432"
     restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_DB}" ]
+      test: [ "CMD-SHELL", "pg_isready -d typo-typer" ]
       interval: 5s
       timeout: 10s
       retries: 5
