@@ -11,12 +11,12 @@ type TextStore struct {
 	db *pgxpool.Pool
 }
 
-func (ts TextStore) GetRandomText(ctx context.Context) (string, error) {
-	sql := "SELECT entry FROM typing_text ORDER BY RANDOM() LIMIT 1"
-	row := ts.db.QueryRow(ctx, sql)
+// TODO: make this function return Text
+func (s TextStore) GetRandomText(ctx context.Context) (string, error) {
+	query := "SELECT entry FROM typing_text ORDER BY RANDOM() LIMIT 1"
 
 	var text string
-	if err := row.Scan(&text); err != nil {
+	if err := s.db.QueryRow(ctx, query).Scan(&text); err != nil {
 		return "", fmt.Errorf("failed to get random text: %w", err)
 	}
 

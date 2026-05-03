@@ -20,32 +20,56 @@ type AccountStore struct {
 	db *pgxpool.Pool
 }
 
-func (as AccountStore) CreateAccount(ctx context.Context, username, passhash, salt string) error {
-	sql := "INSERT INTO account (username, passhash, salt) VALUES ($1, $2, $3)"
-	if _, err := as.db.Exec(ctx, sql, username, passhash, salt); err != nil {
+// TODO: make this function accept *Account parameter
+func (s AccountStore) CreateAccount(ctx context.Context, username, passhash, salt string) error {
+	query := `
+		INSERT INTO accounts (username, passhash, salt) 
+		VALUES ($1, $2, $3)
+	`
+	if _, err := s.db.Exec(ctx, query, username, passhash, salt); err != nil {
 		return fmt.Errorf("failed to add account: %w", err)
 	}
 	return nil
 }
 
-func (as AccountStore) GetAccountByID(ctx context.Context, id int64) (Account, error) {
-	sql := "SELECT id, username, email, passhash, salt, wpm FROM account WHERE id=$1"
-	row := as.db.QueryRow(ctx, sql, id)
+func (s AccountStore) GetAccountByID(ctx context.Context, id int64) (Account, error) {
+	query := `
+		SELECT id, username, email, passhash, salt, wpm FROM accounts 
+		WHERE id = $1
+	`
 
 	var a Account
-	if err := row.Scan(&a.ID, &a.Username, &a.Email, &a.PassHash, &a.Salt, &a.WPM); err != nil {
-		return Account{}, fmt.Errorf("failed to get account by name: %w", err)
+	err := s.db.QueryRow(ctx, query, id).Scan(
+		&a.ID,
+		&a.Username,
+		&a.Email,
+		&a.PassHash,
+		&a.Salt,
+		&a.WPM,
+	)
+	if err != nil {
+		return Account{}, fmt.Errorf("failed to get account by id: %w", err)
 	}
 
 	return a, nil
 }
 
 func (s AccountStore) GetAccountByName(ctx context.Context, name string) (Account, error) {
-	sql := "SELECT id, username, email, passhash, salt, wpm FROM account WHERE name=$1"
-	row := s.db.QueryRow(ctx, sql, name)
+	query := `
+		SELECT id, username, email, passhash, salt, wpm FROM accounts
+		WHERE name = $1
+	`
 
 	var a Account
-	if err := row.Scan(&a.ID, &a.Username, &a.Email, &a.PassHash, &a.Salt, &a.WPM); err != nil {
+	err := s.db.QueryRow(ctx, query, name).Scan(
+		&a.ID,
+		&a.Username,
+		&a.Email,
+		&a.PassHash,
+		&a.Salt,
+		&a.WPM,
+	)
+	if err != nil {
 		return Account{}, fmt.Errorf("failed to get account by name: %w", err)
 	}
 
