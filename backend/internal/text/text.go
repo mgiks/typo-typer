@@ -7,20 +7,24 @@ import (
 	"github.com/mgiks/typo-typer/internal/storage"
 )
 
-type TextService struct {
+type TextService interface {
+	GetRandomText(context.Context) (storage.Text, error)
+}
+
+type textService struct {
 	repo storage.TextRepository
 }
 
 func NewService(repo storage.TextRepository) TextService {
-	return TextService{
+	return textService{
 		repo: repo,
 	}
 }
 
-func (s TextService) GetRandomText(ctx context.Context) (string, error) {
+func (s textService) GetRandomText(ctx context.Context) (storage.Text, error) {
 	text, err := s.repo.GetRandomText(ctx)
 	if err != nil {
-		return "", fmt.Errorf("failed to get random text from repo: %w", err)
+		return storage.Text{}, fmt.Errorf("failed to get random text from repo: %w", err)
 	}
 	return text, nil
 }

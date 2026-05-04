@@ -20,7 +20,7 @@ type AccountRepository interface {
 }
 
 type TextRepository interface {
-	GetRandomText(ctx context.Context) (string, error)
+	GetRandomText(ctx context.Context) (Text, error)
 }
 
 type RefreshTokenRepository interface {

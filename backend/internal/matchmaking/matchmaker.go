@@ -6,27 +6,25 @@ import (
 	"fmt"
 	"log/slog"
 	"time"
+
+	"github.com/mgiks/typo-typer/internal/text"
 )
 
 var ErrMatchNotFound = errors.New("match not found")
 
 type bucketID int16
 
-type randomTextGetter interface {
-	GetRandomText(ctx context.Context) (string, error)
-}
-
 type MatchMakingService struct {
-	buckets *bucketMap
-	matches *matchMap
-	tg      randomTextGetter
+	buckets     *bucketMap
+	matches     *matchMap
+	textService text.TextService
 }
 
-func NewService(tg randomTextGetter) *MatchMakingService {
+func NewService(textService text.TextService) *MatchMakingService {
 	return &MatchMakingService{
-		matches: newMatchMap(),
-		buckets: newBucketMap(),
-		tg:      tg,
+		matches:     newMatchMap(),
+		buckets:     newBucketMap(),
+		textService: textService,
 	}
 }
 
@@ -85,7 +83,7 @@ func (mm *MatchMakingService) matchBucket(id bucketID) error {
 		return fmt.Errorf("bucket with id %d doesn't exist", id)
 	}
 
-	text, err := mm.tg.GetRandomText(context.Background())
+	text, err := mm.textService.GetRandomText(context.Background())
 	if err != nil {
 		return fmt.Errorf("failed to get random text: %w", err)
 	}
@@ -94,7 +92,7 @@ func (mm *MatchMakingService) matchBucket(id bucketID) error {
 		p1 := q.peek(0)
 		p2 := q.peek(1)
 
-		if err := mm.matches.createMatch(text, *p1, *p2); err != nil {
+		if err := mm.matches.createMatch(text.Content, *p1, *p2); err != nil {
 			return fmt.Errorf("failed to create match: %w", err)
 		}
 
