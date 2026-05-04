@@ -2,10 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"log/slog"
-	"net/http"
 	"time"
 
 	"github.com/mgiks/typo-typer/internal/account"
@@ -15,7 +13,6 @@ import (
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/logger"
 	"github.com/mgiks/typo-typer/internal/matchmaking"
-	"github.com/mgiks/typo-typer/internal/middleware"
 	"github.com/mgiks/typo-typer/internal/storage"
 	"github.com/mgiks/typo-typer/internal/text"
 	"github.com/mgiks/typo-typer/internal/token"
@@ -77,18 +74,11 @@ func main() {
 
 	go app.matchmaker.Run()
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/texts", handler.NewGetTextHandler(store.Text()))
-	mux.HandleFunc("POST /auth/register", handler.NewRegisterHandler(accountService, validator))
-	mux.HandleFunc("POST /auth/login", handler.NewLoginHandler(accountService, validator, tokenService))
-	mux.HandleFunc("GET /matchmaking/pool", handler.NewJoinPoolHandler(matchmaker))
-	mux.HandleFunc("GET /matchmaking/match/{matchId}", handler.NewEnterMatchHandler(matchmaker, tokenService))
+	mux := app.mount()
+	mux.Post("/auth/register", handler.NewRegisterHandler(accountService, validator))
+	mux.Post("/auth/login", handler.NewLoginHandler(accountService, validator, tokenService))
+	mux.Get("/matchmaking/pool", handler.NewJoinPoolHandler(matchmaker))
+	mux.Get("/matchmaking/match/{matchId}", handler.NewEnterMatchHandler(matchmaker, tokenService))
 
-	port := env.GetString("PORT", ":8080")
-	fmt.Printf("Listening and serving on %s\n", port)
-
-	handler := middleware.CORS(mux)
-	if err := http.ListenAndServe(env.GetString("PORT", ":8080"), handler); err != nil {
-		log.Fatalf("http listening and serving failed: %s\n", err)
-	}
+	app.logger.FatalError("app failed", "error", app.run(mux))
 }
