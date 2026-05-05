@@ -2,33 +2,60 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Account struct {
-	ID       string
-	Username string
-	Email    *string
-	PassHash string
-	Salt     string
-	WPM      *uint16
+	ID       string  `json:"id"`
+	Username string  `json:"username"`
+	Email    string  `json:"email"`
+	PassHash string  `json:"-"`
+	Salt     string  `json:"-"`
+	WPM      *uint16 `json:"wpm"`
+	Password string  `json:"-"`
 }
 
 type AccountStore struct {
 	db *pgxpool.Pool
 }
 
-// TODO: make this function accept *Account parameter
-func (s AccountStore) CreateAccount(ctx context.Context, username, passhash, salt string) error {
+func (s AccountStore) Create(ctx context.Context, account *Account) error {
 	query := `
-		INSERT INTO accounts (username, passhash, salt) 
-		VALUES ($1, $2, $3)
+		INSERT INTO accounts (username, email, passhash, salt) 
+		VALUES ($1, $2, $3, $4) RETURNING id, wpm
 	`
-	if _, err := s.db.Exec(ctx, query, username, passhash, salt); err != nil {
-		return fmt.Errorf("failed to add account: %w", err)
+
+	err := s.db.QueryRow(
+		ctx,
+		query,
+		account.Username,
+		account.Email,
+		account.PassHash,
+		account.Salt,
+	).Scan(
+		&account.ID,
+		&account.WPM,
+	)
+
+	if err != nil {
+		var pgErr *pgconn.PgError
+
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			// 23505 - unique constraint violation error in postgres
+			case "23505":
+				return ErrConflict
+			default:
+				return err
+			}
+		}
+
 	}
+
 	return nil
 }
 

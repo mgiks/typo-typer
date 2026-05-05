@@ -9,26 +9,41 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/storage"
 )
 
-type TokenService struct {
-	privateKey []byte
-	store      storage.Store
-	hasher     hashing.HashingService
+type TokenService interface {
+	CreateAccessToken(ctx context.Context, username string) (string, error)
+	ParseAccessToken(ctx context.Context, tokenString string) (jwt.MapClaims, error)
+	CreateRefreshToken(ctx context.Context, username string) (string, error)
 }
 
-func NewService(privateKey string, store storage.Store, hasher hashing.HashingService) (TokenService, error) {
+type tokenService struct {
+	privateKey     []byte
+	accountService account.AccountService
+	hashingService hashing.HashingService
+	refreshToken   storage.RefreshTokenRepository
+}
+
+func NewService(privateKey string,
+	accountService account.AccountService,
+	hashingService hashing.HashingService,
+) (TokenService, error) {
 	key, err := base64.StdEncoding.DecodeString(privateKey)
 	if err != nil {
-		return TokenService{}, fmt.Errorf("base64 string encoding failed: %w", err)
+		return tokenService{}, fmt.Errorf("base64 string encoding failed: %w", err)
 	}
-	return TokenService{privateKey: key, store: store, hasher: hasher}, nil
+	return tokenService{
+		privateKey:     key,
+		accountService: accountService,
+		hashingService: hashingService,
+	}, nil
 }
 
-func (s TokenService) CreateAccessToken(ctx context.Context, username string) (string, error) {
-	account, err := s.store.Account().GetAccountByName(ctx, username)
+func (s tokenService) CreateAccessToken(ctx context.Context, username string) (string, error) {
+	account, err := s.accountService.GetAccountByName(ctx, username)
 	if err != nil {
 		return "", fmt.Errorf("failed to find account with such name %s: %w", username, err)
 	}
@@ -44,7 +59,7 @@ func (s TokenService) CreateAccessToken(ctx context.Context, username string) (s
 	return str, nil
 }
 
-func (s TokenService) ParseAccessToken(ctx context.Context, tokenString string) (jwt.MapClaims, error) {
+func (s tokenService) ParseAccessToken(ctx context.Context, tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (any, error) {
 		secret := os.Getenv("JWT_SECRET")
 		if len(secret) == 0 {
@@ -64,18 +79,18 @@ func (s TokenService) ParseAccessToken(ctx context.Context, tokenString string) 
 	return claims, nil
 }
 
-func (s TokenService) CreateRefreshToken(ctx context.Context, username string) (string, error) {
+func (s tokenService) CreateRefreshToken(ctx context.Context, username string) (string, error) {
 	token := make([]byte, 32)
 	rand.Read(token)
 	tokenStr := base64.RawURLEncoding.EncodeToString(token)
 
-	account, err := s.store.Account().GetAccountByName(ctx, username)
+	account, err := s.accountService.GetAccountByName(ctx, username)
 	if err != nil {
 		return "", fmt.Errorf("failed to find account with such name %s: %w", username, err)
 	}
 
-	tokenHash, salt := s.hasher.HashString(tokenStr)
-	if err := s.store.RefreshToken().CreateRefreshToken(ctx, tokenHash, salt, account.ID, time.Now().AddDate(0, 0, 30)); err != nil {
+	tokenHash, salt := s.hashingService.HashString(tokenStr)
+	if err := s.refreshToken.Create(ctx, tokenHash, salt, account.ID, time.Now().AddDate(0, 0, 30)); err != nil {
 		return "", fmt.Errorf("token database insertion failed: %w", err)
 	}
 

@@ -2,72 +2,90 @@ package account
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
-	"time"
 
+	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/storage"
 )
 
-var ErrAccountAlreadyExists = fmt.Errorf("account already exists")
-var ErrUsernameEmpty = fmt.Errorf("non-empty username required")
-var ErrPasswordTooShort = fmt.Errorf("password less than 8 characters in length")
-var ErrIncorrectPassword = fmt.Errorf("incorrect password")
-var ErrAccountNotFound = fmt.Errorf("account not found")
+var (
+	ErrAccountAlreadyExists = fmt.Errorf("account already exists")
+	ErrUsernameEmpty        = fmt.Errorf("non-empty username required")
+	ErrPasswordTooShort     = fmt.Errorf("password less than 8 characters in length")
+	ErrIncorrectPassword    = fmt.Errorf("incorrect password")
+	ErrAccountNotFound      = fmt.Errorf("account not found")
+)
 
-type Account struct {
-	Id       string
-	Username string
-	Email    *string
-	PassHash string
-	Salt     string
-	Wpm      *uint16
+type AccountService interface {
+	CreateAccount(context.Context, *storage.Account) error
+	GetAccountByName(context.Context, string) (storage.Account, error)
+	PasswordCorrect(ctx context.Context, username, password string) error
 }
 
-type passwordHasher interface {
-	HashString(str string) (b64hash string, b64salt string)
-	VerifyHash(str, b64hash, b64salt string) error
+type accountService struct {
+	account        storage.AccountRepository
+	hashingService hashing.HashingService
 }
 
-type AccountService struct {
-	repo storage.AccountRepository
-	ph   passwordHasher
+func NewService(repo storage.AccountRepository, hashingService hashing.HashingService) AccountService {
+	return accountService{account: repo, hashingService: hashingService}
 }
 
-func NewService(repo storage.AccountRepository, ph passwordHasher) AccountService {
-	return AccountService{repo: repo, ph: ph}
-}
-
-func (s AccountService) CreateAccount(ctx context.Context, username, password string) error {
-	username = strings.TrimSpace(username)
-	if len(username) == 0 {
+func (s accountService) CreateAccount(ctx context.Context, account *storage.Account) error {
+	account.Username = strings.TrimSpace(account.Username)
+	if len(account.Username) == 0 {
 		return ErrUsernameEmpty
 	}
-	if len(password) < 8 {
+	if len(account.Password) < 8 {
 		return ErrPasswordTooShort
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
+	account.PassHash, account.Salt = s.hashingService.HashString(account.Password)
+
+	ctx, cancel := context.WithTimeout(ctx, storage.QueryTimeoutDuration)
 	defer cancel()
 
-	if _, err := s.repo.GetAccountByName(ctx, username); err == nil {
-		return ErrAccountAlreadyExists
+	if err := s.account.Create(ctx, account); err != nil {
+		switch {
+		case errors.Is(err, storage.ErrConflict):
+			return ErrAccountAlreadyExists
+		default:
+			return err
+		}
 	}
 
-	passhash, salt := s.ph.HashString(password)
-	return s.repo.CreateAccount(ctx, username, passhash, salt)
+	return nil
 }
 
-func (s AccountService) PasswordCorrect(ctx context.Context, username, password string) error {
-	ctx, cancel := context.WithTimeout(ctx, time.Second*5)
+func (s accountService) GetAccountByName(ctx context.Context, name string) (storage.Account, error) {
+	ctx, cancel := context.WithTimeout(ctx, storage.QueryTimeoutDuration)
 	defer cancel()
 
-	a, err := s.repo.GetAccountByName(ctx, username)
+	a, err := s.account.GetByName(ctx, name)
+	if err != nil {
+		switch {
+		case errors.Is(err, storage.ErrNotFound):
+			return storage.Account{}, ErrAccountNotFound
+		default:
+			return storage.Account{}, err
+		}
+	}
+
+	return a, nil
+}
+
+func (s accountService) PasswordCorrect(ctx context.Context, username, password string) error {
+	ctx, cancel := context.WithTimeout(ctx, storage.QueryTimeoutDuration)
+	defer cancel()
+
+	a, err := s.account.GetByName(ctx, username)
 	if err != nil {
 		return ErrAccountNotFound
 	}
 
-	if err := s.ph.VerifyHash(password, a.PassHash, a.Salt); err != nil {
+	if err := s.hashingService.VerifyHash(password, a.PassHash, a.Salt); err != nil {
 		return ErrIncorrectPassword
 	}
 

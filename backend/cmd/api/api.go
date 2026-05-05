@@ -55,6 +55,10 @@ func (app application) mount() *chi.Mux {
 		r.Route("/texts", func(r chi.Router) {
 			r.Get("/random", app.getRandomTextHandler)
 		})
+
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/register", app.registerHandler)
+		})
 	})
 
 	return r

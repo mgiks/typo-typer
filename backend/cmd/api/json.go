@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
@@ -9,7 +10,10 @@ func (app application) jsonResponse(w http.ResponseWriter, status int, data any)
 	type envelope struct {
 		Data any `json:"data"`
 	}
-	return writeJSON(w, status, envelope{Data: data})
+	if err := writeJSON(w, status, envelope{Data: data}); err != nil {
+		return fmt.Errorf("failed to write json: %w", err)
+	}
+	return nil
 }
 
 func writeJSON(w http.ResponseWriter, status int, data any) error {

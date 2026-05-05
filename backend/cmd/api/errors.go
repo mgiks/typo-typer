@@ -8,3 +8,8 @@ func (app application) internalServerError(w http.ResponseWriter, r *http.Reques
 	app.logger.Error("internal server error", "method", r.Method, "path", r.URL.Path, "err", err)
 	writeJSONError(w, http.StatusInternalServerError, "the server encountered a problem")
 }
+
+func (app application) badRequest(w http.ResponseWriter, r *http.Request, err error) {
+	app.logger.Info("bad request error", "method", r.Method, "path", r.URL.Path, "err", err)
+	writeJSONError(w, http.StatusBadRequest, err.Error())
+}

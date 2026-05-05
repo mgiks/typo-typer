@@ -8,7 +8,16 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
-type HashingConfig struct {
+type HashingService interface {
+	HashString(str string) (b64hash string, b64salt string)
+	VerifyHash(str, b64hash, b64salt string) error
+}
+
+type hashingService struct {
+	conf hashingConfig
+}
+
+type hashingConfig struct {
 	time       uint32
 	memory     uint32
 	threads    uint8
@@ -16,31 +25,25 @@ type HashingConfig struct {
 	saltLength uint8
 }
 
-var DefaultHashingConfig = HashingConfig{
-	saltLength: 16,
-	time:       1,
-	memory:     64 * 1024,
-	threads:    4,
-	keyLength:  32,
-}
-
-type HashingService struct {
-	conf HashingConfig
-}
-
-func NewService(conf HashingConfig) HashingService {
-	return HashingService{
-		conf: conf,
+func NewService() HashingService {
+	return hashingService{
+		conf: hashingConfig{
+			saltLength: 16,
+			time:       1,
+			memory:     64 * 1024,
+			threads:    4,
+			keyLength:  32,
+		},
 	}
 }
 
-func (s HashingService) HashString(str string) (b64hash string, b64salt string) {
-	salt := s.generateSalt(s.conf.saltLength)
+func (s hashingService) HashString(str string) (b64hash string, b64salt string) {
+	salt := generateSalt(s.conf.saltLength)
 	hash := argon2.IDKey([]byte(str), salt, s.conf.time, s.conf.memory, s.conf.threads, s.conf.keyLength)
 	return b64.StdEncoding.EncodeToString(hash), b64.StdEncoding.EncodeToString(salt)
 }
 
-func (s HashingService) VerifyHash(str, b64hash, b64salt string) error {
+func (s hashingService) VerifyHash(str, b64hash, b64salt string) error {
 	salt, err := b64.StdEncoding.DecodeString(b64salt)
 	if err != nil {
 		return fmt.Errorf("failed to decode salt from b64 form: %w", err)
@@ -55,7 +58,7 @@ func (s HashingService) VerifyHash(str, b64hash, b64salt string) error {
 	return nil
 }
 
-func (s HashingService) generateSalt(length uint8) []byte {
+func generateSalt(length uint8) []byte {
 	salt := make([]byte, length)
 	rand.Read(salt)
 	return salt

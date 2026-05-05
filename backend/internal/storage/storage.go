@@ -2,9 +2,16 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+var (
+	ErrConflict          = errors.New("resource already exists")
+	ErrNotFound          = errors.New("resource not found")
+	QueryTimeoutDuration = time.Second * 5
 )
 
 type Store interface {
@@ -14,7 +21,7 @@ type Store interface {
 }
 
 type AccountRepository interface {
-	CreateAccount(ctx context.Context, username, passhash, salt string) error
+	Create(context.Context, *Account) error
 	GetByID(context.Context, int64) (Account, error)
 	GetByName(context.Context, string) (Account, error)
 }

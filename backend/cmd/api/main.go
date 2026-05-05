@@ -49,11 +49,15 @@ func main() {
 	store := storage.NewStore(pg)
 
 	textService := text.NewService(store.Text())
-	hashingService := hashing.NewService(hashing.DefaultHashingConfig)
+	hashingService := hashing.NewService()
 	accountService := account.NewService(store.Account(), hashingService)
 	validator := validation.NewService()
-	matchmaker := matchmaking.NewService(store.Text())
-	tokenService, err := token.NewService(env.GetString("JWT_SECRET", ""), store, hashingService)
+	matchmaker := matchmaking.NewService(textService)
+	tokenService, err := token.NewService(
+		env.GetString("JWT_SECRET", ""),
+		accountService,
+		hashingService,
+	)
 	if err != nil {
 		log.Fatalf("failed to initialize token service: %v\n", err)
 		return
@@ -75,7 +79,6 @@ func main() {
 	go app.matchmaker.Run()
 
 	mux := app.mount()
-	mux.Post("/auth/register", handler.NewRegisterHandler(accountService, validator))
 	mux.Post("/auth/login", handler.NewLoginHandler(accountService, validator, tokenService))
 	mux.Get("/matchmaking/pool", handler.NewJoinPoolHandler(matchmaker))
 	mux.Get("/matchmaking/match/{matchId}", handler.NewEnterMatchHandler(matchmaker, tokenService))
