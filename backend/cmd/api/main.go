@@ -57,6 +57,7 @@ func main() {
 		env.GetString("JWT_SECRET", ""),
 		accountService,
 		hashingService,
+		store.RefreshToken(),
 	)
 	if err != nil {
 		log.Fatalf("failed to initialize token service: %v\n", err)
@@ -79,7 +80,6 @@ func main() {
 	go app.matchmaker.Run()
 
 	mux := app.mount()
-	mux.Post("/auth/login", handler.NewLoginHandler(accountService, validator, tokenService))
 	mux.Get("/matchmaking/pool", handler.NewJoinPoolHandler(matchmaker))
 	mux.Get("/matchmaking/match/{matchId}", handler.NewEnterMatchHandler(matchmaker, tokenService))
 

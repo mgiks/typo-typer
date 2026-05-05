@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -27,9 +28,11 @@ type tokenService struct {
 	refreshToken   storage.RefreshTokenRepository
 }
 
-func NewService(privateKey string,
+func NewService(
+	privateKey string,
 	accountService account.AccountService,
 	hashingService hashing.HashingService,
+	repo storage.RefreshTokenRepository,
 ) (TokenService, error) {
 	key, err := base64.StdEncoding.DecodeString(privateKey)
 	if err != nil {
@@ -39,6 +42,7 @@ func NewService(privateKey string,
 		privateKey:     key,
 		accountService: accountService,
 		hashingService: hashingService,
+		refreshToken:   repo,
 	}, nil
 }
 
@@ -47,12 +51,11 @@ func (s tokenService) CreateAccessToken(ctx context.Context, username string) (s
 	if err != nil {
 		return "", fmt.Errorf("failed to find account with such name %s: %w", username, err)
 	}
-
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	tkn := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": account.ID,
 		"exp": jwt.NewNumericDate(time.Now().Add(10 * time.Minute)),
 	})
-	str, err := t.SignedString(s.privateKey)
+	str, err := tkn.SignedString(s.privateKey)
 	if err != nil {
 		return "", fmt.Errorf("token signing failed: %w", err)
 	}
@@ -84,14 +87,26 @@ func (s tokenService) CreateRefreshToken(ctx context.Context, username string) (
 	rand.Read(token)
 	tokenStr := base64.RawURLEncoding.EncodeToString(token)
 
-	account, err := s.accountService.GetAccountByName(ctx, username)
+	ctx, cancel := context.WithTimeout(ctx, storage.QueryTimeoutDuration)
+	defer cancel()
+
+	acc, err := s.accountService.GetAccountByName(ctx, username)
 	if err != nil {
-		return "", fmt.Errorf("failed to find account with such name %s: %w", username, err)
+		switch {
+		case errors.Is(err, account.ErrAccountNotFound):
+			return "", err
+		default:
+			return "", fmt.Errorf("failed to find account: %w", err)
+		}
 	}
 
 	tokenHash, salt := s.hashingService.HashString(tokenStr)
-	if err := s.refreshToken.Create(ctx, tokenHash, salt, account.ID, time.Now().AddDate(0, 0, 30)); err != nil {
-		return "", fmt.Errorf("token database insertion failed: %w", err)
+
+	ctx, cancel = context.WithTimeout(ctx, storage.QueryTimeoutDuration)
+	defer cancel()
+
+	if err := s.refreshToken.Create(ctx, tokenHash, salt, acc.ID, time.Now().AddDate(0, 0, 30)); err != nil {
+		return "", fmt.Errorf("failed to create refresh token: %w", err)
 	}
 
 	return tokenStr, nil

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -84,7 +85,7 @@ func (s AccountStore) GetByID(ctx context.Context, id int64) (Account, error) {
 func (s AccountStore) GetByName(ctx context.Context, name string) (Account, error) {
 	query := `
 		SELECT id, username, email, passhash, salt, wpm FROM accounts
-		WHERE name = $1
+		WHERE username = $1
 	`
 
 	var a Account
@@ -96,8 +97,14 @@ func (s AccountStore) GetByName(ctx context.Context, name string) (Account, erro
 		&a.Salt,
 		&a.WPM,
 	)
+
 	if err != nil {
-		return Account{}, fmt.Errorf("failed to get account by name: %w", err)
+		switch {
+		case errors.Is(err, pgx.ErrNoRows):
+			return Account{}, ErrNotFound
+		default:
+			return Account{}, fmt.Errorf("failed to get account by name: %w", err)
+		}
 	}
 
 	return a, nil

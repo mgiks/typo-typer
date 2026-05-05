@@ -58,6 +58,7 @@ func (app application) mount() *chi.Mux {
 
 		r.Route("/auth", func(r chi.Router) {
 			r.Post("/register", app.registerHandler)
+			r.Post("/login", app.loginHandler)
 		})
 	})
 

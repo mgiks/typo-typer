@@ -33,9 +33,7 @@ type TextRepository interface {
 type RefreshTokenRepository interface {
 	Create(
 		ctx context.Context,
-		tokenHash,
-		salt,
-		accountId string,
+		tokenHash, salt, accountID string,
 		expiresAt time.Time,
 	) error
 }
