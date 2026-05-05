@@ -16,7 +16,7 @@ type TextStore struct {
 	db *pgxpool.Pool
 }
 
-func (s TextStore) GetRandomText(ctx context.Context) (Text, error) {
+func (s TextStore) GetRandom(ctx context.Context) (Text, error) {
 	query := "SELECT id, content FROM texts ORDER BY RANDOM() LIMIT 1"
 
 	var text Text

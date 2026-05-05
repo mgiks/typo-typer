@@ -13,7 +13,7 @@ type RefreshTokenStore struct {
 }
 
 // TODO: make this function accept *RefreshToken parameter
-func (s RefreshTokenStore) CreateRefreshToken(ctx context.Context, tokenHash, salt, accountId string, expiresAt time.Time) error {
+func (s RefreshTokenStore) Create(ctx context.Context, tokenHash, salt, accountId string, expiresAt time.Time) error {
 	query := `
 		INSERT INTO refresh_tokens (token_hash, salt, account_id, expires_at) 
 		VALUES ($1, $2, $3, $4)

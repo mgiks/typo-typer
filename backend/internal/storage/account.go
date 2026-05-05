@@ -32,7 +32,7 @@ func (s AccountStore) CreateAccount(ctx context.Context, username, passhash, sal
 	return nil
 }
 
-func (s AccountStore) GetAccountByID(ctx context.Context, id int64) (Account, error) {
+func (s AccountStore) GetByID(ctx context.Context, id int64) (Account, error) {
 	query := `
 		SELECT id, username, email, passhash, salt, wpm FROM accounts 
 		WHERE id = $1
@@ -54,7 +54,7 @@ func (s AccountStore) GetAccountByID(ctx context.Context, id int64) (Account, er
 	return a, nil
 }
 
-func (s AccountStore) GetAccountByName(ctx context.Context, name string) (Account, error) {
+func (s AccountStore) GetByName(ctx context.Context, name string) (Account, error) {
 	query := `
 		SELECT id, username, email, passhash, salt, wpm FROM accounts
 		WHERE name = $1

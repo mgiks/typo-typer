@@ -12,17 +12,17 @@ type TextService interface {
 }
 
 type textService struct {
-	repo storage.TextRepository
+	text storage.TextRepository
 }
 
 func NewService(repo storage.TextRepository) TextService {
 	return textService{
-		repo: repo,
+		text: repo,
 	}
 }
 
 func (s textService) GetRandomText(ctx context.Context) (storage.Text, error) {
-	text, err := s.repo.GetRandomText(ctx)
+	text, err := s.text.GetRandom(ctx)
 	if err != nil {
 		return storage.Text{}, fmt.Errorf("failed to get random text from repo: %w", err)
 	}

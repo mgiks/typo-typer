@@ -15,16 +15,16 @@ type Store interface {
 
 type AccountRepository interface {
 	CreateAccount(ctx context.Context, username, passhash, salt string) error
-	GetAccountByID(context.Context, int64) (Account, error)
-	GetAccountByName(context.Context, string) (Account, error)
+	GetByID(context.Context, int64) (Account, error)
+	GetByName(context.Context, string) (Account, error)
 }
 
 type TextRepository interface {
-	GetRandomText(ctx context.Context) (Text, error)
+	GetRandom(ctx context.Context) (Text, error)
 }
 
 type RefreshTokenRepository interface {
-	CreateRefreshToken(
+	Create(
 		ctx context.Context,
 		tokenHash,
 		salt,
