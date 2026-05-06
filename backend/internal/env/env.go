@@ -3,6 +3,7 @@ package env
 import (
 	"os"
 	"strconv"
+	"strings"
 )
 
 func GetString(key, fallback string) string {
@@ -25,4 +26,12 @@ func GetInt32(key string, fallback int32) int32 {
 	}
 
 	return int32(valAsInt32)
+}
+
+func GetStringSlice(key string, fallback []string) []string {
+	val, exists := os.LookupEnv(key)
+	if !exists {
+		return fallback
+	}
+	return strings.Split(val, ",")
 }

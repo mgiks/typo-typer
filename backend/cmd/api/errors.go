@@ -13,3 +13,8 @@ func (app application) badRequest(w http.ResponseWriter, r *http.Request, err er
 	app.logger.Info("bad request error", "method", r.Method, "path", r.URL.Path, "err", err)
 	writeJSONError(w, http.StatusBadRequest, err.Error())
 }
+
+func (app application) unauthorized(w http.ResponseWriter, r *http.Request, err error) {
+	app.logger.Info("unauthorized error", "method", r.Method, "path", r.URL.Path, "err", err)
+	writeJSONError(w, http.StatusUnauthorized, err.Error())
+}

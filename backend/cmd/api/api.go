@@ -28,8 +28,10 @@ type application struct {
 }
 
 type config struct {
-	port string
-	db   dbConfig
+	port          string
+	allowedOrigin string
+	db            dbConfig
+	ws            wsConfig
 }
 
 type dbConfig struct {
@@ -39,11 +41,15 @@ type dbConfig struct {
 	maxConnIdleTime string
 }
 
+type wsConfig struct {
+	originPattens []string
+}
+
 // TODO: change *chi.Mux to http.Handler once api refactoring is done
-func (app application) mount() *chi.Mux {
+func (app application) mount() http.Handler {
 	r := chi.NewRouter()
 
-	r.Use(customMiddleware.CORS)
+	r.Use(app.CORS)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
@@ -58,6 +64,11 @@ func (app application) mount() *chi.Mux {
 		r.Route("/auth", func(r chi.Router) {
 			r.Post("/register", app.registerHandler)
 			r.Post("/login", app.loginHandler)
+		})
+
+		r.Route("/matchmaking", func(r chi.Router) {
+			r.Get("/pool", app.joinPoolHandler)
+			r.Get("/match/{matchID}", app.enterMatchHandler)
 		})
 	})
 

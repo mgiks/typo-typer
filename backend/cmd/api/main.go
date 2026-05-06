@@ -9,7 +9,6 @@ import (
 	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/db"
 	"github.com/mgiks/typo-typer/internal/env"
-	"github.com/mgiks/typo-typer/internal/handler"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/logger"
 	"github.com/mgiks/typo-typer/internal/matchmaker"
@@ -27,6 +26,9 @@ func main() {
 			maxConns:        env.GetInt32("DB_MAX_CONNS", 35),
 			minIdleConns:    env.GetInt32("DB_MIN_IDLE_CONNS", 5),
 			maxConnIdleTime: env.GetString("DB_MAX_CONN_IDLE_TIME", "15m"),
+		},
+		ws: wsConfig{
+			originPattens: env.GetStringSlice("WS_ORIGIN_PATTERNS", []string{"http://localhost:5173"}),
 		},
 	}
 
@@ -80,8 +82,5 @@ func main() {
 	go app.matchmaker.Run()
 
 	mux := app.mount()
-	mux.Get("/matchmaking/pool", handler.NewJoinPoolHandler(matchmaker))
-	mux.Get("/matchmaking/match/{matchId}", handler.NewEnterMatchHandler(matchmaker, tokenService))
-
 	app.logger.FatalError("app failed", "error", app.run(mux))
 }
