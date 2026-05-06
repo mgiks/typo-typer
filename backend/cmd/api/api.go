@@ -45,7 +45,6 @@ type wsConfig struct {
 	originPattens []string
 }
 
-// TODO: change *chi.Mux to http.Handler once api refactoring is done
 func (app application) mount() http.Handler {
 	r := chi.NewRouter()
 
