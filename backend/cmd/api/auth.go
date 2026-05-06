@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/storage"
+	"github.com/mgiks/typo-typer/internal/user"
 )
 
 type RegisterPayload struct {
@@ -33,13 +33,13 @@ func (app application) registerHandler(w http.ResponseWriter, r *http.Request) {
 		Email:    payload.Email,
 	}
 
-	if err := app.accountService.CreateAccount(r.Context(), &acc); err != nil {
+	if err := app.userService.CreateUser(r.Context(), &acc); err != nil {
 		switch {
-		case errors.Is(err, account.ErrAccountAlreadyExists),
-			errors.Is(err, account.ErrUsernameEmpty),
-			errors.Is(err, account.ErrPasswordTooShort),
-			errors.Is(err, account.ErrIncorrectPassword),
-			errors.Is(err, account.ErrAccountNotFound):
+		case errors.Is(err, user.ErrUserAlreadyExists),
+			errors.Is(err, user.ErrUsernameEmpty),
+			errors.Is(err, user.ErrPasswordTooShort),
+			errors.Is(err, user.ErrIncorrectPassword),
+			errors.Is(err, user.ErrUserNotFound):
 			app.badRequest(w, r, err)
 		default:
 			app.internalServerError(w, r, fmt.Errorf("failed to create account: %w", err))
@@ -65,14 +65,14 @@ func (app application) loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := app.validator.ValidateJSON(payload); err != nil {
-		app.badRequest(w, r, fmt.Errorf("invalid json: %w", err))
+		app.badRequest(w, r, err)
 		return
 	}
 
-	if err := app.accountService.PasswordCorrect(r.Context(), payload.Username, payload.Password); err != nil {
+	if err := app.userService.PasswordCorrect(r.Context(), payload.Username, payload.Password); err != nil {
 		switch {
-		case errors.Is(err, account.ErrAccountNotFound),
-			errors.Is(err, account.ErrIncorrectPassword):
+		case errors.Is(err, user.ErrUserNotFound),
+			errors.Is(err, user.ErrIncorrectPassword):
 			app.badRequest(w, r, err)
 		default:
 			app.internalServerError(w, r, fmt.Errorf("failed to verify password: %w", err))

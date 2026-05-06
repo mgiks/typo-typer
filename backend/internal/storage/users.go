@@ -26,7 +26,7 @@ type AccountStore struct {
 
 func (s AccountStore) Create(ctx context.Context, account *Account) error {
 	query := `
-		INSERT INTO accounts (username, email, passhash, salt) 
+		INSERT INTO users (username, email, passhash, salt) 
 		VALUES ($1, $2, $3, $4) RETURNING id, wpm
 	`
 
@@ -62,7 +62,7 @@ func (s AccountStore) Create(ctx context.Context, account *Account) error {
 
 func (s AccountStore) GetByID(ctx context.Context, id int64) (Account, error) {
 	query := `
-		SELECT id, username, email, passhash, salt, wpm FROM accounts 
+		SELECT id, username, email, passhash, salt, wpm FROM users 
 		WHERE id = $1
 	`
 
@@ -84,7 +84,7 @@ func (s AccountStore) GetByID(ctx context.Context, id int64) (Account, error) {
 
 func (s AccountStore) GetByName(ctx context.Context, name string) (Account, error) {
 	query := `
-		SELECT id, username, email, passhash, salt, wpm FROM accounts
+		SELECT id, username, email, passhash, salt, wpm FROM users
 		WHERE username = $1
 	`
 

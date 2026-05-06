@@ -7,12 +7,12 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/logger"
 	"github.com/mgiks/typo-typer/internal/matchmaker"
 	"github.com/mgiks/typo-typer/internal/text"
 	"github.com/mgiks/typo-typer/internal/token"
+	"github.com/mgiks/typo-typer/internal/user"
 	"github.com/mgiks/typo-typer/internal/validation"
 )
 
@@ -20,7 +20,7 @@ type application struct {
 	config         config
 	textService    text.TextService
 	hashingService hashing.HashingService
-	accountService account.AccountService
+	userService    user.UserService
 	tokenService   token.TokenService
 	matchmaker     *matchmaker.MatchMakerService
 	validator      validation.ValidationService

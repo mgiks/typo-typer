@@ -15,12 +15,12 @@ var (
 )
 
 type Store interface {
-	Account() AccountRepository
+	Users() UserRepository
 	Text() TextRepository
 	RefreshToken() RefreshTokenRepository
 }
 
-type AccountRepository interface {
+type UserRepository interface {
 	Create(context.Context, *Account) error
 	GetByID(context.Context, int64) (Account, error)
 	GetByName(context.Context, string) (Account, error)
@@ -39,13 +39,13 @@ type RefreshTokenRepository interface {
 }
 
 type store struct {
-	account      AccountRepository
+	user         UserRepository
 	text         TextRepository
 	refreshToken RefreshTokenRepository
 }
 
-func (s store) Account() AccountRepository {
-	return s.account
+func (s store) Users() UserRepository {
+	return s.user
 }
 
 func (s store) Text() TextRepository {
@@ -58,7 +58,7 @@ func (s store) RefreshToken() RefreshTokenRepository {
 
 func NewStore(db *pgxpool.Pool) Store {
 	return store{
-		account:      AccountStore{db: db},
+		user:         AccountStore{db: db},
 		text:         TextStore{db: db},
 		refreshToken: RefreshTokenStore{db: db},
 	}

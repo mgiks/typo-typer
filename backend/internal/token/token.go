@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/storage"
+	"github.com/mgiks/typo-typer/internal/user"
 )
 
 type TokenService interface {
@@ -23,14 +23,14 @@ type TokenService interface {
 
 type tokenService struct {
 	privateKey     []byte
-	accountService account.AccountService
+	userService    user.UserService
 	hashingService hashing.HashingService
 	refreshToken   storage.RefreshTokenRepository
 }
 
 func NewService(
 	privateKey string,
-	accountService account.AccountService,
+	userService user.UserService,
 	hashingService hashing.HashingService,
 	repo storage.RefreshTokenRepository,
 ) (TokenService, error) {
@@ -40,14 +40,14 @@ func NewService(
 	}
 	return tokenService{
 		privateKey:     key,
-		accountService: accountService,
+		userService:    userService,
 		hashingService: hashingService,
 		refreshToken:   repo,
 	}, nil
 }
 
 func (s tokenService) CreateAccessToken(ctx context.Context, username string) (string, error) {
-	account, err := s.accountService.GetAccountByName(ctx, username)
+	account, err := s.userService.GetUserByName(ctx, username)
 	if err != nil {
 		return "", fmt.Errorf("failed to find account with such name %s: %w", username, err)
 	}
@@ -90,10 +90,10 @@ func (s tokenService) CreateRefreshToken(ctx context.Context, username string) (
 	ctx, cancel := context.WithTimeout(ctx, storage.QueryTimeoutDuration)
 	defer cancel()
 
-	acc, err := s.accountService.GetAccountByName(ctx, username)
+	acc, err := s.userService.GetUserByName(ctx, username)
 	if err != nil {
 		switch {
-		case errors.Is(err, account.ErrAccountNotFound):
+		case errors.Is(err, user.ErrUserNotFound):
 			return "", err
 		default:
 			return "", fmt.Errorf("failed to find account: %w", err)
