@@ -1,4 +1,4 @@
-package matchmaking
+package matchmaker
 
 import (
 	"github.com/coder/websocket"
@@ -6,12 +6,12 @@ import (
 
 type SearchingPlayer struct {
 	name           string
-	wpm            int16
+	wpm            uint16
 	conn           *websocket.Conn
 	queueTimeInSec uint64
 }
 
-func NewSearchingPlayer(name string, wpm int16, conn *websocket.Conn) *SearchingPlayer {
+func NewSearchingPlayer(name string, wpm uint16, conn *websocket.Conn) *SearchingPlayer {
 	return &SearchingPlayer{
 		name: name,
 		wpm:  wpm,

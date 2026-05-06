@@ -1,4 +1,4 @@
-package matchmaking
+package matchmaker
 
 import (
 	"context"
@@ -14,21 +14,21 @@ var ErrMatchNotFound = errors.New("match not found")
 
 type bucketID int16
 
-type MatchMakingService struct {
+type MatchMakerService struct {
 	buckets     *bucketMap
 	matches     *matchMap
 	textService text.TextService
 }
 
-func NewService(textService text.TextService) *MatchMakingService {
-	return &MatchMakingService{
+func NewService(textService text.TextService) *MatchMakerService {
+	return &MatchMakerService{
 		matches:     newMatchMap(),
 		buckets:     newBucketMap(),
 		textService: textService,
 	}
 }
 
-func (mm *MatchMakingService) Run() {
+func (mm *MatchMakerService) Run() {
 	t := time.NewTicker(time.Second * 1)
 	defer t.Stop()
 
@@ -41,7 +41,7 @@ func (mm *MatchMakingService) Run() {
 	}
 }
 
-func (mm *MatchMakingService) JoinPool(p *SearchingPlayer) {
+func (mm *MatchMakerService) JoinPool(p *SearchingPlayer) {
 	mm.buckets.mu.Lock()
 	defer mm.buckets.mu.Unlock()
 
@@ -53,12 +53,12 @@ func (mm *MatchMakingService) JoinPool(p *SearchingPlayer) {
 	mm.buckets.m[id].enqueue(p)
 }
 
-func (mm *MatchMakingService) MatchExists(matchId string) bool {
+func (mm *MatchMakerService) MatchExists(matchId string) bool {
 	_, ok := mm.matches.m[matchId]
 	return ok
 }
 
-func (mm *MatchMakingService) PlayerBelongs(matchId, playerId string) bool {
+func (mm *MatchMakerService) PlayerBelongs(matchId, playerId string) bool {
 	if ok := mm.MatchExists(matchId); !ok {
 		return false
 	}
@@ -66,7 +66,7 @@ func (mm *MatchMakingService) PlayerBelongs(matchId, playerId string) bool {
 	return match.playerBelongs(playerId)
 }
 
-func (mm *MatchMakingService) EnterMatch(matchId string, p MatchedPlayer) error {
+func (mm *MatchMakerService) EnterMatch(matchId string, p MatchedPlayer) error {
 	if ok := mm.MatchExists(matchId); !ok {
 		return ErrMatchNotFound
 	}
@@ -77,7 +77,7 @@ func (mm *MatchMakingService) EnterMatch(matchId string, p MatchedPlayer) error 
 	return nil
 }
 
-func (mm *MatchMakingService) matchBucket(id bucketID) error {
+func (mm *MatchMakerService) matchBucket(id bucketID) error {
 	q := mm.buckets.m[id]
 	if q == nil {
 		return fmt.Errorf("bucket with id %d doesn't exist", id)

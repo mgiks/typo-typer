@@ -12,7 +12,7 @@ import (
 	"github.com/mgiks/typo-typer/internal/handler"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/logger"
-	"github.com/mgiks/typo-typer/internal/matchmaking"
+	"github.com/mgiks/typo-typer/internal/matchmaker"
 	"github.com/mgiks/typo-typer/internal/storage"
 	"github.com/mgiks/typo-typer/internal/text"
 	"github.com/mgiks/typo-typer/internal/token"
@@ -52,7 +52,7 @@ func main() {
 	hashingService := hashing.NewService()
 	accountService := account.NewService(store.Account(), hashingService)
 	validator := validation.NewService()
-	matchmaker := matchmaking.NewService(textService)
+	matchmaker := matchmaker.NewService(textService)
 	tokenService, err := token.NewService(
 		env.GetString("JWT_SECRET", ""),
 		accountService,

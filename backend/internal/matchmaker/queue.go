@@ -1,4 +1,4 @@
-package matchmaking
+package matchmaker
 
 import (
 	"fmt"

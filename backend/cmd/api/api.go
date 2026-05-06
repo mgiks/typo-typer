@@ -10,8 +10,7 @@ import (
 	"github.com/mgiks/typo-typer/internal/account"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/logger"
-	"github.com/mgiks/typo-typer/internal/matchmaking"
-	customMiddleware "github.com/mgiks/typo-typer/internal/middleware"
+	"github.com/mgiks/typo-typer/internal/matchmaker"
 	"github.com/mgiks/typo-typer/internal/text"
 	"github.com/mgiks/typo-typer/internal/token"
 	"github.com/mgiks/typo-typer/internal/validation"
@@ -23,7 +22,7 @@ type application struct {
 	hashingService hashing.HashingService
 	accountService account.AccountService
 	tokenService   token.TokenService
-	matchmaker     *matchmaking.MatchMakingService
+	matchmaker     *matchmaker.MatchMakerService
 	validator      validation.ValidationService
 	logger         logger.LoggerService
 }
