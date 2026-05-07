@@ -28,6 +28,7 @@ type UserRepository interface {
 
 type TextRepository interface {
 	GetRandom(ctx context.Context) (Text, error)
+	Create(context.Context, *Text) error
 }
 
 type RefreshTokenRepository interface {

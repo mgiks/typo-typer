@@ -29,3 +29,14 @@ func (s TextStore) GetRandom(ctx context.Context) (Text, error) {
 
 	return text, nil
 }
+
+func (s TextStore) Create(ctx context.Context, text *Text) error {
+	query := `
+		INSERT INTO texts (content)
+		VALUES ($1) RETURNING id
+	`
+	if err := s.db.QueryRow(ctx, query, text.Content).Scan(&text.ID); err != nil {
+		return err
+	}
+	return nil
+}
