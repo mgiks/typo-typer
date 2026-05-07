@@ -23,7 +23,7 @@ func (app application) registerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := app.validator.ValidateJSON(payload); err != nil {
-		app.badRequest(w, r, fmt.Errorf("invalid json: %w", err))
+		app.badRequest(w, r, err)
 		return
 	}
 

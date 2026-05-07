@@ -1,7 +1,8 @@
 package validation
 
 import (
-	"fmt"
+	"errors"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -18,7 +19,26 @@ func NewService() ValidationService {
 
 func (s ValidationService) ValidateJSON(data any) error {
 	if err := s.validator.Struct(data); err != nil {
-		return fmt.Errorf("failed to validate struct: %w", err)
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make([]string, len(ve))
+			for i, fe := range ve {
+				out[i] = fe.Field() + " field " + msgForTag(fe)
+			}
+			return errors.New(strings.Join(out, ", "))
+		}
+		return err
 	}
 	return nil
+}
+
+func msgForTag(fe validator.FieldError) string {
+	switch fe.Tag() {
+	case "required":
+		return "required"
+	case "min":
+		return "must have the length of at least " + fe.Param()
+	default:
+		return fe.Tag() + " - unknown"
+	}
 }
