@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -76,7 +75,7 @@ func (s AccountStore) GetByID(ctx context.Context, id int64) (Account, error) {
 		&a.WPM,
 	)
 	if err != nil {
-		return Account{}, fmt.Errorf("failed to get account by id: %w", err)
+		return Account{}, err
 	}
 
 	return a, nil
@@ -103,7 +102,7 @@ func (s AccountStore) GetByName(ctx context.Context, name string) (Account, erro
 		case errors.Is(err, pgx.ErrNoRows):
 			return Account{}, ErrNotFound
 		default:
-			return Account{}, fmt.Errorf("failed to get account by name: %w", err)
+			return Account{}, err
 		}
 	}
 

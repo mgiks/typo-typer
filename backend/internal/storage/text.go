@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -17,11 +16,15 @@ type TextStore struct {
 }
 
 func (s TextStore) GetRandom(ctx context.Context) (Text, error) {
-	query := "SELECT id, content FROM texts ORDER BY RANDOM() LIMIT 1"
+	query := `
+		SELECT id, content FROM texts 
+		ORDER BY RANDOM() 
+		LIMIT 1
+	`
 
 	var text Text
 	if err := s.db.QueryRow(ctx, query).Scan(&text.ID, &text.Content); err != nil {
-		return Text{}, fmt.Errorf("failed to get random text: %w", err)
+		return Text{}, err
 	}
 
 	return text, nil
