@@ -46,19 +46,19 @@ func (app application) enterMatchHandler(w http.ResponseWriter, r *http.Request)
 
 	t, err := r.Cookie("access_token")
 	if err != nil {
-		app.unauthorized(w, r, errors.New("no 'access_token' cookie provided"))
+		app.unauthorizedResponse(w, r, errors.New("no 'access_token' cookie provided"))
 		return
 	}
 
 	claims, err := app.tokenService.ParseAccessToken(r.Context(), t.Value)
 	if err != nil {
-		app.unauthorized(w, r, errors.New("failed ot parse access token"))
+		app.unauthorizedResponse(w, r, errors.New("failed ot parse access token"))
 		return
 	}
 
 	playerId, err := claims.GetSubject()
 	if err != nil {
-		app.unauthorized(w, r, errors.New("failed to get 'sub' from access token"))
+		app.unauthorizedResponse(w, r, errors.New("failed to get 'sub' from access token"))
 		return
 	}
 

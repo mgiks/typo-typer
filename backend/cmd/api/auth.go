@@ -38,9 +38,10 @@ func (app application) registerHandler(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, user.ErrUserAlreadyExists),
 			errors.Is(err, user.ErrUsernameEmpty),
 			errors.Is(err, user.ErrPasswordTooShort),
-			errors.Is(err, user.ErrIncorrectPassword),
-			errors.Is(err, user.ErrUserNotFound):
+			errors.Is(err, user.ErrIncorrectPassword):
 			app.badRequestResponse(w, r, err)
+		case errors.Is(err, user.ErrUserNotFound):
+			app.notFoundResponse(w, r, err)
 		default:
 			app.internalServerError(w, r, fmt.Errorf("failed to create account: %w", err))
 		}

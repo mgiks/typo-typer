@@ -14,7 +14,12 @@ func (app application) badRequestResponse(w http.ResponseWriter, r *http.Request
 	writeJSONError(w, http.StatusBadRequest, err.Error())
 }
 
-func (app application) unauthorized(w http.ResponseWriter, r *http.Request, err error) {
-	app.logger.Info("unauthorized error", "method", r.Method, "path", r.URL.Path, "err", err)
+func (app application) notFoundResponse(w http.ResponseWriter, r *http.Request, err error) {
+	app.logger.Info("not found response", "method", r.Method, "path", r.URL.Path, "err", err)
+	writeJSONError(w, http.StatusBadRequest, err.Error())
+}
+
+func (app application) unauthorizedResponse(w http.ResponseWriter, r *http.Request, err error) {
+	app.logger.Info("unauthorized response", "method", r.Method, "path", r.URL.Path, "err", err)
 	writeJSONError(w, http.StatusUnauthorized, err.Error())
 }
