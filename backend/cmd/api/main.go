@@ -35,6 +35,8 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
+	logger := logger.NewService(*slog.Default())
+
 	pg, err := db.New(
 		ctx,
 		config.db.url,
@@ -47,6 +49,8 @@ func main() {
 	}
 
 	defer pg.Close()
+
+	logger.Info("database connection established")
 
 	store := storage.NewStore(pg)
 
@@ -65,8 +69,6 @@ func main() {
 		log.Fatalf("failed to initialize token service: %v\n", err)
 		return
 	}
-
-	logger := logger.NewService(*slog.Default())
 
 	app := application{
 		config:         config,

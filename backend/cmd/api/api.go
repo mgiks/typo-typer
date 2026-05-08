@@ -83,6 +83,6 @@ func (app application) run(mux http.Handler) error {
 		IdleTimeout:  time.Minute,
 	}
 
-	app.logger.Info("server has started at", "port", app.config.port)
+	app.logger.Info("server has started", "port", app.config.port)
 	return fmt.Errorf("server failed when listening: %w", srv.ListenAndServe())
 }
