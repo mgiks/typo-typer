@@ -1,2 +1,3 @@
 .envrc
 postgres-language-server.jsonc
+tmp/
