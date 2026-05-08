@@ -23,7 +23,7 @@ func (app application) registerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := app.validator.ValidateJSON(payload); err != nil {
-		app.badRequest(w, r, err)
+		app.badRequestResponse(w, r, err)
 		return
 	}
 
@@ -40,7 +40,7 @@ func (app application) registerHandler(w http.ResponseWriter, r *http.Request) {
 			errors.Is(err, user.ErrPasswordTooShort),
 			errors.Is(err, user.ErrIncorrectPassword),
 			errors.Is(err, user.ErrUserNotFound):
-			app.badRequest(w, r, err)
+			app.badRequestResponse(w, r, err)
 		default:
 			app.internalServerError(w, r, fmt.Errorf("failed to create account: %w", err))
 		}
@@ -65,7 +65,7 @@ func (app application) loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := app.validator.ValidateJSON(payload); err != nil {
-		app.badRequest(w, r, err)
+		app.badRequestResponse(w, r, err)
 		return
 	}
 
@@ -73,7 +73,7 @@ func (app application) loginHandler(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, user.ErrUserNotFound),
 			errors.Is(err, user.ErrIncorrectPassword):
-			app.badRequest(w, r, err)
+			app.badRequestResponse(w, r, err)
 		default:
 			app.internalServerError(w, r, fmt.Errorf("failed to verify password: %w", err))
 		}

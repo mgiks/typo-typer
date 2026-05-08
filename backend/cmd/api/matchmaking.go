@@ -63,7 +63,7 @@ func (app application) enterMatchHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	if !app.matchmaker.MatchExists(matchID) {
-		app.badRequest(w, r, errors.New("match does not exist"))
+		app.badRequestResponse(w, r, errors.New("match does not exist"))
 		return
 	}
 
