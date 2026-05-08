@@ -2,15 +2,16 @@ package hashing
 
 import (
 	"crypto/rand"
-	b64 "encoding/base64"
 	"fmt"
+	"slices"
 
 	"golang.org/x/crypto/argon2"
 )
 
 type HashingService interface {
-	HashString(str string) (b64hash string, b64salt string)
-	VerifyHash(str, b64hash, b64salt string) error
+	GenerateSalt() []byte
+	HashPassword(password string, salt []byte) (hash []byte)
+	VerifyPassword(password string, hash, salt []byte) error
 }
 
 type hashingService struct {
@@ -37,29 +38,20 @@ func NewService() HashingService {
 	}
 }
 
-func (s hashingService) HashString(str string) (b64hash string, b64salt string) {
-	salt := generateSalt(s.conf.saltLength)
-	hash := argon2.IDKey([]byte(str), salt, s.conf.time, s.conf.memory, s.conf.threads, s.conf.keyLength)
-	return b64.StdEncoding.EncodeToString(hash), b64.StdEncoding.EncodeToString(salt)
+func (s hashingService) HashPassword(password string, salt []byte) []byte {
+	return argon2.IDKey([]byte(password), salt, s.conf.time, s.conf.memory, s.conf.threads, s.conf.keyLength)
 }
 
-func (s hashingService) VerifyHash(str, b64hash, b64salt string) error {
-	salt, err := b64.StdEncoding.DecodeString(b64salt)
-	if err != nil {
-		return fmt.Errorf("failed to decode salt from b64 form: %w", err)
+func (s hashingService) VerifyPassword(password string, hash, salt []byte) error {
+	passwordHash := s.HashPassword(password, salt)
+	if slices.Compare(passwordHash, hash) != 0 {
+		return fmt.Errorf("incorrect password")
 	}
-
-	strHash := argon2.IDKey([]byte(str), salt, s.conf.time, s.conf.memory, s.conf.threads, s.conf.keyLength)
-	b64strHash := b64.StdEncoding.EncodeToString(strHash)
-	if b64strHash != b64hash {
-		return fmt.Errorf("string's hash is different from provided hash")
-	}
-
 	return nil
 }
 
-func generateSalt(length uint8) []byte {
-	salt := make([]byte, length)
+func (s hashingService) GenerateSalt() []byte {
+	salt := make([]byte, s.conf.saltLength)
 	rand.Read(salt)
 	return salt
 }

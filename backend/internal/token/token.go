@@ -100,12 +100,13 @@ func (s tokenService) CreateRefreshToken(ctx context.Context, username string) (
 		}
 	}
 
-	tokenHash, salt := s.hashingService.HashString(tokenStr)
+	salt := s.hashingService.GenerateSalt()
+	tokenHash := s.hashingService.HashPassword(tokenStr, salt)
 
 	ctx, cancel = context.WithTimeout(ctx, storage.QueryTimeoutDuration)
 	defer cancel()
 
-	if err := s.refreshToken.Create(ctx, tokenHash, salt, acc.ID, time.Now().AddDate(0, 0, 30)); err != nil {
+	if err := s.refreshToken.Create(ctx, string(tokenHash), string(salt), acc.ID, time.Now().AddDate(0, 0, 30)); err != nil {
 		return "", fmt.Errorf("failed to create refresh token: %w", err)
 	}
 

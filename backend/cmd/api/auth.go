@@ -27,7 +27,7 @@ func (app application) registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	acc := storage.Account{
+	acc := storage.User{
 		Username: payload.Username,
 		Password: payload.Password,
 		Email:    payload.Email,

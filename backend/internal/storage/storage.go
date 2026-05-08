@@ -21,9 +21,9 @@ type Store interface {
 }
 
 type UserRepository interface {
-	Create(context.Context, *Account) error
-	GetByID(context.Context, int64) (Account, error)
-	GetByName(context.Context, string) (Account, error)
+	Create(context.Context, *User) error
+	GetByID(context.Context, int64) (User, error)
+	GetByName(context.Context, string) (User, error)
 }
 
 type TextRepository interface {
@@ -59,7 +59,7 @@ func (s store) RefreshToken() RefreshTokenRepository {
 
 func NewStore(db *pgxpool.Pool) Store {
 	return store{
-		user:         AccountStore{db: db},
+		user:         UserStore{db: db},
 		text:         TextStore{db: db},
 		refreshToken: RefreshTokenStore{db: db},
 	}

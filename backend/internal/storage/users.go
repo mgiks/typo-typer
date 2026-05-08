@@ -9,21 +9,31 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Account struct {
-	ID       string  `json:"id"`
-	Username string  `json:"username"`
-	Email    string  `json:"email"`
-	PassHash string  `json:"-"`
-	Salt     string  `json:"-"`
-	WPM      *uint16 `json:"wpm"`
-	Password string  `json:"-"`
+type User struct {
+	ID       string   `json:"id"`
+	Username string   `json:"username"`
+	Email    string   `json:"email"`
+	Password password `json:"-"`
+	WPM      *uint16  `json:"wpm"`
 }
 
-type AccountStore struct {
+type password struct {
+	Text *string
+	Hash []byte
+	Salt []byte
+}
+
+func (p *password) Set(text string, hash []byte, salt []byte) {
+	p.Text = &text
+	p.Hash = hash
+	p.Salt = salt
+}
+
+type UserStore struct {
 	db *pgxpool.Pool
 }
 
-func (s AccountStore) Create(ctx context.Context, account *Account) error {
+func (s UserStore) Create(ctx context.Context, account *User) error {
 	query := `
 		INSERT INTO users (username, email, passhash, salt) 
 		VALUES ($1, $2, $3, $4) RETURNING id, wpm
@@ -34,8 +44,8 @@ func (s AccountStore) Create(ctx context.Context, account *Account) error {
 		query,
 		account.Username,
 		account.Email,
-		account.PassHash,
-		account.Salt,
+		account.Password.Hash,
+		account.Password.Salt,
 	).Scan(
 		&account.ID,
 		&account.WPM,
@@ -59,50 +69,50 @@ func (s AccountStore) Create(ctx context.Context, account *Account) error {
 	return nil
 }
 
-func (s AccountStore) GetByID(ctx context.Context, id int64) (Account, error) {
+func (s UserStore) GetByID(ctx context.Context, id int64) (User, error) {
 	query := `
 		SELECT id, username, email, passhash, salt, wpm FROM users 
 		WHERE id = $1
 	`
 
-	var a Account
+	var a User
 	err := s.db.QueryRow(ctx, query, id).Scan(
 		&a.ID,
 		&a.Username,
 		&a.Email,
-		&a.PassHash,
-		&a.Salt,
+		&a.Password.Hash,
+		&a.Password.Salt,
 		&a.WPM,
 	)
 	if err != nil {
-		return Account{}, err
+		return User{}, err
 	}
 
 	return a, nil
 }
 
-func (s AccountStore) GetByName(ctx context.Context, name string) (Account, error) {
+func (s UserStore) GetByName(ctx context.Context, name string) (User, error) {
 	query := `
 		SELECT id, username, email, passhash, salt, wpm FROM users
 		WHERE username = $1
 	`
 
-	var a Account
+	var a User
 	err := s.db.QueryRow(ctx, query, name).Scan(
 		&a.ID,
 		&a.Username,
 		&a.Email,
-		&a.PassHash,
-		&a.Salt,
+		&a.Password.Hash,
+		&a.Password.Salt,
 		&a.WPM,
 	)
 
 	if err != nil {
 		switch {
 		case errors.Is(err, pgx.ErrNoRows):
-			return Account{}, ErrNotFound
+			return User{}, ErrNotFound
 		default:
-			return Account{}, err
+			return User{}, err
 		}
 	}
 
