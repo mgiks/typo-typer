@@ -10,7 +10,7 @@ func (app application) internalServerError(w http.ResponseWriter, r *http.Reques
 }
 
 func (app application) badRequestResponse(w http.ResponseWriter, r *http.Request, err error) {
-	app.logger.Info("bad request error", "method", r.Method, "path", r.URL.Path, "err", err)
+	app.logger.Warn("bad request response", "method", r.Method, "path", r.URL.Path, "err", err)
 	writeJSONError(w, http.StatusBadRequest, err.Error())
 }
 

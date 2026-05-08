@@ -9,6 +9,7 @@ type LoggerService interface {
 	Info(string, ...any)
 	Error(string, ...any)
 	FatalError(string, ...any)
+	Warn(string, ...any)
 }
 
 type loggerService struct {
@@ -32,4 +33,8 @@ func (s loggerService) Error(msg string, args ...any) {
 func (s loggerService) FatalError(msg string, args ...any) {
 	s.logger.Error(msg, args...)
 	os.Exit(1)
+}
+
+func (s loggerService) Warn(msg string, args ...any) {
+	s.logger.Warn(msg, args...)
 }
