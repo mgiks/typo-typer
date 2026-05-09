@@ -62,6 +62,7 @@ func (app application) mount() http.Handler {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Route("/texts", func(r chi.Router) {
+			r.Post("/", app.createTextHandler)
 			r.Get("/random", app.getRandomTextHandler)
 		})
 
