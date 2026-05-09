@@ -28,18 +28,12 @@ type tokenService struct {
 	refreshToken   storage.RefreshTokenRepository
 }
 
-func NewService(
-	privateKey string,
-	userService user.UserService,
-	hashingService hashing.HashingService,
-	repo storage.RefreshTokenRepository,
-) (TokenService, error) {
-	key, err := base64.StdEncoding.DecodeString(privateKey)
-	if err != nil {
-		return tokenService{}, fmt.Errorf("base64 string encoding failed: %w", err)
+func NewService(privateKey []byte, userService user.UserService, hashingService hashing.HashingService, repo storage.RefreshTokenRepository) (TokenService, error) {
+	if len(privateKey) == 0 {
+		return tokenService{}, fmt.Errorf("private key is required")
 	}
 	return tokenService{
-		privateKey:     key,
+		privateKey:     privateKey,
 		userService:    userService,
 		hashingService: hashingService,
 		refreshToken:   repo,

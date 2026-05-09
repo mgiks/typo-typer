@@ -30,12 +30,15 @@ func main() {
 		ws: wsConfig{
 			originPattens: env.GetStringSlice("WS_ORIGIN_PATTERNS", []string{"http://localhost:5173"}),
 		},
+		jwt: jwtConfig{
+			secret: env.GetByteSlice("JWT_SECRET", nil),
+		},
 	}
+
+	logger := logger.NewService(*slog.Default())
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-
-	logger := logger.NewService(*slog.Default())
 
 	pg, err := db.New(
 		ctx,
@@ -59,14 +62,9 @@ func main() {
 	userService := user.NewService(store.Users(), hashingService)
 	validator := validation.NewService()
 	matchmaker := matchmaker.NewService(textService)
-	tokenService, err := token.NewService(
-		env.GetString("JWT_SECRET", ""),
-		userService,
-		hashingService,
-		store.RefreshToken(),
-	)
+	tokenService, err := token.NewService(config.jwt.secret, userService, hashingService, store.RefreshToken())
 	if err != nil {
-		log.Fatalf("failed to initialize token service: %v\n", err)
+		logger.FatalError("failed to initialize token service", "err", err)
 		return
 	}
 

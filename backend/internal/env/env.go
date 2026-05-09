@@ -35,3 +35,11 @@ func GetStringSlice(key string, fallback []string) []string {
 	}
 	return strings.Split(val, ",")
 }
+
+func GetByteSlice(key string, fallback []byte) []byte {
+	val, exists := os.LookupEnv(key)
+	if !exists {
+		return fallback
+	}
+	return []byte(val)
+}

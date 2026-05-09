@@ -32,6 +32,7 @@ type config struct {
 	allowedOrigin string
 	db            dbConfig
 	ws            wsConfig
+	jwt           jwtConfig
 }
 
 type dbConfig struct {
@@ -43,6 +44,10 @@ type dbConfig struct {
 
 type wsConfig struct {
 	originPattens []string
+}
+
+type jwtConfig struct {
+	secret []byte
 }
 
 func (app application) mount() http.Handler {
