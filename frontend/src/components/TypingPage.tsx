@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import './TypingBox.scss'
+import './TypingPage.scss'
+import { API_URL } from '../App'
 
-type TextResponse = {
-  text: string
+type Text = {
+  data: {
+    id: string
+    content: string
+  }
 }
 
-function TypingBox() {
+function TypingPage() {
   const [text, setText] = useState('')
   const [correctText, setCorrectText] = useState('')
   const [incorrectText, setIncorrectText] = useState('')
@@ -13,11 +17,11 @@ function TypingBox() {
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    fetch(import.meta.env.VITE_BACKEND_URL + '/api/texts')
+    fetch(API_URL + '/v1/texts/random')
       .then((response) => response.json())
-      .then((data: TextResponse) => {
-        setText(data.text)
-        setRemainingText(data.text)
+      .then((payload: Text) => {
+        setText(payload.data.content)
+        setRemainingText(payload.data.content)
       })
   }, [])
 
@@ -26,32 +30,16 @@ function TypingBox() {
       correctText,
       incorrectText,
       remainingText,
-    } = evaluateTyping(text, typed)
+    } = evaluateTyping(
+      text,
+      typed,
+    )
 
     setCorrectText(correctText)
     setIncorrectText(incorrectText)
     setRemainingText(remainingText)
   }
 
-  return (
-    <div className='typing-box' onClick={() => inputRef.current?.focus()}>
-      <TypingInput ref={inputRef} onType={onType} />
-      <TextDisplay
-        correctText={correctText}
-        incorrectText={incorrectText}
-        remainingText={remainingText}
-      />
-    </div>
-  )
-}
-
-function TextDisplay(
-  { correctText, incorrectText, remainingText }: {
-    correctText: string
-    incorrectText: string
-    remainingText: string
-  },
-) {
   const cursorRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
@@ -59,30 +47,24 @@ function TextDisplay(
   })
 
   return (
-    <div className='typing-box__text'>
-      <span className='typing-box__text--correct' content={correctText}>
-        {correctText}
-      </span>
-      <span className='typing-box__text--incorrect' content={incorrectText}>
-        {incorrectText}
-      </span>
-      <span ref={cursorRef} className='typing-box__cursor' />
-      {remainingText}
+    <div className='typing-box' onClick={() => inputRef.current?.focus()}>
+      <textarea
+        autoFocus
+        ref={inputRef}
+        onChange={(e) => onType(e.target.value)}
+        className='typing-box__input'
+      />
+      <div className='typing-box__text'>
+        <span className='typing-box__text--correct' content={correctText}>
+          {correctText}
+        </span>
+        <span className='typing-box__text--incorrect' content={incorrectText}>
+          {incorrectText}
+        </span>
+        <span ref={cursorRef} className='typing-box__cursor' />
+        {remainingText}
+      </div>
     </div>
-  )
-}
-
-function TypingInput({ ref, onType }: {
-  ref: React.RefObject<HTMLTextAreaElement | null>
-  onType: (typed: string) => void
-}) {
-  return (
-    <textarea
-      autoFocus
-      ref={ref}
-      onChange={(e) => onType(e.target.value)}
-      className='typing-box__input'
-    />
   )
 }
 
@@ -113,4 +95,4 @@ function evaluateTyping(text: string, typed: string) {
   }
 }
 
-export default TypingBox
+export default TypingPage
