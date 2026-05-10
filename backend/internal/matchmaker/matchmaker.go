@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
+	"sync"
 	"time"
 
+	"github.com/coder/websocket"
 	"github.com/mgiks/typo-typer/internal/text"
 )
 
@@ -15,13 +16,20 @@ var ErrMatchNotFound = errors.New("match not found")
 type bucketID int16
 
 type MatchMakerService struct {
+	pool        *pool
 	buckets     *bucketMap
 	matches     *matchMap
 	textService text.TextService
 }
 
+type pool struct {
+	mu      sync.Mutex
+	players []*websocket.Conn
+}
+
 func NewService(textService text.TextService) *MatchMakerService {
 	return &MatchMakerService{
+		pool:        &pool{players: []*websocket.Conn{}},
 		matches:     newMatchMap(),
 		buckets:     newBucketMap(),
 		textService: textService,
@@ -29,28 +37,29 @@ func NewService(textService text.TextService) *MatchMakerService {
 }
 
 func (mm *MatchMakerService) Run() {
-	t := time.NewTicker(time.Second * 1)
-	defer t.Stop()
+	ticker := time.NewTicker(time.Second)
 
-	for range t.C {
-		for id := range mm.buckets.m {
-			if err := mm.matchBucket(id); err != nil {
-				slog.Error("failed to match bucket", "error", err)
+	go func() {
+		for {
+			<-ticker.C
+			mm.pool.mu.Lock()
+			if len(mm.pool.players) >= 2 {
+				p1 := mm.pool.players[0]
+				mm.pool.players = mm.pool.players[1:]
+				p2 := mm.pool.players[0]
+				mm.pool.players = mm.pool.players[1:]
+				p1.Write(context.Background(), websocket.MessageText, []byte(`{"data": { "text": "some text" }}`))
+				p2.Write(context.Background(), websocket.MessageText, []byte(`{"data": { "text": "some text" }}`))
 			}
+			mm.pool.mu.Unlock()
 		}
-	}
+	}()
 }
 
-func (mm *MatchMakerService) JoinPool(p *SearchingPlayer) {
-	mm.buckets.mu.Lock()
-	defer mm.buckets.mu.Unlock()
-
-	id := bucketID(p.wpm / 10)
-	if mm.buckets.m[id] == nil {
-		mm.buckets.m[id] = &queue{}
-	}
-
-	mm.buckets.m[id].enqueue(p)
+func (mm *MatchMakerService) JoinPool(conn *websocket.Conn) {
+	mm.pool.mu.Lock()
+	defer mm.pool.mu.Unlock()
+	mm.pool.players = append(mm.pool.players, conn)
 }
 
 func (mm *MatchMakerService) MatchExists(matchId string) bool {

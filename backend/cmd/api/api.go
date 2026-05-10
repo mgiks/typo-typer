@@ -66,15 +66,17 @@ func (app application) mount() http.Handler {
 			r.Get("/random", app.getRandomTextHandler)
 		})
 
+		r.Route("/matchmaking", func(r chi.Router) {
+			r.Get("/pool", app.joinPoolHandler)
+			r.Get("/match/{matchID}", app.enterMatchHandler)
+		})
+
+		// TODO: Improve these handlers in the future
 		r.Route("/auth", func(r chi.Router) {
 			r.Post("/register", app.registerHandler)
 			r.Post("/login", app.loginHandler)
 		})
 
-		r.Route("/matchmaking", func(r chi.Router) {
-			r.Get("/pool", app.joinPoolHandler)
-			r.Get("/match/{matchID}", app.enterMatchHandler)
-		})
 	})
 
 	return r

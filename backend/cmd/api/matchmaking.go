@@ -10,8 +10,7 @@ import (
 )
 
 type JoinPoolMsg struct {
-	Username string `json:"username" validate:"required,max=30"`
-	WPM      uint16 `json:"password" validate:"required"`
+	Username string `json:"username" validate:"required"`
 }
 
 func (app application) joinPoolHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,21 +19,20 @@ func (app application) joinPoolHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer conn.Close(websocket.StatusNormalClosure, "")
-
 	var msg JoinPoolMsg
-	if err := readJSON(w, r, &msg); err != nil {
+	if err := readWSjson(conn, &msg); err != nil {
+		app.logger.Info("failed to read ws json")
 		conn.Close(StatusInavalidMessage, "message decoding failed")
 		return
 	}
 
 	if err := app.validator.ValidateJSON(msg); err != nil {
+		app.logger.Info("failed to validate ws json")
 		conn.Close(StatusInavalidMessage, "invalid message")
 		return
 	}
 
-	p := matchmaker.NewSearchingPlayer(msg.Username, msg.WPM, conn)
-	app.matchmaker.JoinPool(p)
+	app.matchmaker.JoinPool(conn)
 }
 
 type EnterMatchMsg struct {

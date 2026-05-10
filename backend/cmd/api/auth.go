@@ -11,8 +11,8 @@ import (
 
 type RegisterPayload struct {
 	Username string `json:"username" validate:"required,max=30"`
-	Password string `json:"password" validate:"required,min=8,max=72"`
 	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8,max=72"`
 }
 
 func (app application) registerHandler(w http.ResponseWriter, r *http.Request) {
@@ -29,9 +29,9 @@ func (app application) registerHandler(w http.ResponseWriter, r *http.Request) {
 
 	acc := storage.User{
 		Username: payload.Username,
-		Password: payload.Password,
 		Email:    payload.Email,
 	}
+	acc.Password.SetText(payload.Username)
 
 	if err := app.userService.CreateUser(r.Context(), &acc); err != nil {
 		switch {

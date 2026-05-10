@@ -5,16 +5,13 @@ import (
 )
 
 type SearchingPlayer struct {
-	name           string
-	wpm            uint16
-	conn           *websocket.Conn
-	queueTimeInSec uint64
+	name string
+	conn *websocket.Conn
 }
 
 func NewSearchingPlayer(name string, wpm uint16, conn *websocket.Conn) *SearchingPlayer {
 	return &SearchingPlayer{
 		name: name,
-		wpm:  wpm,
 		conn: conn,
 	}
 }

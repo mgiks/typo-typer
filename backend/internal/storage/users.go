@@ -23,10 +23,8 @@ type password struct {
 	Salt []byte
 }
 
-func (p *password) Set(text string, hash []byte, salt []byte) {
+func (p *password) SetText(text string) {
 	p.Text = &text
-	p.Hash = hash
-	p.Salt = salt
 }
 
 type UserStore struct {

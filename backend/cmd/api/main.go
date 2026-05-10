@@ -79,7 +79,7 @@ func main() {
 		logger:         logger,
 	}
 
-	go app.matchmaker.Run()
+	app.matchmaker.Run()
 
 	mux := app.mount()
 	app.logger.FatalError("app failed", "error", app.run(mux))
