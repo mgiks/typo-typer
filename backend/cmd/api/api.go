@@ -61,22 +61,25 @@ func (app application) mount() http.Handler {
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Route("/v1", func(r chi.Router) {
-		r.Route("/texts", func(r chi.Router) {
-			r.Post("/", app.createTextHandler)
-			r.Get("/random", app.getRandomTextHandler)
+		r.Route("/api", func(r chi.Router) {
+			r.Route("/texts", func(r chi.Router) {
+				r.Post("/", app.createTextHandler)
+				r.Get("/random", app.getRandomTextHandler)
+			})
+
+			// TODO: Improve these handlers in the future
+			r.Route("/auth", func(r chi.Router) {
+				r.Post("/register", app.registerHandler)
+				r.Post("/login", app.loginHandler)
+			})
 		})
 
-		r.Route("/matchmaking", func(r chi.Router) {
-			r.Get("/pool", app.joinPoolHandler)
-			r.Get("/match/{matchID}", app.enterMatchHandler)
+		r.Route("/ws", func(r chi.Router) {
+			r.Route("/matchmaking", func(r chi.Router) {
+				r.Get("/pool", app.joinPoolHandler)
+				r.Get("/match/{matchID}", app.enterMatchHandler)
+			})
 		})
-
-		// TODO: Improve these handlers in the future
-		r.Route("/auth", func(r chi.Router) {
-			r.Post("/register", app.registerHandler)
-			r.Post("/login", app.loginHandler)
-		})
-
 	})
 
 	return r
