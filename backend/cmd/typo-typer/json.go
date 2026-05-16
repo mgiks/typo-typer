@@ -1,13 +1,9 @@
 package main
 
 import (
-	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
-
-	"github.com/coder/websocket"
 )
 
 func (app application) jsonResponse(w http.ResponseWriter, status int, data any) error {
@@ -40,17 +36,6 @@ func readJSON(w http.ResponseWriter, r *http.Request, dest any) error {
 	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
 
 	decoder := json.NewDecoder(r.Body)
-	decoder.DisallowUnknownFields()
-	return decoder.Decode(dest)
-}
-
-func readWSjson(conn *websocket.Conn, dest any) error {
-	_, data, err := conn.Read(context.Background())
-	if err != nil {
-		return err
-	}
-	msg := bytes.NewBuffer(data)
-	decoder := json.NewDecoder(msg)
 	decoder.DisallowUnknownFields()
 	return decoder.Decode(dest)
 }

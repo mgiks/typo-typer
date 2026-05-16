@@ -10,7 +10,6 @@ import (
 	"github.com/mgiks/typo-typer/internal/env"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/logger"
-	"github.com/mgiks/typo-typer/internal/matchmaker"
 	"github.com/mgiks/typo-typer/internal/storage"
 	"github.com/mgiks/typo-typer/internal/text"
 	"github.com/mgiks/typo-typer/internal/token"
@@ -61,25 +60,25 @@ func main() {
 	hashingService := hashing.NewService()
 	userService := user.NewService(store.Users(), hashingService)
 	validator := validation.NewService()
-	matchmaker := matchmaker.NewService(textService)
 	tokenService, err := token.NewService(config.jwt.secret, userService, hashingService, store.RefreshToken())
 	if err != nil {
 		logger.FatalError("failed to initialize token service", "err", err)
 		return
 	}
 
+	wsManager := newWsManager()
+	wsManager.mount()
+
 	app := application{
 		config:         config,
+		wsManager:      wsManager,
 		textService:    textService,
 		hashingService: hashingService,
 		userService:    userService,
 		tokenService:   tokenService,
-		matchmaker:     matchmaker,
 		validator:      validator,
 		logger:         logger,
 	}
-
-	app.matchmaker.Run()
 
 	mux := app.mount()
 	app.logger.FatalError("app failed", "error", app.run(mux))
