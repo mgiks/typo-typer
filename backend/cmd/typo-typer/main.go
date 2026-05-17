@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/mgiks/typo-typer/internal/cache"
 	"github.com/mgiks/typo-typer/internal/db"
 	"github.com/mgiks/typo-typer/internal/env"
 	"github.com/mgiks/typo-typer/internal/hashing"
@@ -74,7 +75,12 @@ func main() {
 
 	wsManager := newWsManager()
 
-	matchmaker := matchmaker.NewMatchMaker()
+	rc := cache.NewRedisClient(config.redis.addr, config.redis.password, config.redis.db)
+	logger.Info("cache connection established")
+
+	cacheStore := cache.NewStore(rc)
+
+	matchmaker := matchmaker.NewMatchMaker(cacheStore.Room())
 	matchmaker.Run()
 
 	app := application{

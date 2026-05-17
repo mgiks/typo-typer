@@ -12,7 +12,7 @@ type CacheStore interface {
 
 type RoomRepository interface {
 	Get(ctx context.Context, roomID string)
-	Create(ctx context.Context) (roomID string)
+	Create(ctx context.Context) (roomID string, err error)
 }
 
 type cacheStore struct {

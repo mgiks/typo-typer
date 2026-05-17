@@ -1,9 +1,12 @@
 package matchmaker
 
 import (
-	"crypto/rand"
+	"context"
+	"fmt"
 	"sync"
 	"time"
+
+	"github.com/mgiks/typo-typer/internal/cache"
 )
 
 // How many players are in a room
@@ -12,26 +15,27 @@ const roomSize = 2
 type MatchMaker interface {
 	Run()
 	SearchGame(SearchingPlayer)
+	ErrorChan() chan error
 }
 
-func NewMatchMaker() MatchMaker {
+func NewMatchMaker(rr cache.RoomRepository) MatchMaker {
 	return &matchMaker{
-		players: []SearchingPlayer{},
+		players:   []SearchingPlayer{},
+		room:      rr,
+		errorChan: make(chan error, 10),
 	}
 }
 
 type matchMaker struct {
 	sync.Mutex
-	players []SearchingPlayer
+	players   []SearchingPlayer
+	room      cache.RoomRepository
+	errorChan chan error
 }
-
-type roomID string
-
-type RoomIDReceiverChan chan roomID
 
 type SearchingPlayer struct {
 	Name       string
-	RoomIDChan RoomIDReceiverChan
+	RoomIDChan chan string
 }
 
 func (mm *matchMaker) Run() {
@@ -49,7 +53,13 @@ func (mm *matchMaker) Run() {
 				continue
 			}
 
-			roomID := roomID(rand.Text())
+			roomID, err := mm.room.Create(context.Background())
+			if err != nil {
+				mm.errorChan <- fmt.Errorf("failed to create room: %w", err)
+				mm.Unlock()
+				continue
+			}
+
 			matchedPlayers := mm.players[len(mm.players)-roomSize:]
 
 			for _, mp := range matchedPlayers {
@@ -67,4 +77,8 @@ func (mm *matchMaker) SearchGame(sp SearchingPlayer) {
 	mm.Lock()
 	mm.players = append(mm.players, sp)
 	mm.Unlock()
+}
+
+func (mm *matchMaker) ErrorChan() chan error {
+	return mm.errorChan
 }

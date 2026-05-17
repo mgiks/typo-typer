@@ -40,7 +40,7 @@ func (app application) eventJoinPoolHandler(e Event, c Client) error {
 		return err
 	}
 
-	roomIDChan := make(matchmaker.RoomIDReceiverChan)
+	roomIDChan := make(chan string)
 
 	app.matchmaker.SearchGame(matchmaker.SearchingPlayer{
 		Name:       c.id,
