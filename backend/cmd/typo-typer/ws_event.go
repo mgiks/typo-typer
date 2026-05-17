@@ -1,30 +1,64 @@
 package main
 
-import "encoding/json"
+import (
+	"encoding/json"
 
-type Event struct {
-	Type    EventType       `json:"type"`
-	Payload json.RawMessage `json:"payload"`
-}
+	"github.com/mgiks/typo-typer/internal/matchmaker"
+)
 
-type EventHandler func(Event, Client) error
+type (
+	EventType string
 
-type EventType string
+	Event struct {
+		Type    EventType       `json:"type"`
+		Payload json.RawMessage `json:"payload"`
+	}
 
-const EventHello EventType = "hello"
+	EventHandler func(Event, Client) error
+)
 
-func eventHelloHandler(e Event, c Client) error {
-	payload, err := json.Marshal("hello")
+const (
+	EventJoinPool  EventType = "join_pool"
+	EventFoundRoom EventType = "found_room"
+)
+
+type (
+	EventJoinPoolPayload struct {
+		Name string `json:"name"`
+		WPM  uint8  `json:"wpm"`
+	}
+
+	EventFoundGamePayload struct {
+		RoomID string `json:"room_id"`
+	}
+)
+
+func (app application) eventJoinPoolHandler(e Event, c Client) error {
+	var payload EventJoinPoolPayload
+	err := json.Unmarshal(e.Payload, &payload)
 	if err != nil {
 		return err
 	}
 
-	event := Event{
-		Type:    EventHello,
-		Payload: payload,
+	roomIDChan := make(matchmaker.RoomIDReceiverChan)
+
+	app.matchmaker.SearchGame(matchmaker.SearchingPlayer{
+		Name:       c.id,
+		RoomIDChan: roomIDChan,
+	})
+
+	outgoingPayload, err := json.Marshal(EventFoundGamePayload{
+		RoomID: string(<-roomIDChan),
+	})
+
+	if err != nil {
+		return err
 	}
 
-	c.incomingEvents <- event
+	var outgoingEvent Event
+	outgoingEvent.Type = EventFoundRoom
+	outgoingEvent.Payload = outgoingPayload
 
+	c.incomingEvents <- outgoingEvent
 	return nil
 }

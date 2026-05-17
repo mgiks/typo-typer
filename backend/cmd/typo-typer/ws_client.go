@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/coder/websocket"
 )
@@ -38,8 +37,6 @@ func (app application) readMessages(c Client) {
 			app.logger.Warn("client failed to read json", "err", err)
 			return
 		}
-
-		fmt.Println(event)
 
 		if err := app.wsManager.routeEvent(event, c); err != nil {
 			app.logger.Warn("manager failed to route event", "err", err)

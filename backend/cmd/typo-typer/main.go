@@ -10,6 +10,7 @@ import (
 	"github.com/mgiks/typo-typer/internal/env"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/logger"
+	"github.com/mgiks/typo-typer/internal/matchmaker"
 	"github.com/mgiks/typo-typer/internal/storage"
 	"github.com/mgiks/typo-typer/internal/text"
 	"github.com/mgiks/typo-typer/internal/token"
@@ -67,7 +68,9 @@ func main() {
 	}
 
 	wsManager := newWsManager()
-	wsManager.mount()
+
+	matchmakerService := matchmaker.NewMatchMaker()
+	matchmakerService.Run()
 
 	app := application{
 		config:         config,
@@ -78,6 +81,7 @@ func main() {
 		tokenService:   tokenService,
 		validator:      validator,
 		logger:         logger,
+		matchmaker:     matchmakerService,
 	}
 
 	mux := app.mount()

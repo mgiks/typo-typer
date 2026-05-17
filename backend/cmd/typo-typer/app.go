@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/mgiks/typo-typer/internal/hashing"
 	"github.com/mgiks/typo-typer/internal/logger"
+	"github.com/mgiks/typo-typer/internal/matchmaker"
 	"github.com/mgiks/typo-typer/internal/text"
 	"github.com/mgiks/typo-typer/internal/token"
 	"github.com/mgiks/typo-typer/internal/user"
@@ -24,6 +25,7 @@ type application struct {
 	tokenService   token.TokenService
 	validator      validation.ValidationService
 	logger         logger.LoggerService
+	matchmaker     matchmaker.MatchMaker
 }
 
 type config struct {
@@ -74,12 +76,13 @@ func (app application) mount() http.Handler {
 		})
 
 		r.Route("/ws", func(r chi.Router) {
-			r.Get("/hello", app.helloHandler)
-			// r.Route("/matchmaking", func(r chi.Router) {
-			// 	r.Get("/pool", app.joinPoolHandler)
-			// })
+			r.Route("/matchmaking", func(r chi.Router) {
+				r.Get("/pool", app.joinPoolHandler)
+			})
 		})
 	})
+
+	app.wsManager.routes[EventJoinPool] = app.eventJoinPoolHandler
 
 	return r
 }

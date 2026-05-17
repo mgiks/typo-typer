@@ -38,7 +38,3 @@ func (m *WsManager) routeEvent(event Event, client Client) error {
 
 	return handler(event, client)
 }
-
-func (m *WsManager) mount() {
-	m.routes[EventHello] = eventHelloHandler
-}
