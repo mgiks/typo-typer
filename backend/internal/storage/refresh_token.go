@@ -7,12 +7,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type RefreshTokenStore struct {
+type refreshTokenStore struct {
 	db *pgxpool.Pool
 }
 
 // TODO: make this function accept *RefreshToken parameter
-func (s RefreshTokenStore) Create(ctx context.Context, tokenHash, salt, accountID string, expiresAt time.Time) error {
+func (s refreshTokenStore) Create(ctx context.Context, tokenHash, salt, accountID string, expiresAt time.Time) error {
 	query := `
 		INSERT INTO refresh_tokens (token_hash, salt, account_id, expires_at) 
 		VALUES ($1, $2, $3, $4)

@@ -27,11 +27,11 @@ func (p *password) SetText(text string) {
 	p.Text = &text
 }
 
-type UserStore struct {
+type userStore struct {
 	db *pgxpool.Pool
 }
 
-func (s UserStore) Create(ctx context.Context, account *User) error {
+func (s userStore) Create(ctx context.Context, account *User) error {
 	query := `
 		INSERT INTO users (username, email, passhash, salt) 
 		VALUES ($1, $2, $3, $4) RETURNING id, wpm
@@ -67,7 +67,7 @@ func (s UserStore) Create(ctx context.Context, account *User) error {
 	return nil
 }
 
-func (s UserStore) GetByID(ctx context.Context, id int64) (User, error) {
+func (s userStore) GetByID(ctx context.Context, id int64) (User, error) {
 	query := `
 		SELECT id, username, email, passhash, salt, wpm FROM users 
 		WHERE id = $1
@@ -89,7 +89,7 @@ func (s UserStore) GetByID(ctx context.Context, id int64) (User, error) {
 	return a, nil
 }
 
-func (s UserStore) GetByName(ctx context.Context, name string) (User, error) {
+func (s userStore) GetByName(ctx context.Context, name string) (User, error) {
 	query := `
 		SELECT id, username, email, passhash, salt, wpm FROM users
 		WHERE username = $1

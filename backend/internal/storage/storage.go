@@ -40,9 +40,9 @@ type RefreshTokenRepository interface {
 }
 
 type store struct {
-	user         UserRepository
-	text         TextRepository
-	refreshToken RefreshTokenRepository
+	user         userStore
+	text         textStore
+	refreshToken refreshTokenStore
 }
 
 func (s store) Users() UserRepository {
@@ -59,8 +59,8 @@ func (s store) RefreshToken() RefreshTokenRepository {
 
 func NewStore(db *pgxpool.Pool) Store {
 	return store{
-		user:         UserStore{db: db},
-		text:         TextStore{db: db},
-		refreshToken: RefreshTokenStore{db: db},
+		user:         userStore{db: db},
+		text:         textStore{db: db},
+		refreshToken: refreshTokenStore{db: db},
 	}
 }

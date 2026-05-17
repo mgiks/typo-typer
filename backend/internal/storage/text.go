@@ -11,11 +11,11 @@ type Text struct {
 	Content string `json:"content"`
 }
 
-type TextStore struct {
+type textStore struct {
 	db *pgxpool.Pool
 }
 
-func (s TextStore) GetRandom(ctx context.Context) (Text, error) {
+func (s textStore) GetRandom(ctx context.Context) (Text, error) {
 	query := `
 		SELECT id, content FROM texts 
 		ORDER BY RANDOM() 
@@ -30,7 +30,7 @@ func (s TextStore) GetRandom(ctx context.Context) (Text, error) {
 	return text, nil
 }
 
-func (s TextStore) Create(ctx context.Context, text *Text) error {
+func (s textStore) Create(ctx context.Context, text *Text) error {
 	query := `
 		INSERT INTO texts (content)
 		VALUES ($1) RETURNING id
