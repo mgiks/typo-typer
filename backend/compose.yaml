@@ -2,10 +2,10 @@ name: typo-typer
 
 services:
   postgres:
-    container_name: postgres
+    container_name: typo-typer-postgres
     image: postgres:18.3-alpine
     volumes:
-      - postgres:/var/lib/postgresql
+      - typo-typer-postgres-data:/var/lib/postgresql
     environment:
       POSTGRES_DB: typo-typer
       PGDATABASE: typo-typer
@@ -13,14 +13,22 @@ services:
       PGUSER: admin
       POSTGRES_PASSWORD: adminpassword
       PGPASSWORD: adminpassword
+    restart: unless-stopped
     ports:
       - "5433:5432"
-    restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d typo-typer" ]
       interval: 5s
       timeout: 10s
       retries: 5
 
+  redis:
+    container_name: typo-typer-redis
+    image: redis:8.6.3-alpine
+    command: redis-server --save 60 1 --loglevel warning
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
 volumes:
-  postgres:
+  typo-typer-postgres-data:

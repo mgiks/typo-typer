@@ -14,6 +14,20 @@ func GetString(key, fallback string) string {
 	return val
 }
 
+func GetInt(key string, fallback int) int {
+	val, exists := os.LookupEnv(key)
+	if !exists {
+		return fallback
+	}
+
+	valAsInt, err := strconv.ParseInt(val, 10, 0)
+	if err != nil {
+		return fallback
+	}
+
+	return int(valAsInt)
+}
+
 func GetInt32(key string, fallback int32) int32 {
 	val, exists := os.LookupEnv(key)
 	if !exists {

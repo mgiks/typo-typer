@@ -33,6 +33,11 @@ func main() {
 		jwt: jwtConfig{
 			secret: env.GetByteSlice("JWT_SECRET", nil),
 		},
+		redis: redisConfig{
+			addr:     env.GetString("REDIS_ADDR", "localhost:6379"),
+			password: env.GetString("REDIS_PASSWORD", ""),
+			db:       env.GetInt("REDIS_DB", 0),
+		},
 	}
 
 	logger := logger.NewService(*slog.Default())
@@ -69,8 +74,8 @@ func main() {
 
 	wsManager := newWsManager()
 
-	matchmakerService := matchmaker.NewMatchMaker()
-	matchmakerService.Run()
+	matchmaker := matchmaker.NewMatchMaker()
+	matchmaker.Run()
 
 	app := application{
 		config:         config,
@@ -81,7 +86,7 @@ func main() {
 		tokenService:   tokenService,
 		validator:      validator,
 		logger:         logger,
-		matchmaker:     matchmakerService,
+		matchmaker:     matchmaker,
 	}
 
 	mux := app.mount()

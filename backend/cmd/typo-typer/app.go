@@ -34,6 +34,13 @@ type config struct {
 	db            dbConfig
 	ws            wsConfig
 	jwt           jwtConfig
+	redis         redisConfig
+}
+
+type redisConfig struct {
+	addr     string
+	password string
+	db       int
 }
 
 type dbConfig struct {
