@@ -7,17 +7,21 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type ValidationService struct {
+type ValidationService interface {
+	ValidateJSON(any) error
+}
+
+type validationService struct {
 	validator *validator.Validate
 }
 
 func NewService() ValidationService {
-	return ValidationService{
+	return validationService{
 		validator: validator.New(validator.WithRequiredStructEnabled()),
 	}
 }
 
-func (s ValidationService) ValidateJSON(data any) error {
+func (s validationService) ValidateJSON(data any) error {
 	if err := s.validator.Struct(data); err != nil {
 		var ve validator.ValidationErrors
 		if errors.As(err, &ve) {
