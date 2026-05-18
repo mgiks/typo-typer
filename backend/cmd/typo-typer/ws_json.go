@@ -8,21 +8,26 @@ import (
 	"github.com/coder/websocket"
 )
 
+var (
+	ErrInvalidPayloadType = fmt.Errorf("invalid payload type")
+	ErrConnClosed         = fmt.Errorf("connection closed")
+)
+
 func readWsJson(ctx context.Context, conn *websocket.Conn, dest any) error {
 	payloadType, payload, err := conn.Read(ctx)
-	if payloadType != websocket.MessageText {
-		unsupportedDataClose(conn)
-		return fmt.Errorf("unsupported data")
+	if err != nil {
+		if websocket.CloseStatus(err) != -1 {
+			return ErrConnClosed
+		}
+		return fmt.Errorf("error reading from connection: %w", err)
 	}
 
-	if err != nil {
-		abnormalClosureClose(conn)
-		return fmt.Errorf("abnormal closure")
+	if payloadType != websocket.MessageText {
+		return ErrInvalidPayloadType
 	}
 
 	if err := json.Unmarshal(payload, dest); err != nil {
-		inavalidDataClose(conn)
-		return fmt.Errorf("invalid data")
+		return fmt.Errorf("json unmarshalling failed: %w", err)
 	}
 
 	return nil
@@ -31,7 +36,7 @@ func readWsJson(ctx context.Context, conn *websocket.Conn, dest any) error {
 func writeWsJson(ctx context.Context, conn *websocket.Conn, data any) error {
 	msg, err := json.Marshal(data)
 	if err != nil {
-		return err
+		return fmt.Errorf("json marshalling failed: %w", err)
 	}
 	return conn.Write(ctx, websocket.MessageText, msg)
 }

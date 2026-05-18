@@ -6,12 +6,14 @@ import (
 )
 
 func (app application) joinPoolHandler(w http.ResponseWriter, r *http.Request) {
-	conn, err := app.acceptWSHandshake(w, r, r.URL.Path)
+	path := r.URL.Path
+
+	conn, err := app.acceptWSHandshake(w, r, path)
 	if err != nil {
 		return
 	}
 
-	client := NewClient(rand.Text(), conn)
+	client := NewClient(rand.Text(), conn, path)
 	app.wsManager.addClient(client)
 
 	go app.readMessages(client)

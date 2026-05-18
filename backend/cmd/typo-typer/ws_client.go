@@ -2,20 +2,23 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/coder/websocket"
 )
 
 type Client struct {
-	id   string
-	conn *websocket.Conn
+	id      string
+	urlPath string
+	conn    *websocket.Conn
 	// Events that are incoming to the client
 	incomingEvents chan Event
 }
 
-func NewClient(id string, conn *websocket.Conn) Client {
+func NewClient(id string, conn *websocket.Conn, urlPath string) Client {
 	return Client{
 		id:             id,
+		urlPath:        urlPath,
 		conn:           conn,
 		incomingEvents: make(chan Event),
 	}
@@ -34,13 +37,18 @@ func (app application) readMessages(c Client) {
 
 		var event Event
 		if err := readWsJson(ctx, c.conn, &event); err != nil {
-			app.logger.Warn("client failed to read json", "err", err)
+			switch err {
+			case ErrInvalidPayloadType:
+				app.inavalidDataClose(c)
+			case ErrConnClosed:
+			default:
+				app.internalErrorClose(c, fmt.Errorf("failed to read json: %w", err))
+			}
 			return
 		}
 
 		if err := app.wsManager.routeEvent(event, c); err != nil {
-			app.logger.Warn("manager failed to route event", "err", err)
-			internalErrorClose(c.conn)
+			app.internalErrorClose(c, err)
 			return
 		}
 
@@ -61,13 +69,12 @@ func (app application) writeMessages(c Client) {
 			defer cancel()
 
 			if !open {
-				normalClosureClose(c.conn)
+				app.normalClosureClose(c)
 				return
 			}
 
 			if err := writeWsJson(ctx, c.conn, event); err != nil {
-				app.logger.Warn("client failed to write json", "err", err)
-				internalErrorClose(c.conn)
+				app.internalErrorClose(c, fmt.Errorf("failed to write json: %w", err))
 				return
 			}
 
