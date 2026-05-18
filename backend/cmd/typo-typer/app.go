@@ -51,7 +51,9 @@ type dbConfig struct {
 }
 
 type wsConfig struct {
-	originPattens []string
+	originPattens  []string
+	readTimeLimit  string
+	writeTimeLimit string
 }
 
 type jwtConfig struct {

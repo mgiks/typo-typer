@@ -29,7 +29,9 @@ func main() {
 			maxConnIdleTime: env.GetString("DB_MAX_CONN_IDLE_TIME", "15m"),
 		},
 		ws: wsConfig{
-			originPattens: env.GetStringSlice("WS_ORIGIN_PATTERNS", []string{"http://localhost:5173"}),
+			originPattens:  env.GetStringSlice("WS_ORIGIN_PATTERNS", []string{"http://localhost:5173"}),
+			readTimeLimit:  env.GetString("WS_READ_TIME_LIMIT", "1m"),
+			writeTimeLimit: env.GetString("WS_WRITE_TIME_LIMIT", "5s"),
 		},
 		jwt: jwtConfig{
 			secret: env.GetByteSlice("JWT_SECRET", nil),
@@ -73,7 +75,11 @@ func main() {
 		return
 	}
 
-	wsManager := newWsManager()
+	wsManager, err := newWsManager(config.ws.readTimeLimit, config.ws.writeTimeLimit)
+	if err != nil {
+		logger.FatalError("failed to initialize ws manager", "err", err)
+		return
+	}
 
 	rc := cache.NewRedisClient(config.redis.addr, config.redis.password, config.redis.db)
 	logger.Info("cache connection established")

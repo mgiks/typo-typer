@@ -29,7 +29,7 @@ func (app application) readMessages(c Client) {
 	c.conn.SetReadLimit(512)
 
 	for {
-		ctx, cancel := context.WithTimeout(context.Background(), WsReadTimeLimit)
+		ctx, cancel := context.WithTimeout(context.Background(), app.wsManager.readTimeLimit)
 		defer cancel()
 
 		var event Event
@@ -57,7 +57,7 @@ func (app application) writeMessages(c Client) {
 	for {
 		select {
 		case event, open := <-c.incomingEvents:
-			ctx, cancel := context.WithTimeout(context.Background(), WsWriteTimeLimit)
+			ctx, cancel := context.WithTimeout(context.Background(), app.wsManager.writeTimeLimit)
 			defer cancel()
 
 			if !open {
