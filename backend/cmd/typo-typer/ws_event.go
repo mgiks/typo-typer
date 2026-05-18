@@ -60,5 +60,7 @@ func (app application) eventJoinPoolHandler(e Event, c Client) error {
 	outgoingEvent.Payload = outgoingPayload
 
 	c.incomingEvents <- outgoingEvent
+	close(c.incomingEvents)
+
 	return nil
 }

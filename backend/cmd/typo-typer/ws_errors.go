@@ -21,3 +21,7 @@ func abnormalClosureClose(conn *websocket.Conn) {
 func internalErrorClose(conn *websocket.Conn) {
 	conn.Close(websocket.StatusInternalError, "internal error")
 }
+
+func normalClosuseClose(conn *websocket.Conn) {
+	conn.Close(websocket.StatusNormalClosure, "normal closure")
+}

@@ -56,13 +56,12 @@ func (app application) writeMessages(c Client) {
 
 	for {
 		select {
-		case event, ok := <-c.incomingEvents:
+		case event, open := <-c.incomingEvents:
 			ctx, cancel := context.WithTimeout(context.Background(), WsWriteTimeLimit)
 			defer cancel()
 
-			if !ok {
-				app.logger.Warn("client's write channel is closed")
-				internalErrorClose(c.conn)
+			if !open {
+				normalClosureClose(c.conn)
 				return
 			}
 
